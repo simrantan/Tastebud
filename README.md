@@ -12,7 +12,7 @@
 </p>
 -->
 
-<h1 align="center">Project Title</h1>
+<h1 align="center">TasteBud</h1>
 <div id="top"></div>
 
 <!--
@@ -77,20 +77,16 @@ The things you need to use the software and how to install them.
 1. Clone the repo
 
     ```sh
-    git clone https://github.com/github_username/repo_name.git
+    git clone git@github.com:StanfordCS194/Win24-Team22.git
     ```
 
-2. Install NPM packages
+2. Install NPM packages. Run this in both `frontend` and `backend` directories.
 
     ```sh
     npm install
     ```
-
-3. Enter your API in `config.js`
-
-    ```js
-    const API_KEY = "ENTER YOUR API";
-    ```
+  
+3. Once you've made your changes, publish them by running `npm run deploy` from the frontend directory.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
