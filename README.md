@@ -85,6 +85,8 @@ The things you need to use the software and how to install them.
     ```sh
     npm install
     ```
+  
+3. Once you've made your changes, publish them by running `npm run deploy` from the frontend directory.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
