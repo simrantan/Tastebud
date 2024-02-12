@@ -1,5 +1,6 @@
 <!--
 # Steven G. Opferman | steven.g.opferman@gmail.com
+# Layton Rosenfeld | sparkyrosenfeld@gmail.com
 # Adapted from:
 #   https://github.com/othneildrew/Best-README-Template/
 #   https://github.com/kylelobo/The-Documentation-Compendium/
