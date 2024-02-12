@@ -1,5 +1,7 @@
 <!--
 # Steven G. Opferman | steven.g.opferman@gmail.com
+# Layton Rosenfeld | sparkyrosenfeld@gmail.com
+# Janelle Cheung | cheungj19@gmail.com
 # Adapted from:
 #   https://github.com/othneildrew/Best-README-Template/
 #   https://github.com/kylelobo/The-Documentation-Compendium/
@@ -68,24 +70,24 @@ The things you need to use the software and how to install them.
 
 - npm
 
-    ```sh
-    npm install npm@latest -g
-    ```
+  ```sh
+  npm install npm@latest -g
+  ```
 
 ### Installation
 
 1. Clone the repo
 
-    ```sh
-    git clone git@github.com:StanfordCS194/Win24-Team22.git
-    ```
+   ```sh
+   git clone git@github.com:StanfordCS194/Win24-Team22.git
+   ```
 
 2. Install NPM packages. Run this in both `frontend` and `backend` directories.
 
-    ```sh
-    npm install
-    ```
-  
+   ```sh
+   npm install
+   ```
+
 3. Once you've made your changes, publish them by running `npm run deploy` from the frontend directory.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -114,6 +116,10 @@ Feel free to do any of the following:
 - [fork the repo](https://docs.github.com/en/get-started/quickstart/fork-a-repo) and [create a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
+
+## Contributors
+
+- Tomy Di Felice
 
 ## Acknowledgements <a name="acknowledgements"></a>
 
