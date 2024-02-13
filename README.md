@@ -1,7 +1,5 @@
 <!--
 # Steven G. Opferman | steven.g.opferman@gmail.com
-# Layton Rosenfeld | sparkyrosenfeld@gmail.com
-# Janelle Cheung | cheungj19@gmail.com
 # Adapted from:
 #   https://github.com/othneildrew/Best-README-Template/
 #   https://github.com/kylelobo/The-Documentation-Compendium/
@@ -116,10 +114,6 @@ Feel free to do any of the following:
 - [fork the repo](https://docs.github.com/en/get-started/quickstart/fork-a-repo) and [create a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
-## Contributors
-
-- Tomy Di Felice
 
 ## Acknowledgements <a name="acknowledgements"></a>
 
