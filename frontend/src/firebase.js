@@ -18,4 +18,5 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+
+// We will actually access Firebase in the backend -- frontend doesn't need to do anything! -Steven
