@@ -1,4 +1,5 @@
 const express = require("express");
+const { default: generateDummyData } = require("./generate_firebase_dummydata");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -9,8 +10,9 @@ app.use((req, res, next) => {
 	next();
 });
 
-/* ########################### User ########################## */
+/* ###################################################### URL Routes ##################################################### */
 
+/* ########################### User ########################## */
 /** Get information for a single user */
 app.get("/user/:userId", (req, res) => {
 	const userId = Number(req.params.userId);
@@ -62,6 +64,16 @@ app.get("/chat/:chatID", (req, res) => {
 		created_at: "2021-04-20T12:00:00Z",
 	});
 });
+
+/* ########################### Firebase Testing ########################## */
+app.get("/firebase/dummy_data", (req, res) => {
+	console.log("Creating dummy data...");
+	generateDummyData();
+});
+
+/* ###################################################### Firebase Methods ##################################################### */
+/** Get a single user */
+function getUser(userId) {}
 
 app.get("/", (req, res) => {
 	res.json({ message: "Hello from server!" });
