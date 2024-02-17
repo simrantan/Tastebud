@@ -1,5 +1,5 @@
-const express = require("express");
-const { default: generateDummyData } = require("./generate_firebase_dummydata");
+import express from "express";
+import { generateDummyData } from "./generate_firebase_dummydata.js";
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -61,7 +61,8 @@ app.get("/chat/:chatID", (req, res) => {
 		host_id: 0,
 		recipes: [111, 222, 333],
 		guests: [1, 2, 3],
-		created_at: "2021-04-20T12:00:00Z",
+		created_at: new Date(),
+		messages: [{}],
 	});
 });
 
@@ -69,6 +70,7 @@ app.get("/chat/:chatID", (req, res) => {
 app.get("/firebase/dummy_data", (req, res) => {
 	console.log("Creating dummy data...");
 	generateDummyData();
+	res.json({ message: "Dummy data created!" });
 });
 
 /* ###################################################### Firebase Methods ##################################################### */
