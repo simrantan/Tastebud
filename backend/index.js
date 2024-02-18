@@ -9,6 +9,9 @@ app.use((req, res, next) => {
 	next();
 });
 
+app.use(express.json());
+
+
 /* ########################### User ########################## */
 
 /** Get information for a single user */
@@ -35,25 +38,25 @@ app.get("/user/:userId", (req, res) => {
 /** Save user preferences */
 app.post("/user/:userId/preferences", (req, res) => {
 	const userId = Number(req.params.userId);
-	const {prefType} = req.body;
+    const prefType = req.body.prefType;
 
 	if (prefType === 'likes') {
-		user.likes = req.body[prefType];
-		console.log(`Likes added for user ${userId}. Likes: ${req.body[prefType].join(', ')}`);
+		console.log(`userId: ${userId} likes ${req.body.preferences}`);
+		// TODO: update firebase with user likes
 	} 
 	else if (prefType === 'dislikes') {
-		user.dislikes = req.body[prefType];
-		console.log(`Dislikes added for user ${userId}. Dislikes: ${req.body[prefType].join(', ')}`);
+		console.log(`userId: ${userId} dislikes ${req.body.preferences}`);
+		// TODO: update firebase with user dislikes
 	} 
 	else if (prefType === 'allergies') {
-		user.allergies = req.body[prefType];
-		console.log(`Allergies added for user ${userId}. Allergies: ${
-			Object.entries(req.body[prefType]).map(([allergen, severity]) => `${allergen}: ${severity}`).join(', ')
-        }`);	
+		console.log(`userId: ${userId} allergies ${req.body.preferences}`);
+		// TODO: update firebase with user allergies
+	} else {
+		return res.status(400).json({ error: "Invalid prefType" });
 	}
+	res.status(200).json({ success: true });
 });
 
-// for likes, dislikes, allergies  
 
 /* ########################### Recipe ########################## */
 /** Get information for a single recipe */
