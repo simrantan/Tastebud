@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import { Card, Button, Modal } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+
 import "react-toastify/dist/ReactToastify.css";
 import "./RecipeBook.css"; // Import the CSS file
 
 export default function RecipeBook({ userId }) {
+	const navigate = useNavigate();
+
 	const [recipeBook, setRecipeBook] = useState([
 		{
 			id: 11,
@@ -81,6 +85,10 @@ export default function RecipeBook({ userId }) {
 		setShowModal(false);
 	};
 
+	const handleHomepageButton = () => {
+		navigate("/");
+	};
+
 	const handleRemoveFromRecipeBook = (recipeId) => {
 		// Find the selected recipe
 		const removedRecipe = recipeBook.find((recipe) => recipe.id === recipeId);
@@ -117,7 +125,11 @@ export default function RecipeBook({ userId }) {
 	return (
 		<div>
 			<ToastContainer position="top-right" autoClose={3000} hideProgressBar />
-
+			<div className="homepage-button">
+				<Button variant="primary" onClick={handleHomepageButton}>
+					Go to MainPage
+				</Button>
+			</div>
 			<h2>Recipe Book</h2>
 			<input
 				type="text"
