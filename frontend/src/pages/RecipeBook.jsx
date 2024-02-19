@@ -148,7 +148,7 @@ export default function RecipeBook({ userId }) {
 									<Card.Title>{recipe.name}</Card.Title>
 									<div className="button-container">
 										<Button onClick={() => handleRecipeClick(recipe)}>
-											View Details
+											View Recipe
 										</Button>
 										<Button
 											variant="danger"
