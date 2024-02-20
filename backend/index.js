@@ -49,7 +49,7 @@ app.post("/user/:userId/preferences", (req, res) => {
 		// TODO: update firebase with user dislikes
 	} 
 	else if (prefType === 'allergies') {
-		console.log(`userId: ${userId} allergies ${req.body.preferences}`);
+    	console.log(`userId: ${userId} allergies ${JSON.stringify(req.body.preferences)}`);
 		// TODO: update firebase with user allergies
 	} else {
 		return res.status(400).json({ error: "Invalid prefType" });
