@@ -25,9 +25,9 @@ app.get("/user/:userId", (req, res) => {
 		dislikes: ["apple", "orange"],
 		allergies: {
 			milk: "1",
-			peanuts: "3",
+			peanuts: "1",
 			gluten: "2",
-			beef: "4",
+			beef: "2",
 		},
 		individual_chats: [0, 1],
 		group_chats: [2, 3],
