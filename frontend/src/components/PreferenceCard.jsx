@@ -142,6 +142,7 @@ const PreferenceCard = () => {
 							></Dropdown.Toggle>
 							<Dropdown.Menu>
 								<Dropdown.Item
+									className="dropdown-text"
 									onClick={() => handleCategoryChange(allergen, 1)}
 								>
 									💀
@@ -211,7 +212,7 @@ const PreferenceCard = () => {
 
 			{/* Dislikes Section */}
 			<hr />
-			<h1 classname="section-title">Dislikes</h1>
+			<h1 className="section-title">Dislikes</h1>
 			<Form>
 				<Form.Group controlId="newDislike">
 					<FormControl
