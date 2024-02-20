@@ -1,6 +1,6 @@
 // App.js
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import MainPage from "./pages/MainPage";
 import RecipeBook from "./pages/RecipeBook";
 
@@ -11,7 +11,7 @@ function App() {
 		<Router>
 			<div className="App">
 				<Routes>
-					<Route path="/" element={<MainPage />} />
+					<Route path="/Win24-Team22" element={<MainPage />} />
 					<Route path="/recipe-book" element={<RecipeBook />} />
 				</Routes>
 			</div>
