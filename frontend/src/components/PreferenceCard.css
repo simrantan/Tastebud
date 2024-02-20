@@ -35,12 +35,16 @@
     margin-right: 8px; /* Adjust margin between items as needed */
     margin-bottom: 8px; /* Add margin between rows as needed */
   }
+
+  .item-text {
+    margin-right: 10px;
+  }
   
   /* Add any additional styling as needed */
   .custom-dropdown-toggle.btn-secondary {
     width: 30px;
     padding: 4px;
-    height: 30px !important;
+    height: 32px !important;
     width: 30px !important;    
     background-color: #3498db !important; /* Change the background color as needed */
     color: #ffffff !important; /* Change the text color as needed */
@@ -54,7 +58,8 @@
     color: #ffffff; /* Change the text color as needed */
   }
 
-  .custom-remove-button {
+  
+  .custom-remove-button-test {
     /* Add your custom styles here */
     height: 30px !important;
     width: 30px !important;
@@ -63,4 +68,8 @@
     color: white !important;; /* Change the text color as needed */
     border: 1px solid #ffffff !important; /* Change the border color as needed */
     /* Add any other styles you want to override */
+  }
+  
+  .dropdown-item{
+    text-align: center !important;
   }

@@ -80,7 +80,12 @@ const PreferenceCard = () => {
 	};
 
 	const renderTooltip = (item) => (
-		<Tooltip id={`tooltip-${item}`}>Your tooltip content here</Tooltip>
+		<Tooltip id={`tooltip-${item}`} className="tooltip-pref">
+			💀 This will kill me, keep it away <br />
+			🤢 This makes me physically ill <br />
+			🚫 Tastes bad <br />
+			🥴 Personal choice
+		</Tooltip>
 	);
 
 	return (
@@ -101,7 +106,7 @@ const PreferenceCard = () => {
 			<div className="preference-container">
 				{Object.entries(allergens).map(([allergen, category]) => (
 					<span key={allergen} className="item">
-						<span>{allergen}</span>
+						<span className="item-text">{allergen}</span>
 						<span className="ml-2">
 							{" "}
 							{category === 1
@@ -113,7 +118,17 @@ const PreferenceCard = () => {
 								: "🥴"}
 						</span>
 						<span>
-							<OverlayTrigger placement="top" overlay={renderTooltip(allergen)}>
+							<OverlayTrigger
+								placement="top"
+								overlay={
+									<Tooltip place="top" effect="solid">
+										<div>💀 This will kill me</div>
+										<div>🤢 This makes me ill</div>
+										<div>🚫 Tastes bad</div>
+										<div>🐮 Personal choice</div>
+									</Tooltip>
+								}
+							>
 								<span className="ml-2" style={{ cursor: "pointer" }}>
 									?
 								</span>
@@ -129,22 +144,25 @@ const PreferenceCard = () => {
 								<Dropdown.Item
 									onClick={() => handleCategoryChange(allergen, 1)}
 								>
-									1
+									💀
 								</Dropdown.Item>
+								<Dropdown.Divider />
 								<Dropdown.Item
 									onClick={() => handleCategoryChange(allergen, 2)}
 								>
-									2
+									🤢
 								</Dropdown.Item>
+								<Dropdown.Divider />
 								<Dropdown.Item
 									onClick={() => handleCategoryChange(allergen, 3)}
 								>
-									3
+									🚫
 								</Dropdown.Item>
+								<Dropdown.Divider />
 								<Dropdown.Item
-									onClick={() => handleCategoryChange(allergen, 3)}
+									onClick={() => handleCategoryChange(allergen, 4)}
 								>
-									4
+									🐮
 								</Dropdown.Item>
 							</Dropdown.Menu>
 						</Dropdown>
@@ -178,7 +196,7 @@ const PreferenceCard = () => {
 			<div className="preference-container">
 				{Array.from(likes).map((like) => (
 					<span key={like} className="item">
-						<span>{like}</span>
+						<span className="item-text">{like}</span>
 						<Button
 							variant="danger"
 							size="sm"
@@ -208,7 +226,7 @@ const PreferenceCard = () => {
 			<div className="preference-container">
 				{Array.from(dislikes).map((dislike) => (
 					<span key={dislike} className="item">
-						<span>{dislike}</span>
+						<span className="item-text">{dislike}</span>
 						<Button
 							variant="danger"
 							size="sm"
