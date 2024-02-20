@@ -2,6 +2,7 @@
 import React from "react";
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import PreferenceCard from "../components/PreferenceCard.jsx";
 
 export default function MainPage() {
 	const navigate = useNavigate();
@@ -11,9 +12,10 @@ export default function MainPage() {
 	};
 
 	return (
-		<div className="MainPage container">
+		<div className="main-container">
 			<h1>MainPage</h1>
 			<Button onClick={handleButtonClick}>Go to RecipeBook</Button>
+			<PreferenceCard />
 		</div>
 	);
 }
