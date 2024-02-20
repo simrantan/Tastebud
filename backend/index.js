@@ -22,6 +22,7 @@ app.use((req, res, next) => {
 // Middleware to parse JSON request body
 app.use(express.json());
 
+
 /* ########################### User ########################## */
 
 /** Get information for a single user */
@@ -34,16 +35,40 @@ app.get("/user/:userId", (req, res) => {
 		likes: ["bananas", "corn"],
 		dislikes: ["apple", "orange"],
 		allergies: {
-			milk: "death",
-			peanuts: "taste_bad",
-			gluten: "illness",
-			beef: "choice",
+			milk: "1",
+			peanuts: "1",
+			gluten: "2",
+			beef: "2",
 		},
 		individual_chats: [0, 1],
 		group_chats: [2, 3],
 		recipe_book: [11, 22, 33],
 	});
 });
+
+
+/** Save user preferences */
+app.post("/user/:userId/preferences", (req, res) => {
+	const userId = Number(req.params.userId);
+    const prefType = req.body.prefType;
+
+	if (prefType === 'likes') {
+		console.log(`userId: ${userId} likes ${req.body.preferences}`);
+		// TODO: update firebase with user likes
+	} 
+	else if (prefType === 'dislikes') {
+		console.log(`userId: ${userId} dislikes ${req.body.preferences}`);
+		// TODO: update firebase with user dislikes
+	} 
+	else if (prefType === 'allergies') {
+    	console.log(`userId: ${userId} allergies ${JSON.stringify(req.body.preferences)}`);
+		// TODO: update firebase with user allergies
+	} else {
+		return res.status(400).json({ error: "Invalid prefType" });
+	}
+	res.status(200).json({ success: true });
+});
+
 
 /** Get the recipes in a user's recipe book */
 app.get("/recipe_book/:userId", (req, res) => {
@@ -78,6 +103,7 @@ app.get("/recipe_book/:userId", (req, res) => {
 		],
 	});
 });
+
 
 /* ########################### Recipe ########################## */
 /** Get information for a single recipe */
