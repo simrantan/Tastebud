@@ -117,7 +117,18 @@ export default function RecipeBook({ userId }) {
 				groupedRecipes[cuisine] = [recipe];
 			}
 		});
-		return groupedRecipes;
+
+		// Sort the cuisines alphabetically
+		const sortedCuisines = Object.keys(groupedRecipes).sort();
+
+		// Create a new object with sorted cuisines
+		const sortedGroupedRecipes = {};
+		sortedCuisines.forEach((cuisine) => {
+			sortedGroupedRecipes[cuisine] = groupedRecipes[cuisine];
+		});
+
+		console.log(sortedGroupedRecipes);
+		return sortedGroupedRecipes;
 	};
 
 	const groupedRecipes = groupRecipesByCuisine();
