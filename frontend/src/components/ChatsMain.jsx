@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Container, Row, Col, Card, Form } from "react-bootstrap";
-import ReactMarkdown from "react-markdown"; // Import react-markdown
+import ReactMarkdown from "react-markdown";
 import { useNavigate } from "react-router-dom";
 
 export default function ChatsMain() {
@@ -28,7 +28,7 @@ export default function ChatsMain() {
 		setUserInput(e.target.value);
 	};
 
-	const handleSendMessage = async () => {
+	const handleSendMessage = () => {
 		if (userInput.trim() === "") return;
 
 		// User message
@@ -39,38 +39,43 @@ export default function ChatsMain() {
 
 		setChatHistory((prevChatHistory) => [...prevChatHistory, newUserMessage]);
 		setUserInput("");
-
-		// Send the entire chat history to the backend for AI response
-		try {
-			const response = await fetch("http://localhost:3001/chat/:chatID", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					messages: [...chatHistory, newUserMessage], // Include the entire chat history
-				}),
-			});
-
-			const responseData = await response.json();
-
-			// Assuming the backend handles AI integration
-			const aiResponse = await simulateAIResponse([
-				...chatHistory,
-				newUserMessage,
-			]);
-
-			// Update UI with AI response
-			const newAiMessage = {
-				role: "assistant",
-				content: aiResponse,
-			};
-
-			setChatHistory((prevChatHistory) => [...prevChatHistory, newAiMessage]);
-		} catch (error) {
-			console.error("Error sending user message:", error);
-		}
 	};
+
+	useEffect(() => {
+		const fetchAIResponse = async () => {
+			try {
+				const response = await fetch("http://localhost:3001/chat/:chatID", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						messages: [...chatHistory, { role: "user", content: userInput }],
+					}),
+				});
+
+				const responseData = await response.json();
+
+				// Assuming the backend handles AI integration
+				const aiResponse = await simulateAIResponse([
+					...chatHistory,
+					{ role: "user", content: userInput },
+				]);
+
+				// Update UI with AI response
+				const newAiMessage = {
+					role: "assistant",
+					content: aiResponse,
+				};
+
+				setChatHistory((prevChatHistory) => [...prevChatHistory, newAiMessage]);
+			} catch (error) {
+				console.error("Error sending user message:", error);
+			}
+		};
+
+		fetchAIResponse();
+	}, [userInput, chatHistory]);
 
 	const simulateAIResponse = async (messages) => {
 		try {
