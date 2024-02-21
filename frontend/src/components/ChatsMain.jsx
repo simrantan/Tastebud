@@ -36,18 +36,15 @@ export default function ChatsMain() {
 	useEffect(() => {
 		const fetchAIResponse = async () => {
 			try {
-				const response = await fetch(
-					`http://localhost:3001/chat/${hardcodedUserId}`,
-					{
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						body: JSON.stringify({
-							messages: [...chatHistory, { role: "user", content: userInput }],
-						}),
-					}
-				);
+				const response = await fetch(`http://localhost:3001/chat/1`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						messages: [...chatHistory, { role: "user", content: userInput }],
+					}),
+				});
 
 				const responseData = await response.json();
 
