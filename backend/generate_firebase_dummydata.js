@@ -1,25 +1,9 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
 import { collection, doc, setDoc } from "firebase/firestore";
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-	apiKey: "AIzaSyAhAZONLZ75fA2aXOG5Qx50bhgoaA6UyUo",
-	authDomain: "tastebud-68924.firebaseapp.com",
-	projectId: "tastebud-68924",
-	storageBucket: "tastebud-68924.appspot.com",
-	messagingSenderId: "708594287238",
-	appId: "1:708594287238:web:d37ffdf34ebe8dc9fb4707",
-	measurementId: "G-8WWTR34KTE",
-};
-
-// Initialize Firebase
-initializeApp(firebaseConfig);
+import { DATABASE } from "./firebase.js";
 
 /* ########################### Constants ########################## */
-const db = getFirestore();
-const userRef = collection(db, "users");
+const userRef = collection(DATABASE, "users");
 const JOHN_ID = "00000000_sample_user";
 const RECIPE_ID = "sample_recipe";
 const CHAT_ID = "sample_chat";
@@ -44,7 +28,7 @@ export async function generateDummyData() {
 	});
 
 	// Create a reference to the "recipes" subcollection directly from the root of the database
-	const johnRecipesRef = collection(db, `users/${JOHN_ID}/recipes`);
+	const johnRecipesRef = collection(DATABASE, `users/${JOHN_ID}/recipes`);
 
 	// Create a sample recipe
 	await setDoc(doc(johnRecipesRef), {
@@ -55,7 +39,7 @@ export async function generateDummyData() {
 		cuisine: "American",
 	});
 
-	const johnChatsRef = collection(db, `users/${JOHN_ID}/chats`);
+	const johnChatsRef = collection(DATABASE, `users/${JOHN_ID}/chats`);
 
 	// Create a sample chat
 	await setDoc(doc(johnChatsRef, CHAT_ID), {
