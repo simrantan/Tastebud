@@ -24,14 +24,19 @@ import { DATABASE } from "./firebase.js";
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middleware to log request method and URL (for dev purposes)
-app.use((req, res, next) => {
-	console.log(`HTTP Method: ${req.method}`);
-	console.log(`URL: ${req.url}`);
-	next();
+// Information to access the Together API
+const url = "https://api.together.xyz/v1/chat/completions";
+const apiKey =
+	"6bfe8f020ba958040d37edc7ef8ee9f35c72d8fee380f2850f50a8ecf97d09b4";
+const headers = new Headers({
+	"Content-Type": "application/json",
+	Authorization: `Bearer ${apiKey}`,
 });
+const model = "mistralai/Mixtral-8x7B-Instruct-v0.1";
+const maxTokens = 20; // Keeping this low for now to not use up $$$
 
-/* ###################################################### URL Routes ##################################################### */
+// Middleware to parse JSON request body
+app.use(express.json());
 
 /* ########################### User ########################## */
 /** Get information for a single user */
