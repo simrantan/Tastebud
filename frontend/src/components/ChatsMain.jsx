@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Container, Row, Col, Card, Form } from "react-bootstrap";
+import ReactMarkdown from "react-markdown"; // Import react-markdown
 import { useNavigate } from "react-router-dom";
 
 export default function ChatsMain() {
 	const [userInput, setUserInput] = useState("");
-	const [messages, setMessages] = useState([
+	const [chatHistory, setChatHistory] = useState([
 		{
 			role: "system",
 			content: "You are an AI assistant",
@@ -21,11 +22,12 @@ export default function ChatsMain() {
 
 	useEffect(() => {
 		scrollToBottom();
-	}, [messages]);
+	}, [chatHistory]);
 
 	const handleInputChange = (e) => {
 		setUserInput(e.target.value);
 	};
+
 	const handleSendMessage = async () => {
 		if (userInput.trim() === "") return;
 
@@ -35,25 +37,26 @@ export default function ChatsMain() {
 			content: userInput,
 		};
 
-		setMessages((prevMessages) => [...prevMessages, newUserMessage]);
+		setChatHistory((prevChatHistory) => [...prevChatHistory, newUserMessage]);
 		setUserInput("");
 
 		// Send the entire chat history to the backend for AI response
 		try {
-			const response = await fetch("/chat/:chatID", {
+			const response = await fetch("http://localhost:3001/chat/:chatID", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({
-					messages: [...messages, newUserMessage], // Include the entire chat history
+					messages: [...chatHistory, newUserMessage], // Include the entire chat history
 				}),
 			});
 
 			const responseData = await response.json();
 
+			// Assuming the backend handles AI integration
 			const aiResponse = await simulateAIResponse([
-				...messages,
+				...chatHistory,
 				newUserMessage,
 			]);
 
@@ -63,7 +66,7 @@ export default function ChatsMain() {
 				content: aiResponse,
 			};
 
-			setMessages((prevMessages) => [...prevMessages, newAiMessage]);
+			setChatHistory((prevChatHistory) => [...prevChatHistory, newAiMessage]);
 		} catch (error) {
 			console.error("Error sending user message:", error);
 		}
@@ -71,11 +74,10 @@ export default function ChatsMain() {
 
 	const simulateAIResponse = async (messages) => {
 		try {
-			const response = await fetch("/chat/:chatID", {
+			const response = await fetch("http://localhost:3001/chat/:chatID", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
-					// Add any other headers if needed
 				},
 				body: JSON.stringify({
 					messages: messages,
@@ -106,7 +108,7 @@ export default function ChatsMain() {
 							<h5 className="mb-0">Chat</h5>
 						</Card.Header>
 						<Card.Body style={{ maxHeight: "400px", overflowY: "auto" }}>
-							{messages.map((message, index) => (
+							{chatHistory.map((message, index) => (
 								<div
 									key={index}
 									className={`d-flex flex-row justify-content-${
