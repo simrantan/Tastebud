@@ -1,27 +1,36 @@
 const express = require("express");
+const cors = require("cors");
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Information to access the Together API
-const url = 'https://api.together.xyz/v1/chat/completions';
-const apiKey = '6bfe8f020ba958040d37edc7ef8ee9f35c72d8fee380f2850f50a8ecf97d09b4';
+const url = "https://api.together.xyz/v1/chat/completions";
+const apiKey =
+	"6bfe8f020ba958040d37edc7ef8ee9f35c72d8fee380f2850f50a8ecf97d09b4";
 const headers = new Headers({
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${apiKey}`
+	"Content-Type": "application/json",
+	Authorization: `Bearer ${apiKey}`,
 });
-const model = 'mistralai/Mixtral-8x7B-Instruct-v0.1';
+const model = "mistralai/Mixtral-8x7B-Instruct-v0.1";
 const maxTokens = 20; // Keeping this low for now to not use up $$$
+
+// Use CORS middleware
+app.use(
+	cors({
+		origin: "http://localhost:3000", // Allow requests only from this origin
+	})
+);
 
 // Middleware to log request method and URL (for dev purposes)
 app.use((req, res, next) => {
-	console.log(`HTTP Method: ${req.method}`);
-	console.log(`URL: ${req.url}`);
+	// console.log(`HTTP Method: ${req.method}`);
+	// console.log(`URL: ${req.url}`);
 	next();
 });
 
 // Middleware to parse JSON request body
 app.use(express.json());
-
 
 /* ########################### User ########################## */
 
@@ -46,29 +55,27 @@ app.get("/user/:userId", (req, res) => {
 	});
 });
 
-
 /** Save user preferences */
 app.post("/user/:userId/preferences", (req, res) => {
 	const userId = Number(req.params.userId);
-    const prefType = req.body.prefType;
+	const prefType = req.body.prefType;
 
-	if (prefType === 'likes') {
+	if (prefType === "likes") {
 		console.log(`userId: ${userId} likes ${req.body.preferences}`);
 		// TODO: update firebase with user likes
-	} 
-	else if (prefType === 'dislikes') {
+	} else if (prefType === "dislikes") {
 		console.log(`userId: ${userId} dislikes ${req.body.preferences}`);
 		// TODO: update firebase with user dislikes
-	} 
-	else if (prefType === 'allergies') {
-    	console.log(`userId: ${userId} allergies ${JSON.stringify(req.body.preferences)}`);
+	} else if (prefType === "allergies") {
+		console.log(
+			`userId: ${userId} allergies ${JSON.stringify(req.body.preferences)}`
+		);
 		// TODO: update firebase with user allergies
 	} else {
 		return res.status(400).json({ error: "Invalid prefType" });
 	}
 	res.status(200).json({ success: true });
 });
-
 
 /** Get the recipes in a user's recipe book */
 app.get("/recipe_book/:userId", (req, res) => {
@@ -94,16 +101,15 @@ app.get("/recipe_book/:userId", (req, res) => {
 			},
 			{
 				id: 33,
-				name: "Apple Pie",
+				name: "Empanadas",
 				chat_id: 333,
-				text: "## Apple Pie Recipe\n\n**Ingredients:**\n- 1 recipe pastry for a 9-inch double-crust pie\n- 1/2 cup (100g) unsalted butter\n- 3 tablespoons all-purpose flour\n- 1/4 cup (60ml) water\n- 1/2 cup (100g) white sugar\n- 1/2 cup (100g) packed brown sugar\n- 8 Granny Smith apples - peeled, cored, and sliced\n\n**Instructions:**\n1. Preheat your oven to 425°F (220°C). Place the bottom crust in your pan.\n2. Melt the butter in a saucepan. Stir in flour to form a paste. Add water, white sugar, and brown sugar, and bring to a boil. Reduce temperature and let simmer.\n3. Place the apples in the prepared crust. Pour the sugar and butter mixture over the apples. Place the second crust on top of the apples.\n4. Bake in the preheated oven for 15 minutes. Reduce the temperature to 350°F (175°C) and continue baking for 35 to 45 minutes, until apples are soft.",
+				text: "## Empanadas Recipe\n\n**Ingredients:**\n- 1 recipe pastry for a 9-inch double-crust pie\n- 1/2 cup (100g) unsalted butter\n- 3 tablespoons all-purpose flour\n- 1/4 cup (60ml) water\n- 1/2 cup (100g) white sugar\n- 1/2 cup (100g) packed brown sugar\n- 8 Granny Smith apples - peeled, cored, and sliced\n\n**Instructions:**\n1. Preheat your oven to 425°F (220°C). Place the bottom crust in your pan.\n2. Melt the butter in a saucepan. Stir in flour to form a paste. Add water, white sugar, and brown sugar, and bring to a boil. Reduce temperature and let simmer.\n3. Place the apples in the prepared crust. Pour the sugar and butter mixture over the apples. Place the second crust on top of the apples.\n4. Bake in the preheated oven for 15 minutes. Reduce the temperature to 350°F (175°C) and continue baking for 35 to 45 minutes, until apples are soft.",
 				picture_url: "https://placekitten.com/1000/1000",
-				cuisine: "American",
+				cuisine: "Argentine",
 			},
 		],
 	});
 });
-
 
 /* ########################### Recipe ########################## */
 /** Get information for a single recipe */
@@ -141,43 +147,44 @@ app.post("/chat/:chatID", async (req, res) => {
 	const chatID = Number(req.params.chatID);
 	// const messages = req.body.messages; // History of messages from front end state
 	const input = req.body.message;
-	
+
 	const messages = [
 		{
-			role: 'system',
-			content: 'You are TasteBud! You help users find recipes based off of their dietary restrictions and preferences. Respond with \'Yes Chef!\' to requests when appropriate.'
-		}
-	]
+			role: "system",
+			content:
+				"You are TasteBud! You help users find recipes based off of their dietary restrictions and preferences. Respond with 'Yes Chef!' to requests when appropriate.",
+		},
+	];
 
-	messages.push({role: 'user', content: input});
+	messages.push({ role: "user", content: input });
 
 	const data = {
 		model: model,
 		max_tokens: maxTokens,
-		messages: messages
+		messages: messages,
 	};
 
 	const options = {
-		method: 'POST',
+		method: "POST",
 		headers: headers,
 		body: JSON.stringify(data),
-	}
+	};
 
 	try {
-        const response = await fetch(url, options);
-        const result = await response.text();
-		const resMessage = JSON.parse(result).choices[0].message
+		const response = await fetch(url, options);
+		const result = await response.text();
+		const resMessage = JSON.parse(result).choices[0].message;
 		const content = resMessage.content;
 		messages.push(resMessage);
 
-        res.json({
+		res.json({
 			chat_id: chatID,
-            response: content,
-			messages: messages
-        });
-    } catch (error) {
-        res.status(500).json({ error: 'API Internal server error' });
-    }
+			response: content,
+			messages: messages,
+		});
+	} catch (error) {
+		res.status(500).json({ error: "API Internal server error" });
+	}
 
 	// TODO: Think about how to organize recipe data with chat
 });
