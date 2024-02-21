@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Container, Row, Col, Card, Button, Form } from "react-bootstrap";
+import React, { useState, useEffect, useRef } from "react";
+import { Container, Row, Col, Card, Form } from "react-bootstrap";
 
 export default function ChatsMain() {
 	const [userInput, setUserInput] = useState("");
@@ -9,6 +9,18 @@ export default function ChatsMain() {
 			content: "You are an AI assistant",
 		},
 	]);
+
+	const messagesEndRef = useRef(null);
+
+	const scrollToBottom = () => {
+		if (messagesEndRef.current) {
+			messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+		}
+	};
+
+	useEffect(() => {
+		scrollToBottom();
+	}, [messages]);
 
 	const handleInputChange = (e) => {
 		setUserInput(e.target.value);
@@ -68,13 +80,13 @@ export default function ChatsMain() {
 								<div
 									key={index}
 									className={`d-flex flex-row justify-content-${
-										message.role === "user" ? "start" : "end"
+										message.role === "user" ? "end" : "start"
 									} mb-4`}
 								>
 									<div>
 										<p
 											className={`small p-2 ms-3 mb-1 rounded-3 ${
-												message.role === "assistant"
+												message.role === "user"
 													? "text-white bg-primary"
 													: "bg-light"
 											}`}
@@ -84,6 +96,7 @@ export default function ChatsMain() {
 									</div>
 								</div>
 							))}
+							<div ref={messagesEndRef} />
 						</Card.Body>
 						<Card.Footer className="text-muted d-flex justify-content-start align-items-center p-3">
 							<Form.Control
