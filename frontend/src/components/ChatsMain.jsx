@@ -1,12 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Container, Row, Col, Card, Form } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import RecipePanel from "./recipeSidebar";
 
 const hardcodedUserId = 1; // Hardcoded userId
+const API_CHAT_ENDPOINT = "http://localhost:3001/chat";
+const AI_SIMULATION_ENDPOINT = `${API_CHAT_ENDPOINT}/${hardcodedUserId}`;
 
 export default function ChatsMain() {
 	const [userInput, setUserInput] = useState("");
 	const [chatHistory, setChatHistory] = useState([{}]);
+	const [canSendAiMessage, setCanSendAiMessage] = useState(true);
+	const [recipePanelData, setRecipePanelData] = useState(null);
 
 	const messagesEndRef = useRef(null);
 
@@ -31,12 +35,17 @@ export default function ChatsMain() {
 
 		setChatHistory((prevChatHistory) => [...prevChatHistory, newUserMessage]);
 		setUserInput("");
+
+		// Allow AI to send a message after user sends one
+		setCanSendAiMessage(true);
 	};
 
 	useEffect(() => {
 		const fetchAIResponse = async () => {
 			try {
-				const response = await fetch(`http://localhost:3001/chat/1`, {
+				if (!canSendAiMessage) return;
+
+				const response = await fetch(`${API_CHAT_ENDPOINT}/1`, {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
@@ -63,7 +72,14 @@ export default function ChatsMain() {
 					content: aiResponse,
 				};
 
+				if (responseData.isRecipe) {
+					setRecipePanelData(responseData.recipe);
+				}
+
 				setChatHistory((prevChatHistory) => [...prevChatHistory, newAiMessage]);
+
+				// Set flag to prevent AI from sending until the next user message
+				setCanSendAiMessage(false);
 			} catch (error) {
 				console.error("Error sending/receiving messages:", error);
 				// Log more details about the error
@@ -75,22 +91,19 @@ export default function ChatsMain() {
 
 		scrollToBottom();
 		fetchAIResponse();
-	}, [userInput, chatHistory]);
+	}, [userInput, chatHistory, canSendAiMessage]);
 
 	const simulateAIResponse = async (messages) => {
 		try {
-			const response = await fetch(
-				`http://localhost:3001/chat/${hardcodedUserId}`,
-				{
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
-						messages: messages,
-					}),
-				}
-			);
+			const response = await fetch(AI_SIMULATION_ENDPOINT, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					messages: messages,
+				}),
+			});
 
 			const responseData = await response.json();
 
@@ -167,6 +180,7 @@ export default function ChatsMain() {
 						</Card.Footer>
 					</Card>
 				</Col>
+				<RecipePanel recipe={recipePanelData} />
 			</Row>
 		</Container>
 	);
