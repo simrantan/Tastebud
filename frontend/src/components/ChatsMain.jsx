@@ -69,6 +69,9 @@ export default function ChatsMain() {
 				setChatHistory((prevChatHistory) => [...prevChatHistory, newAiMessage]);
 			} catch (error) {
 				console.error("Error sending/receiving messages:", error);
+				// Log more details about the error
+				console.error(error.message);
+				console.error(error.stack);
 				// Handle error in UI if needed
 			}
 		};
