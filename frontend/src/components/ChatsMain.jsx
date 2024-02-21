@@ -1,16 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Container, Row, Col, Card, Form } from "react-bootstrap";
-import ReactMarkdown from "react-markdown";
 import { useNavigate } from "react-router-dom";
+
+const hardcodedUserId = 1; // Hardcoded userId
 
 export default function ChatsMain() {
 	const [userInput, setUserInput] = useState("");
-	const [chatHistory, setChatHistory] = useState([
-		{
-			role: "system",
-			content: "You are an AI assistant",
-		},
-	]);
+	const [chatHistory, setChatHistory] = useState([{}]);
 
 	const messagesEndRef = useRef(null);
 
@@ -19,10 +15,6 @@ export default function ChatsMain() {
 			messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
 		}
 	};
-
-	useEffect(() => {
-		scrollToBottom();
-	}, [chatHistory]);
 
 	const handleInputChange = (e) => {
 		setUserInput(e.target.value);
@@ -44,23 +36,29 @@ export default function ChatsMain() {
 	useEffect(() => {
 		const fetchAIResponse = async () => {
 			try {
-				const response = await fetch("http://localhost:3001/chat/:chatID", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
-						messages: [...chatHistory, { role: "user", content: userInput }],
-					}),
-				});
+				const response = await fetch(
+					`http://localhost:3001/chat/${hardcodedUserId}`,
+					{
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({
+							messages: [...chatHistory, { role: "user", content: userInput }],
+						}),
+					}
+				);
 
 				const responseData = await response.json();
 
+				// Log the response data to check what's being received
+				console.log("Backend Response Data:", responseData);
+
 				// Assuming the backend handles AI integration
-				const aiResponse = await simulateAIResponse([
-					...chatHistory,
-					{ role: "user", content: userInput },
-				]);
+				const aiResponse = await simulateAIResponse(responseData.messages);
+
+				// Log the AI response to check what's being received
+				console.log("AI Response:", aiResponse);
 
 				// Update UI with AI response
 				const newAiMessage = {
@@ -70,26 +68,35 @@ export default function ChatsMain() {
 
 				setChatHistory((prevChatHistory) => [...prevChatHistory, newAiMessage]);
 			} catch (error) {
-				console.error("Error sending user message:", error);
+				console.error("Error sending/receiving messages:", error);
+				// Handle error in UI if needed
 			}
 		};
 
+		scrollToBottom();
 		fetchAIResponse();
 	}, [userInput, chatHistory]);
 
 	const simulateAIResponse = async (messages) => {
 		try {
-			const response = await fetch("http://localhost:3001/chat/:chatID", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					messages: messages,
-				}),
-			});
+			const response = await fetch(
+				`http://localhost:3001/chat/${hardcodedUserId}`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						messages: messages,
+					}),
+				}
+			);
 
 			const responseData = await response.json();
+
+			// Log the AI simulation response to check what's being received
+			console.log("AI Simulation Response:", responseData);
+
 			return responseData.response; // Assuming the backend handles AI integration
 		} catch (error) {
 			console.error("Error fetching AI response:", error);
