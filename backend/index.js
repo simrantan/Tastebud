@@ -2,12 +2,26 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Information to access the Together API
+const url = 'https://api.together.xyz/v1/chat/completions';
+const apiKey = '6bfe8f020ba958040d37edc7ef8ee9f35c72d8fee380f2850f50a8ecf97d09b4';
+const headers = new Headers({
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${apiKey}`
+});
+const model = 'mistralai/Mixtral-8x7B-Instruct-v0.1';
+const maxTokens = 20; // Keeping this low for now to not use up $$$
+
 // Middleware to log request method and URL (for dev purposes)
 app.use((req, res, next) => {
 	console.log(`HTTP Method: ${req.method}`);
 	console.log(`URL: ${req.url}`);
 	next();
 });
+
+// Middleware to parse JSON request body
+app.use(express.json());
+
 
 /* ########################### User ########################## */
 
@@ -21,16 +35,40 @@ app.get("/user/:userId", (req, res) => {
 		likes: ["bananas", "corn"],
 		dislikes: ["apple", "orange"],
 		allergies: {
-			milk: "death",
-			peanuts: "taste_bad",
-			gluten: "illness",
-			beef: "choice",
+			milk: "1",
+			peanuts: "1",
+			gluten: "2",
+			beef: "2",
 		},
 		individual_chats: [0, 1],
 		group_chats: [2, 3],
 		recipe_book: [11, 22, 33],
 	});
 });
+
+
+/** Save user preferences */
+app.post("/user/:userId/preferences", (req, res) => {
+	const userId = Number(req.params.userId);
+    const prefType = req.body.prefType;
+
+	if (prefType === 'likes') {
+		console.log(`userId: ${userId} likes ${req.body.preferences}`);
+		// TODO: update firebase with user likes
+	} 
+	else if (prefType === 'dislikes') {
+		console.log(`userId: ${userId} dislikes ${req.body.preferences}`);
+		// TODO: update firebase with user dislikes
+	} 
+	else if (prefType === 'allergies') {
+    	console.log(`userId: ${userId} allergies ${JSON.stringify(req.body.preferences)}`);
+		// TODO: update firebase with user allergies
+	} else {
+		return res.status(400).json({ error: "Invalid prefType" });
+	}
+	res.status(200).json({ success: true });
+});
+
 
 /** Get the recipes in a user's recipe book */
 app.get("/recipe_book/:userId", (req, res) => {
@@ -66,6 +104,7 @@ app.get("/recipe_book/:userId", (req, res) => {
 	});
 });
 
+
 /* ########################### Recipe ########################## */
 /** Get information for a single recipe */
 app.get("/recipe/:recipeId", (req, res) => {
@@ -95,6 +134,52 @@ app.get("/chat/:chatID", (req, res) => {
 		guests: [1, 2, 3],
 		created_at: "2021-04-20T12:00:00Z",
 	});
+});
+
+/** Get response message from TasteBud after receiving user message */
+app.post("/chat/:chatID", async (req, res) => {
+	const chatID = Number(req.params.chatID);
+	// const messages = req.body.messages; // History of messages from front end state
+	const input = req.body.message;
+	
+	const messages = [
+		{
+			role: 'system',
+			content: 'You are TasteBud! You help users find recipes based off of their dietary restrictions and preferences. Respond with \'Yes Chef!\' to requests when appropriate.'
+		}
+	]
+
+	messages.push({role: 'user', content: input});
+
+	const data = {
+		model: model,
+		max_tokens: maxTokens,
+		messages: messages
+	};
+
+	const options = {
+		method: 'POST',
+		headers: headers,
+		body: JSON.stringify(data),
+	}
+
+	try {
+        const response = await fetch(url, options);
+        const result = await response.text();
+		const resMessage = JSON.parse(result).choices[0].message
+		const content = resMessage.content;
+		messages.push(resMessage);
+
+        res.json({
+			chat_id: chatID,
+            response: content,
+			messages: messages
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'API Internal server error' });
+    }
+
+	// TODO: Think about how to organize recipe data with chat
 });
 
 app.get("/", (req, res) => {
