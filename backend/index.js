@@ -101,11 +101,11 @@ app.get("/recipe_book/:userId", (req, res) => {
 			},
 			{
 				id: 33,
-				name: "Apple Pie",
+				name: "Empanadas",
 				chat_id: 333,
-				text: "## Apple Pie Recipe\n\n**Ingredients:**\n- 1 recipe pastry for a 9-inch double-crust pie\n- 1/2 cup (100g) unsalted butter\n- 3 tablespoons all-purpose flour\n- 1/4 cup (60ml) water\n- 1/2 cup (100g) white sugar\n- 1/2 cup (100g) packed brown sugar\n- 8 Granny Smith apples - peeled, cored, and sliced\n\n**Instructions:**\n1. Preheat your oven to 425°F (220°C). Place the bottom crust in your pan.\n2. Melt the butter in a saucepan. Stir in flour to form a paste. Add water, white sugar, and brown sugar, and bring to a boil. Reduce temperature and let simmer.\n3. Place the apples in the prepared crust. Pour the sugar and butter mixture over the apples. Place the second crust on top of the apples.\n4. Bake in the preheated oven for 15 minutes. Reduce the temperature to 350°F (175°C) and continue baking for 35 to 45 minutes, until apples are soft.",
+				text: "## Empanadas Recipe\n\n**Ingredients:**\n- 1 recipe pastry for a 9-inch double-crust pie\n- 1/2 cup (100g) unsalted butter\n- 3 tablespoons all-purpose flour\n- 1/4 cup (60ml) water\n- 1/2 cup (100g) white sugar\n- 1/2 cup (100g) packed brown sugar\n- 8 Granny Smith apples - peeled, cored, and sliced\n\n**Instructions:**\n1. Preheat your oven to 425°F (220°C). Place the bottom crust in your pan.\n2. Melt the butter in a saucepan. Stir in flour to form a paste. Add water, white sugar, and brown sugar, and bring to a boil. Reduce temperature and let simmer.\n3. Place the apples in the prepared crust. Pour the sugar and butter mixture over the apples. Place the second crust on top of the apples.\n4. Bake in the preheated oven for 15 minutes. Reduce the temperature to 350°F (175°C) and continue baking for 35 to 45 minutes, until apples are soft.",
 				picture_url: "https://placekitten.com/1000/1000",
-				cuisine: "American",
+				cuisine: "Argentine",
 			},
 		],
 	});
