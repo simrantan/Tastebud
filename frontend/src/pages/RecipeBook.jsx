@@ -46,7 +46,7 @@ export default function RecipeBook() {
 	};
 
 	const handleHomepageButton = () => {
-		navigate("/Win24-Team22");
+		navigate("/");
 	};
 
 	const handleRemoveFromRecipeBook = (recipeId) => {
