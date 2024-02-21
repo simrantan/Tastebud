@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Container, Row, Col, Card, Form } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 export default function ChatsMain() {
 	const [userInput, setUserInput] = useState("");
@@ -25,7 +26,6 @@ export default function ChatsMain() {
 	const handleInputChange = (e) => {
 		setUserInput(e.target.value);
 	};
-
 	const handleSendMessage = async () => {
 		if (userInput.trim() === "") return;
 
@@ -38,26 +38,51 @@ export default function ChatsMain() {
 		setMessages((prevMessages) => [...prevMessages, newUserMessage]);
 		setUserInput("");
 
-		// Simulate AI response (replace this with your actual AI integration)
+		// Send the entire chat history to the backend for AI response
 		try {
-			const aiResponse = await simulateAIResponse(userInput); // replace with actual AI logic
+			const response = await fetch("/chat/:chatID", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					messages: [...messages, newUserMessage], // Include the entire chat history
+				}),
+			});
+
+			const responseData = await response.json();
+
+			// Update UI with AI response
 			const newAiMessage = {
 				role: "assistant",
-				content: aiResponse,
+				content: responseData.response,
 			};
 
 			setMessages((prevMessages) => [...prevMessages, newAiMessage]);
 		} catch (error) {
-			console.error("Error fetching AI response:", error);
+			console.error("Error sending user message:", error);
 		}
 	};
 
-	const simulateAIResponse = async (userInput) => {
-		// Simulated delay to mimic AI processing time
-		await new Promise((resolve) => setTimeout(resolve, 1000));
+	const simulateAIResponse = async (messages) => {
+		try {
+			const response = await fetch("/chat/:chatID", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					// Add any other headers if needed
+				},
+				body: JSON.stringify({
+					messages: messages,
+				}),
+			});
 
-		// Replace this with your actual AI integration logic
-		return "AI response goes here";
+			const responseData = await response.json();
+			return responseData.response; // Assuming the backend handles AI integration
+		} catch (error) {
+			console.error("Error fetching AI response:", error);
+			return "AI response goes here";
+		}
 	};
 
 	return (
