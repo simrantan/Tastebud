@@ -52,10 +52,15 @@ export default function ChatsMain() {
 
 			const responseData = await response.json();
 
+			const aiResponse = await simulateAIResponse([
+				...messages,
+				newUserMessage,
+			]);
+
 			// Update UI with AI response
 			const newAiMessage = {
 				role: "assistant",
-				content: responseData.response,
+				content: aiResponse,
 			};
 
 			setMessages((prevMessages) => [...prevMessages, newAiMessage]);
