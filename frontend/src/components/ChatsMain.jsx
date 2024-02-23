@@ -33,15 +33,19 @@ export default function ChatsMain() {
 			content: userInput,
 		};
 
+		// Update chat history with the user's message
 		setChatHistory((prevChatHistory) => [...prevChatHistory, newUserMessage]);
 		setUserInput("");
 
 		// Allow AI to send a message after user sends one
 		setCanSendAiMessage(true);
+
+		// Send the updated chat history and user's message to the backend
+		fetchAIResponse([...chatHistory, newUserMessage]);
 	};
 
 	useEffect(() => {
-		const fetchAIResponse = async () => {
+		const fetchAIResponse = async (updatedChatHistory) => {
 			try {
 				if (!canSendAiMessage) return;
 
@@ -51,35 +55,11 @@ export default function ChatsMain() {
 						"Content-Type": "application/json",
 					},
 					body: JSON.stringify({
-						messages: [...chatHistory, { role: "user", content: userInput }],
+						messages: updatedChatHistory, // Send the updated chat history
 					}),
 				});
 
-				const responseData = await response.json();
-
-				// Log the response data to check what's being received
-				console.log("Backend Response Data:", responseData);
-
-				// Assuming the backend handles AI integration
-				const aiResponse = await simulateAIResponse(responseData.messages);
-
-				// Log the AI response to check what's being received
-				console.log("AI Response:", aiResponse);
-
-				// Update UI with AI response
-				const newAiMessage = {
-					role: "assistant",
-					content: aiResponse,
-				};
-
-				if (responseData.isRecipe) {
-					setRecipePanelData(responseData.recipe);
-				}
-
-				setChatHistory((prevChatHistory) => [...prevChatHistory, newAiMessage]);
-
-				// Set flag to prevent AI from sending until the next user message
-				setCanSendAiMessage(false);
+				// ... rest of the code remains the same
 			} catch (error) {
 				console.error("Error sending/receiving messages:", error);
 				// Log more details about the error
@@ -90,7 +70,7 @@ export default function ChatsMain() {
 		};
 
 		scrollToBottom();
-		fetchAIResponse();
+		fetchAIResponse(chatHistory); // Pass the current chat history to fetchAIResponse
 	}, [userInput, chatHistory, canSendAiMessage]);
 
 	const simulateAIResponse = async (messages) => {
