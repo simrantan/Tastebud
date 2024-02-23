@@ -11,7 +11,7 @@ function App() {
 		<Router>
 			<div className="App">
 				<Routes>
-					<Route path="/Win24-Team22" element={<MainPage />} />
+					<Route path="/" element={<MainPage />} />
 					<Route path="/recipe-book" element={<RecipeBook />} />
 				</Routes>
 			</div>
