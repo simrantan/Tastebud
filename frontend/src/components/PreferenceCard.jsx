@@ -83,8 +83,6 @@ const PreferenceCard = () => {
 		<Tooltip id={`tooltip-${item}`} className="tooltip-pref">
 			💀 This will kill me, keep it away <br />
 			🤢 This makes me physically ill <br />
-			🚫 Tastes bad <br />
-			🥴 Personal choice
 		</Tooltip>
 	);
 
@@ -109,13 +107,7 @@ const PreferenceCard = () => {
 						<span className="item-text">{allergen}</span>
 						<span className="ml-2">
 							{" "}
-							{category === 1
-								? "💀"
-								: category === 2
-								? "🤢"
-								: category === 3
-								? "🚫"
-								: "🥴"}
+							{category === 1 ? "💀" : category === 2 ? "🤢" : "💀"}
 						</span>
 						<span>
 							<OverlayTrigger
@@ -124,8 +116,6 @@ const PreferenceCard = () => {
 									<Tooltip place="top" effect="solid">
 										<div>💀 This will kill me</div>
 										<div>🤢 This makes me ill</div>
-										<div>🚫 Tastes bad</div>
-										<div>🐮 Personal choice</div>
 									</Tooltip>
 								}
 							>
@@ -152,18 +142,6 @@ const PreferenceCard = () => {
 									onClick={() => handleCategoryChange(allergen, 2)}
 								>
 									🤢
-								</Dropdown.Item>
-								<Dropdown.Divider />
-								<Dropdown.Item
-									onClick={() => handleCategoryChange(allergen, 3)}
-								>
-									🚫
-								</Dropdown.Item>
-								<Dropdown.Divider />
-								<Dropdown.Item
-									onClick={() => handleCategoryChange(allergen, 4)}
-								>
-									🐮
 								</Dropdown.Item>
 							</Dropdown.Menu>
 						</Dropdown>
