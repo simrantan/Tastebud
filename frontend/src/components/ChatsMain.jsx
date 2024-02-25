@@ -37,65 +37,77 @@ export default function ChatsMain() {
 		setChatHistory((prevChatHistory) => [...prevChatHistory, newUserMessage]);
 		setUserInput("");
 
-		// Allow AI to send a message after user sends one
+		// Allow AI to send a message after the user sends one
 		setCanSendAiMessage(true);
 
-		// Send the updated chat history and user's message to the backend
-		fetchAIResponse([...chatHistory, newUserMessage]);
+		// Send the combined chat history and user's message to the backend
+		fetchAIResponse({
+			chatHistory: [...chatHistory, newUserMessage],
+			userMessage: newUserMessage,
+		});
 	};
 
-	useEffect(() => {
-		const fetchAIResponse = async (updatedChatHistory) => {
-			try {
-				if (!canSendAiMessage) return;
-
-				const response = await fetch(`${API_CHAT_ENDPOINT}/1`, {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
-						messages: updatedChatHistory, // Send the updated chat history
-					}),
-				});
-
-				// ... rest of the code remains the same
-			} catch (error) {
-				console.error("Error sending/receiving messages:", error);
-				// Log more details about the error
-				console.error(error.message);
-				console.error(error.stack);
-				// Handle error in UI if needed
-			}
-		};
-
-		scrollToBottom();
-		fetchAIResponse(chatHistory); // Pass the current chat history to fetchAIResponse
-	}, [userInput, chatHistory, canSendAiMessage]);
-
-	const simulateAIResponse = async (messages) => {
+	const fetchAIResponse = async (requestData) => {
 		try {
-			const response = await fetch(AI_SIMULATION_ENDPOINT, {
+			if (!canSendAiMessage) return;
+
+			await fetch(`${API_CHAT_ENDPOINT}/1`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({
-					messages: messages,
+					requestData,
 				}),
 			});
 
-			const responseData = await response.json();
-
-			// Log the AI simulation response to check what's being received
-			console.log("AI Simulation Response:", responseData);
-
-			return responseData.response; // Assuming the backend handles AI integration
+			// ... rest of the code remains the same
 		} catch (error) {
-			console.error("Error fetching AI response:", error);
-			return "AI response goes here";
+			console.error("Error sending/receiving messages:", error);
+			// Log more details about the error
+			console.error(error.message);
+			console.error(error.stack);
+			// Handle error in UI if needed
 		}
 	};
+
+	useEffect(() => {
+		const simulateAIResponse = async (messages) => {
+			try {
+				const responseData = await fetch(AI_SIMULATION_ENDPOINT, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						messages: messages,
+					}),
+				}).then((response) => response.json());
+
+				// Log the AI simulation response to check what's being received
+				console.log("AI Simulation Response:", responseData);
+
+				// Assuming the backend handles AI integration
+				const aiResponse = responseData.response;
+
+				// Check if the AI response contains recipe data
+				if (responseData.isRecipe) {
+					setRecipePanelData(responseData.recipe);
+				}
+
+				return aiResponse;
+			} catch (error) {
+				console.error("Error fetching AI response:", error);
+				return "AI response goes here";
+			}
+		};
+
+		scrollToBottom();
+		fetchAIResponse({ chatHistory, userMessage: null }); // Pass the current chat history to fetchAIResponse
+
+		// Simulate AI response and update recipePanelData
+		simulateAIResponse(chatHistory);
+	}, [userInput, chatHistory, canSendAiMessage]);
 
 	return (
 		<Container fluid className="py-5" style={{ backgroundColor: "#eee" }}>

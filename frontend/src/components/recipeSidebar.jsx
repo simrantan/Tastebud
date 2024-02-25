@@ -16,6 +16,11 @@ const RecipePanel = ({ recipe }) => {
 					<li key={index}>{ingredient}</li>
 				))}
 			</ul>
+			<ul>
+				{recipe.steps.map((step, index) => (
+					<li key={index}>{step}</li>
+				))}
+			</ul>
 		</div>
 	);
 };
