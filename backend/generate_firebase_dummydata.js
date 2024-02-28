@@ -1,4 +1,3 @@
-import { initializeApp } from "firebase/app";
 import { collection, doc, setDoc } from "firebase/firestore";
 import { DATABASE } from "./firebase.js";
 
