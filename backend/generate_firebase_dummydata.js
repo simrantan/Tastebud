@@ -1,4 +1,3 @@
-import { initializeApp } from "firebase/app";
 import { collection, doc, setDoc } from "firebase/firestore";
 import { DATABASE } from "./firebase.js";
 
@@ -50,6 +49,26 @@ export async function generateDummyData() {
 		recipes: [RECIPE_ID],
 		guests: [],
 		created_at: new Date(),
-		messages: [{}],
 	});
+
+	const sampleChatRef = collection(
+		DATABASE,
+		`users/${JOHN_ID}/chats/${CHAT_ID}/messages`
+	);
+
+	// Add sample chat messages
+	await setDoc(doc(sampleChatRef, getTimestamp()), {
+		created_at: new Date(),
+		role: "user",
+		content: "Hi, I'm looking for something classic and easy to make.",
+	});
+	await setDoc(doc(sampleChatRef, getTimestamp()), {
+		created_at: new Date(),
+		role: "system",
+		content: "Perfect, how about corn bread?",
+	});
+}
+
+function getTimestamp() {
+	return String(new Date().getTime());
 }
