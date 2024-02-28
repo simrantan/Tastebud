@@ -12,26 +12,51 @@ import "./PreferenceCard.css";
 
 const PreferenceCard = () => {
 	const [allergens, setAllergens] = useState({});
-	const [likes, setLikes] = useState(new Set());
-	const [dislikes, setDislikes] = useState(new Set());
+	const [likes, setLikes] = useState([]);
+	const [dislikes, setDislikes] = useState([]);
 	const [newAllergen, setNewAllergen] = useState("");
 	const [newLike, setNewLike] = useState("");
 	const [newDislike, setNewDislike] = useState("");
+	const userId = 1;
 
 	useEffect(() => {
+		const savePreferences = async (prefType, preferences) => {
+			try {
+				const response = await fetch(
+					`http://localhost:3001/user/${userId}/preferences`,
+					{
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({ prefType, preferences }),
+					}
+				);
+
+				if (!response.ok) {
+					throw new Error(`HTTP error! Status: ${response.status}`);
+				}
+
+				const data = await response.json();
+			} catch (error) {
+				console.error("Error saving preferences:", error.message);
+			}
+		};
+
+		// Check for allergens, likes, and dislikes and make API calls
 		if (Object.keys(allergens).length > 0) {
 			console.log("Sending allergens data to the backend:", allergens);
-			// Make your backend API call here for allergens
+			savePreferences("allergies", allergens);
 		}
-		if (likes.size > 0) {
+		if (likes.length > 0) {
 			console.log("Sending likes data to the backend:", likes);
-			// Make your backend API call here for likes
+			savePreferences("likes", likes);
 		}
-		if (dislikes.size > 0) {
+		if (dislikes.length > 0) {
 			console.log("Sending dislikes data to the backend:", dislikes);
-			// Make your backend API call here for dislikes
+			savePreferences("dislikes", dislikes);
 		}
-	}, [allergens, likes, dislikes]);
+	}, [userId, allergens, likes, dislikes]);
 
 	const handleAddAllergen = (e) => {
 		e.preventDefault();
@@ -54,37 +79,29 @@ const PreferenceCard = () => {
 	const handleAddLike = (e) => {
 		e.preventDefault();
 		if (newLike.trim() !== "") {
-			setLikes(new Set([...likes, newLike]));
+			setLikes([...likes, newLike]);
 			setNewLike("");
+			console.log(likes);
 		}
 	};
 
 	const handleRemoveLike = (like) => {
-		const updatedLikes = new Set(likes);
-		updatedLikes.delete(like);
+		const updatedLikes = likes.filter((item) => item !== like);
 		setLikes(updatedLikes);
 	};
 
 	const handleAddDislike = (e) => {
 		e.preventDefault();
 		if (newDislike.trim() !== "") {
-			setDislikes(new Set([...dislikes, newDislike]));
+			setDislikes([...dislikes, newDislike]);
 			setNewDislike("");
 		}
 	};
 
 	const handleRemoveDislike = (dislike) => {
-		const updatedDislikes = new Set(dislikes);
-		updatedDislikes.delete(dislike);
+		const updatedDislikes = dislikes.filter((item) => item !== dislike);
 		setDislikes(updatedDislikes);
 	};
-
-	const renderTooltip = (item) => (
-		<Tooltip id={`tooltip-${item}`} className="tooltip-pref">
-			💀 This will kill me, keep it away <br />
-			🤢 This makes me physically ill <br />
-		</Tooltip>
-	);
 
 	return (
 		<div className="preference-card-container">
