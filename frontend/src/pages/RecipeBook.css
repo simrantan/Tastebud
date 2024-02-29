@@ -1,0 +1,51 @@
+/* RecipeBook.css */
+
+.recipe-book-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .recipe-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: left;
+    flex-direction: row; /* Add this line */
+  }
+
+  .recipe-card {
+    width: 18rem;
+    border: 2px solid #A94C40;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .recipe-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  
+  .recipe-card .card-body {
+    padding: 1rem;
+  }
+  
+  .recipe-card .card-title {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+  
+  .recipe-card button {
+    margin-top: 10px;
+    margin-right: 10px;
+  }
+  
+  /* Add more styles as needed */
+  
+.homepage-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
