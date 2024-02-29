@@ -245,6 +245,7 @@ app.get("/firebase/dummy_data", (req, res) => {
 app.post("/chat/:chatID", async (req, res) => {
 	const chatID = Number(req.params.chatID);
 	const messages = req.body.messages;
+	const messages = req.body.messages;
 	const input = req.body.message;
 	// TO-DO: Add user input to Firebase
 
@@ -261,14 +262,17 @@ app.post("/chat/:chatID", async (req, res) => {
 	};
 
 	try {
-        const response = await fetch(url, options);
-        const result = await response.text();
-		const resMessage = JSON.parse(result).choices[0].message
+		const response = await fetch(url, options);
+		const result = await response.text();
+		const resMessage = JSON.parse(result).choices[0].message;
+		const content = resMessage.content;
 		// TO-DO: Add AI response to Firebase
+
 
         res.json({
 			chat_id: chatID,
-			response: resMessage
+            response: content,
+			formattedResponse: resMessage
         });
     } catch (error) {
         res.status(500).json({ error: 'API Internal server error' });
