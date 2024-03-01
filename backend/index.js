@@ -179,6 +179,34 @@ app.post("/recipe_book/:userId/:recipeId", (req, res) => {
 	res.status(200).json({ success: true });
 });
 
+/** Add or Remove a recipe from a user's recipe book */
+app.post("/recipe_book/:userId/:recipeId", (req, res) => {
+	const userId = Number(req.params.userId);
+	const recipeId =  Number(req.params.recipeId);
+	const {action, recipeInfo} = req.body;
+
+	if (action == "add") {
+		console.log(`Recipe with ID ${recipeId} added to the recipe book for user ${userId}`);
+		const { name, chat_id, text, picture_url, cuisine } = recipeInfo;
+		console.log("Additional recipe information:");
+		console.log(`Name: ${name}`);
+		console.log(`Chat ID: ${chat_id}`);
+		console.log(`Text: ${text}`);
+		console.log(`Picture URL: ${picture_url}`);
+		console.log(`Cuisine: ${cuisine}`);
+		// TODO: update firebase with new recipe
+	}
+	else if (action == "remove") {
+		console.log(`Recipe with ID ${recipeId} removed from the recipe book for user ${userId}`);
+		// TODO: remove recipe from firebase
+	}
+	else {
+		return res.status(400).json({ error: "Invalid action (not 'add' or 'remove')" });
+	}
+	res.status(200).json({ success: true });
+});
+
+
 /* ########################### Chat ########################## */
 // TODO: should return info about the chat, including the messages
 /** Get all the information for a single chat */
