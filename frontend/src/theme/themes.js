@@ -1,5 +1,24 @@
 import { palette } from "./colors";
-import { fontStyles } from "./fonts";
+
+const fontStyles = `
+  @font-face {
+    font-family: 'Karla';
+    src: url('./assets/karla/Karla-Regular.ttf') format('truetype');
+    /* Add additional formats and styles (e.g., bold, italic) as needed */
+  }
+
+  @font-face {
+    font-family: 'Inter';
+    src: url('./assets/inter/Inter-Regular.ttf') format('truetype');
+    /* Add additional formats and styles (e.g., bold, italic) as needed */
+  }
+
+  @font-face {
+    font-family: 'Inter-Semi-Bold';
+    src: url('./assets/inter/Inter-Semi_Bold.ttf') format('truetype');
+    /* Add additional formats and styles (e.g., bold, italic) as needed */
+  }
+`;
 
 const theme = {
 	colors: {
@@ -12,6 +31,9 @@ const theme = {
 	},
 
 	typography: {
+		// Include font styles directly in typography
+		...fontStyles,
+
 		title: {
 			fontFamily: "Karla",
 			fontSize: "2rem", // Adjust the size as needed
