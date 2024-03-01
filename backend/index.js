@@ -145,18 +145,9 @@ app.get("/chat/:chatID", (req, res) => {
 /** Get response message from TasteBud after receiving user message */
 app.post("/chat/:chatID", async (req, res) => {
 	const chatID = Number(req.params.chatID);
-	// const messages = req.body.messages; // History of messages from front end state
+	const messages = req.body.messages;
 	const input = req.body.message;
-
-	const messages = [
-		{
-			role: "system",
-			content:
-				"You are TasteBud! You help users find recipes based off of their dietary restrictions and preferences. Respond with 'Yes Chef!' to requests when appropriate.",
-		},
-	];
-
-	messages.push({ role: "user", content: input });
+	// TO-DO: Add user input to Firebase
 
 	const data = {
 		model: model,
@@ -171,20 +162,18 @@ app.post("/chat/:chatID", async (req, res) => {
 	};
 
 	try {
-		const response = await fetch(url, options);
-		const result = await response.text();
-		const resMessage = JSON.parse(result).choices[0].message;
-		const content = resMessage.content;
-		messages.push(resMessage);
+    const response = await fetch(url, options);
+    const result = await response.text();
+		const resMessage = JSON.parse(result).choices[0].message
+		// TO-DO: Add AI response to Firebase
 
 		res.json({
 			chat_id: chatID,
-			response: content,
-			messages: messages,
-		});
-	} catch (error) {
-		res.status(500).json({ error: "API Internal server error" });
-	}
+			response: resMessage
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'API Internal server error' });
+    }
 
 	// TODO: Think about how to organize recipe data with chat
 });
