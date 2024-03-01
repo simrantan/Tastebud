@@ -47,6 +47,14 @@ const theme = {
 			fontSize: "1rem", // Adjust the size as needed
 		},
 	},
+	button: {
+		// Customizable button styles
+		color: palette.white,
+		backgroundColor: palette.purple, // Default button background color
+		height: "40px", // Default button height
+		width: "120px", // Default button width
+		fontFamily: "Inter-Regular", // Default font for buttons
+	},
 };
 
 export default theme;
