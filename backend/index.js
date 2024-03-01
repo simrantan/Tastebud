@@ -41,7 +41,7 @@ app.get("/user/:userId", async (req, res) => {
 });
 
 /** Save user preferences */
-app.post("/user/:userId/preferences", (req, res) => {
+app.post("/user/:userId/preferences", async (req, res) => {
 	const userId = Number(req.params.userId);
 	const prefType = req.body.prefType;
 
@@ -99,20 +99,27 @@ app.get("/recipe/:recipeId", (req, res) => {
 });
 
 /* ########################### Chat ########################## */
-/** Get information for a single chat */
-app.get("/chat/:chatID", (req, res) => {
-	const chatID = Number(req.params.chatID);
+/** Get all the information for a single chat */
+app.get("/chat/:userID/:chatID", async (req, res) => {
+	const userId = req.params.userID;
+	const chatID = req.params.chatID;
 
-	res.json({
-		id: chatID,
-		name: "Post-Show Treat",
-		is_group: true,
-		host_id: 0,
-		recipes: [111, 222, 333],
-		guests: [1, 2, 3],
-		created_at: new Date(),
-		messages: [{}],
-	});
+	try {
+		const querySnapshot = await getDocs(
+			collection(DATABASE, "users", userId, "chats", chatID, "messages")
+		);
+
+		let chats = [];
+
+		for (const doc of querySnapshot.docs) {
+			chats.push(doc.data());
+		}
+
+		res.json(chats);
+	} catch (error) {
+		console.error(error);
+		res.status(500).send("Internal Server Error");
+	}
 });
 
 /* ########################### Firebase Testing ########################## */
