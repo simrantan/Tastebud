@@ -44,15 +44,15 @@ const PreferenceCard = () => {
 		};
 
 		// Check for allergens, likes, and dislikes and make API calls
-		if (Object.keys(allergens).length > 0) {
+		if (Object.keys(allergens).length >= 0) {
 			console.log("Sending allergens data to the backend:", allergens);
 			savePreferences("allergies", allergens);
 		}
-		if (likes.length > 0) {
+		if (likes.length >= 0) {
 			console.log("Sending likes data to the backend:", likes);
 			savePreferences("likes", likes);
 		}
-		if (dislikes.length > 0) {
+		if (dislikes.length >= 0) {
 			console.log("Sending dislikes data to the backend:", dislikes);
 			savePreferences("dislikes", dislikes);
 		}
