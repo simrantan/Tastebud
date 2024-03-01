@@ -1,6 +1,12 @@
 import express from "express";
 import { generateDummyData } from "./generate_firebase_dummydata.js";
-import { doc, getDoc, collection, getDocs } from "firebase/firestore";
+import {
+	doc,
+	getDoc,
+	collection,
+	getDocs,
+	updateDoc,
+} from "firebase/firestore";
 import { DATABASE } from "./firebase.js";
 
 const app = express();
@@ -42,24 +48,35 @@ app.get("/user/:userId", async (req, res) => {
 
 /** Save user preferences */
 app.post("/user/:userId/preferences", async (req, res) => {
-	const userId = Number(req.params.userId);
+	const userId = req.params.userId;
 	const prefType = req.body.prefType;
 
-	if (prefType === "likes") {
-		console.log(`userId: ${userId} likes ${req.body.preferences}`);
-		// TODO: update firebase with user likes
-	} else if (prefType === "dislikes") {
-		console.log(`userId: ${userId} dislikes ${req.body.preferences}`);
-		// TODO: update firebase with user dislikes
-	} else if (prefType === "allergies") {
-		console.log(
-			`userId: ${userId} allergies ${JSON.stringify(req.body.preferences)}`
-		);
-		// TODO: update firebase with user allergies
-	} else {
-		return res.status(400).json({ error: "Invalid prefType" });
+	try {
+		const userRef = doc(DATABASE, "users", userId);
+
+		// Test with: curl -X POST -H "Content-Type: application/json" -d '{"prefType": "likes", "preferences": ["cheese", "strawberries"]}' http://localhost:3001/user/00000000_sample_user/preferences
+		if (prefType === "likes") {
+			await updateDoc(userRef, {
+				likes: req.body.preferences,
+			});
+			// Test with: curl -X POST -H "Content-Type: application/json" -d '{"prefType": "dislikes", "preferences": ["cheese", "strawberries"]}' http://localhost:3001/user/00000000_sample_user/preferences
+		} else if (prefType === "dislikes") {
+			await updateDoc(userRef, {
+				dislikes: req.body.preferences,
+			});
+			// Test with: curl -X POST -H "Content-Type: application/json" -d '{"prefType": "allergies", "preferences": {"milk": 1, "peanuts": 2}}' http://localhost:3001/user/00000000_sample_user/preferences
+		} else if (prefType === "allergies") {
+			await updateDoc(userRef, {
+				allergies: req.body.preferences,
+			});
+		} else {
+			return res.status(400).json({ error: "Invalid prefType" });
+		}
+		res.status(200).json({ success: true });
+	} catch (error) {
+		console.error(error);
+		res.status(500).send("Internal Server Error");
 	}
-	res.status(200).json({ success: true });
 });
 
 /** Get the recipes in a user's recipe book */
