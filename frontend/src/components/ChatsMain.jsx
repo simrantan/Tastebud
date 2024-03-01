@@ -72,6 +72,21 @@ export default function ChatsMain() {
 	};
 
 	useEffect(() => {
+		// Function to fetch existing chat history
+		const fetchChatHistory = async () => {
+			try {
+				const response = await fetch(`${API_CHAT_ENDPOINT}/1`);
+				const data = await response.json();
+
+				if (data && data.chatHistory) {
+					setChatHistory(data.chatHistory);
+				}
+			} catch (error) {
+				console.error("Error fetching chat history:", error);
+			}
+		};
+
+		// Function to simulate AI response
 		const simulateAIResponse = async (messages) => {
 			try {
 				const responseData = await fetch(AI_SIMULATION_ENDPOINT, {
@@ -102,12 +117,15 @@ export default function ChatsMain() {
 			}
 		};
 
-		scrollToBottom();
-		fetchAIResponse({ chatHistory, userMessage: null }); // Pass the current chat history to fetchAIResponse
+		// Fetch existing chat history when the component mounts
+		fetchChatHistory();
 
 		// Simulate AI response and update recipePanelData
 		simulateAIResponse(chatHistory);
-	}, [userInput, chatHistory, canSendAiMessage]);
+
+		// Scroll to the bottom after rendering
+		scrollToBottom();
+	}, []); // Empty dependency array ensures this effect runs only once on mount
 
 	return (
 		<Container fluid className="py-5" style={{ backgroundColor: "#eee" }}>
