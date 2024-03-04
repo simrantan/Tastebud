@@ -126,6 +126,34 @@ app.get("/recipe/:recipeId", (req, res) => {
 	});
 });
 
+/** Add or Remove a recipe from a user's recipe book */
+app.post("/recipe_book/:userId/:recipeId", (req, res) => {
+	const userId = Number(req.params.userId);
+	const recipeId =  Number(req.params.recipeId);
+	const {action, recipeInfo} = req.body;
+
+	if (action == "add") {
+		console.log(`Recipe with ID ${recipeId} added to the recipe book for user ${userId}`);
+		const { name, chat_id, text, picture_url, cuisine } = recipeInfo;
+		console.log("Additional recipe information:");
+		console.log(`Name: ${name}`);
+		console.log(`Chat ID: ${chat_id}`);
+		console.log(`Text: ${text}`);
+		console.log(`Picture URL: ${picture_url}`);
+		console.log(`Cuisine: ${cuisine}`);
+		// TODO: update firebase with new recipe
+	}
+	else if (action == "remove") {
+		console.log(`Recipe with ID ${recipeId} removed from the recipe book for user ${userId}`);
+		// TODO: remove recipe from firebase
+	}
+	else {
+		return res.status(400).json({ error: "Invalid action (not 'add' or 'remove')" });
+	}
+	res.status(200).json({ success: true });
+});
+
+
 /* ########################### Chat ########################## */
 /** Get information for a single chat */
 app.get("/chat/:chatID", (req, res) => {
@@ -145,18 +173,9 @@ app.get("/chat/:chatID", (req, res) => {
 /** Get response message from TasteBud after receiving user message */
 app.post("/chat/:chatID", async (req, res) => {
 	const chatID = Number(req.params.chatID);
-	// const messages = req.body.messages; // History of messages from front end state
+	const messages = req.body.messages;
 	const input = req.body.message;
-
-	const messages = [
-		{
-			role: "system",
-			content:
-				"You are TasteBud! You help users find recipes based off of their dietary restrictions and preferences. Respond with 'Yes Chef!' to requests when appropriate.",
-		},
-	];
-
-	messages.push({ role: "user", content: input });
+	// TO-DO: Add user input to Firebase
 
 	const data = {
 		model: model,
@@ -171,20 +190,18 @@ app.post("/chat/:chatID", async (req, res) => {
 	};
 
 	try {
-		const response = await fetch(url, options);
-		const result = await response.text();
-		const resMessage = JSON.parse(result).choices[0].message;
-		const content = resMessage.content;
-		messages.push(resMessage);
+    const response = await fetch(url, options);
+    const result = await response.text();
+		const resMessage = JSON.parse(result).choices[0].message
+		// TO-DO: Add AI response to Firebase
 
 		res.json({
 			chat_id: chatID,
-			response: content,
-			messages: messages,
-		});
-	} catch (error) {
-		res.status(500).json({ error: "API Internal server error" });
-	}
+			response: resMessage
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'API Internal server error' });
+    }
 
 	// TODO: Think about how to organize recipe data with chat
 });
