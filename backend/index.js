@@ -162,18 +162,18 @@ app.post("/chat/:chatID", async (req, res) => {
 	};
 
 	try {
-    const response = await fetch(url, options);
-    const result = await response.text();
-		const resMessage = JSON.parse(result).choices[0].message
+		const response = await fetch(url, options);
+		const result = await response.text();
+		const resMessage = JSON.parse(result).choices[0].message;
 		// TO-DO: Add AI response to Firebase
 
 		res.json({
 			chat_id: chatID,
-			response: resMessage
-        });
-    } catch (error) {
-        res.status(500).json({ error: 'API Internal server error' });
-    }
+			response: resMessage,
+		});
+	} catch (error) {
+		res.status(500).json({ error: "API Internal server error" });
+	}
 
 	// TODO: Think about how to organize recipe data with chat
 });
