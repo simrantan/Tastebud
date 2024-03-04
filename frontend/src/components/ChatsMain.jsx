@@ -1,7 +1,10 @@
+// ChatsMain.js
+
 import React, { useState, useEffect, useRef } from "react";
-import { Container, Row, Col, Card, Form } from "react-bootstrap";
+import { Container, Row, Col, Card, Form, Button } from "react-bootstrap";
 import RecipePanel from "./recipeSidebar";
 import RecipeCarousel from "./RecipeCarousel";
+import ConversationStarters from "./conversationStarters"; // Import the new component
 
 const hardcodedUserId = 1; // Hardcoded userId
 const API_CHAT_ENDPOINT = "http://localhost:3001/chat";
@@ -13,6 +16,7 @@ export default function ChatsMain() {
 	const [canSendAiMessage, setCanSendAiMessage] = useState(true);
 	const [recipePanelData, setRecipePanelData] = useState(null);
 	const [isRecipeList, setIsRecipeList] = useState(false);
+	const [selectedRecipe, setSelectedRecipe] = useState(null);
 
 	const messagesEndRef = useRef(null);
 
@@ -44,30 +48,6 @@ export default function ChatsMain() {
 		});
 	};
 
-	const fetchAIResponse = async (requestData) => {
-		try {
-			if (!canSendAiMessage) return;
-
-			const response = await fetch(`${API_CHAT_ENDPOINT}/1`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					requestData,
-				}),
-			});
-
-			const responseData = await response.json();
-
-			handleBackendResponse(responseData);
-		} catch (error) {
-			console.error("Error sending/receiving messages:", error);
-			console.error(error.message);
-			console.error(error.stack);
-		}
-	};
-
 	const handleBackendResponse = async (data) => {
 		setIsRecipeList(data.isRecipeList);
 
@@ -86,7 +66,7 @@ export default function ChatsMain() {
 		return data;
 	};
 
-	const handleRecipeSelection = async (recipeIndex) => {
+	const handleRecipeSelection = async (recipeName) => {
 		try {
 			await fetch(`${API_CHAT_ENDPOINT}/select-recipe`, {
 				method: "POST",
@@ -94,7 +74,7 @@ export default function ChatsMain() {
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({
-					recipeIndex,
+					recipeName,
 				}),
 			});
 
@@ -103,6 +83,20 @@ export default function ChatsMain() {
 		} catch (error) {
 			console.error("Error selecting recipe:", error);
 		}
+	};
+
+	const handleStartConversation = (starterOption) => {
+		// Simulate user starting a conversation with a button press
+		setChatHistory((prevChatHistory) => [
+			...prevChatHistory,
+			{ role: "user", content: starterOption },
+		]);
+
+		// Fetch AI response for the selected conversation starter
+		fetchAIResponse({
+			chatHistory: [...chatHistory, { role: "user", content: starterOption }],
+			userMessage: { role: "user", content: starterOption },
+		});
 	};
 
 	useEffect(() => {
@@ -144,29 +138,33 @@ export default function ChatsMain() {
 								<RecipeCarousel
 									recipes={recipePanelData.recipes}
 									onRecipeClick={handleRecipeSelection}
+									selectedRecipe={selectedRecipe}
 								/>
 							) : (
-								chatHistory.map((message, index) => (
-									<div
-										key={index}
-										className={`d-flex flex-row justify-content-${
-											message.role === "user" ? "end" : "start"
-										} mb-4`}
-									>
-										<div>
-											<p
-												className={`small p-2 ms-3 mb-1 rounded-3 ${
-													message.role === "user"
-														? "text-white bg-primary"
-														: "bg-light"
-												}`}
-											>
-												{message.content}
-											</p>
-										</div>
-									</div>
-								))
+								<ConversationStarters
+									onStartConversation={handleStartConversation}
+								/>
 							)}
+							{chatHistory.map((message, index) => (
+								<div
+									key={index}
+									className={`d-flex flex-row justify-content-${
+										message.role === "user" ? "end" : "start"
+									} mb-4`}
+								>
+									<div>
+										<p
+											className={`small p-2 ms-3 mb-1 rounded-3 ${
+												message.role === "user"
+													? "text-white bg-primary"
+													: "bg-light"
+											}`}
+										>
+											{message.content}
+										</p>
+									</div>
+								</div>
+							))}
 							<div ref={messagesEndRef} />
 						</Card.Body>
 						<Card.Footer className="text-muted d-flex justify-content-start align-items-center p-3">

@@ -1,9 +1,9 @@
 import React from "react";
 import { Card, Image } from "react-bootstrap";
 
-const RecipeItem = ({ index, recipe, onRecipeClick }) => {
+const RecipeItem = ({ recipe, onRecipeClick }) => {
 	const handleRecipeClick = () => {
-		onRecipeClick(index);
+		onRecipeClick(recipe.name);
 	};
 
 	return (
