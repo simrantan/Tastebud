@@ -35,6 +35,20 @@ const headers = new Headers({
 const model = "mistralai/Mixtral-8x7B-Instruct-v0.1";
 const maxTokens = 20; // Keeping this low for now to not use up $$$
 
+// Use CORS middleware
+app.use(
+	cors({
+		origin: "http://localhost:3000", // Allow requests only from this origin
+	})
+);
+
+// Middleware to log request method and URL (for dev purposes)
+app.use((req, res, next) => {
+	// console.log(`HTTP Method: ${req.method}`);
+	// console.log(`URL: ${req.url}`);
+	next();
+});
+
 // Middleware to parse JSON request body
 app.use(express.json());
 
