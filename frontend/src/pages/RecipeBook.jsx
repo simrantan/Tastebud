@@ -49,7 +49,13 @@ export default function RecipeBook() {
 		navigate("/");
 	};
 
-	const handleRemoveFromRecipeBook = (recipeId) => {
+	const handleRemoveFromRecipeBookModal = (recipeId) => {
+		handleRemoveFromRecipeBook(recipeId);
+		// Close the modal after removal
+		handleCloseModal();
+	};
+
+	const handleRemoveFromRecipeBook = async (recipeId) => {
 		// Find the selected recipe
 		const removedRecipe = recipeBook.find((recipe) => recipe.id === recipeId);
 
@@ -57,10 +63,36 @@ export default function RecipeBook() {
 		setRecipeBook((prevRecipes) =>
 			prevRecipes.filter((recipe) => recipe.id !== recipeId)
 		);
+
 		// Show a notification
 		toast.success(`${removedRecipe.name} has been removed from Recipe Book!`);
-		// Close the modal after removal
-		handleCloseModal();
+
+		try {
+			// Notify the server to remove the recipe from the user's recipe book
+			const response = await fetch(
+				`http://localhost:3001/recipe_book/${userId}/${recipeId}`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						action: "remove",
+						recipeInfo: {}, // You can send additional recipe information if needed
+					}),
+				}
+			);
+
+			if (!response.ok) {
+				throw new Error(`HTTP error! Status: ${response.status}`);
+			}
+
+			// Handle the response if needed
+			const data = await response.json();
+			console.log(data); // Log the success message from the server
+		} catch (error) {
+			console.error("Error removing recipe:", error.message);
+		}
 	};
 
 	const filteredRecipes = recipeBook.filter((recipe) =>
@@ -148,7 +180,7 @@ export default function RecipeBook() {
 				<Modal.Footer>
 					<Button
 						variant="danger"
-						onClick={() => handleRemoveFromRecipeBook(selectedRecipe.id)}
+						onClick={() => handleRemoveFromRecipeBookModal(selectedRecipe.id)}
 					>
 						Remove from Recipe Book
 					</Button>
