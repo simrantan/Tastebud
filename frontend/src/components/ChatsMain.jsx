@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Container, Row, Col, Card, Form } from "react-bootstrap";
 import RecipePanel from "./recipeSidebar";
+import RecipeCarousel from "./RecipeCarousel";
 
 const hardcodedUserId = 1; // Hardcoded userId
 const API_CHAT_ENDPOINT = "http://localhost:3001/chat";
@@ -11,6 +12,7 @@ export default function ChatsMain() {
 	const [chatHistory, setChatHistory] = useState([{}]);
 	const [canSendAiMessage, setCanSendAiMessage] = useState(true);
 	const [recipePanelData, setRecipePanelData] = useState(null);
+	const [isRecipeList, setIsRecipeList] = useState(false);
 
 	const messagesEndRef = useRef(null);
 
@@ -27,20 +29,15 @@ export default function ChatsMain() {
 	const handleSendMessage = () => {
 		if (userInput.trim() === "") return;
 
-		// User message
 		const newUserMessage = {
 			role: "user",
 			content: userInput,
 		};
 
-		// Update chat history with the user's message
 		setChatHistory((prevChatHistory) => [...prevChatHistory, newUserMessage]);
 		setUserInput("");
-
-		// Allow AI to send a message after the user sends one
 		setCanSendAiMessage(true);
 
-		// Send the combined chat history and user's message to the backend
 		fetchAIResponse({
 			chatHistory: [...chatHistory, newUserMessage],
 			userMessage: newUserMessage,
@@ -51,7 +48,7 @@ export default function ChatsMain() {
 		try {
 			if (!canSendAiMessage) return;
 
-			await fetch(`${API_CHAT_ENDPOINT}/1`, {
+			const response = await fetch(`${API_CHAT_ENDPOINT}/1`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -61,71 +58,71 @@ export default function ChatsMain() {
 				}),
 			});
 
-			// ... rest of the code remains the same
+			const responseData = await response.json();
+
+			handleBackendResponse(responseData);
 		} catch (error) {
 			console.error("Error sending/receiving messages:", error);
-			// Log more details about the error
 			console.error(error.message);
 			console.error(error.stack);
-			// Handle error in UI if needed
+		}
+	};
+
+	const handleBackendResponse = async (data) => {
+		setIsRecipeList(data.isRecipeList);
+
+		if (data.isRecipeList) {
+			const updatedRecipePanelData = await fetchRecipePanelData();
+			setRecipePanelData(updatedRecipePanelData);
+		} else {
+			// Handle non-recipe messages from AI if needed
+		}
+	};
+
+	const fetchRecipePanelData = async () => {
+		const response = await fetch(`${API_CHAT_ENDPOINT}/recipe-panel`);
+		const data = await response.json();
+
+		return data;
+	};
+
+	const handleRecipeSelection = async (recipeIndex) => {
+		try {
+			await fetch(`${API_CHAT_ENDPOINT}/select-recipe`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					recipeIndex,
+				}),
+			});
+
+			const updatedRecipePanelData = await fetchRecipePanelData();
+			setRecipePanelData(updatedRecipePanelData);
+		} catch (error) {
+			console.error("Error selecting recipe:", error);
 		}
 	};
 
 	useEffect(() => {
-		// Function to fetch existing chat history
-		const fetchChatHistory = async () => {
+		const simulateBackendResponse = async () => {
 			try {
-				const response = await fetch(`${API_CHAT_ENDPOINT}/1`);
-				const data = await response.json();
+				const responseData = await fetch(AI_SIMULATION_ENDPOINT).then(
+					(response) => response.json()
+				);
 
-				if (data && data.chatHistory) {
-					setChatHistory(data.chatHistory);
-				}
+				console.log("Simulated Backend Response:", responseData);
+
+				handleBackendResponse(responseData);
 			} catch (error) {
-				console.error("Error fetching chat history:", error);
+				console.error("Error simulating backend response:", error);
 			}
 		};
 
-		// Function to simulate AI response
-		const simulateAIResponse = async (messages) => {
-			try {
-				const responseData = await fetch(AI_SIMULATION_ENDPOINT, {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
-						messages: messages,
-					}),
-				}).then((response) => response.json());
-
-				// Log the AI simulation response to check what's being received
-				console.log("AI Simulation Response:", responseData);
-
-				// Assuming the backend handles AI integration
-				const aiResponse = responseData.response;
-
-				// Check if the AI response contains recipe data
-				if (responseData.isRecipe) {
-					setRecipePanelData(responseData.recipe);
-				}
-
-				return aiResponse;
-			} catch (error) {
-				console.error("Error fetching AI response:", error);
-				return "AI response goes here";
-			}
-		};
-
-		// Fetch existing chat history when the component mounts
-		fetchChatHistory();
-
-		// Simulate AI response and update recipePanelData
-		simulateAIResponse(chatHistory);
-
-		// Scroll to the bottom after rendering
+		simulateBackendResponse();
 		scrollToBottom();
-	}, []); // Empty dependency array ensures this effect runs only once on mount
+	}, []);
 
 	return (
 		<Container fluid className="py-5" style={{ backgroundColor: "#eee" }}>
@@ -143,26 +140,33 @@ export default function ChatsMain() {
 							<h5 className="mb-0">Chat</h5>
 						</Card.Header>
 						<Card.Body style={{ maxHeight: "400px", overflowY: "auto" }}>
-							{chatHistory.map((message, index) => (
-								<div
-									key={index}
-									className={`d-flex flex-row justify-content-${
-										message.role === "user" ? "end" : "start"
-									} mb-4`}
-								>
-									<div>
-										<p
-											className={`small p-2 ms-3 mb-1 rounded-3 ${
-												message.role === "user"
-													? "text-white bg-primary"
-													: "bg-light"
-											}`}
-										>
-											{message.content}
-										</p>
+							{isRecipeList ? (
+								<RecipeCarousel
+									recipes={recipePanelData.recipes}
+									onRecipeClick={handleRecipeSelection}
+								/>
+							) : (
+								chatHistory.map((message, index) => (
+									<div
+										key={index}
+										className={`d-flex flex-row justify-content-${
+											message.role === "user" ? "end" : "start"
+										} mb-4`}
+									>
+										<div>
+											<p
+												className={`small p-2 ms-3 mb-1 rounded-3 ${
+													message.role === "user"
+														? "text-white bg-primary"
+														: "bg-light"
+												}`}
+											>
+												{message.content}
+											</p>
+										</div>
 									</div>
-								</div>
-							))}
+								))
+							)}
 							<div ref={messagesEndRef} />
 						</Card.Body>
 						<Card.Footer className="text-muted d-flex justify-content-start align-items-center p-3">
