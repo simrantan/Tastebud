@@ -11,6 +11,7 @@ import {
 import "./PreferenceCard.css";
 
 const PreferenceCard = () => {
+	//state
 	const [allergens, setAllergens] = useState({});
 	const [likes, setLikes] = useState([]);
 	const [dislikes, setDislikes] = useState([]);
@@ -18,6 +19,28 @@ const PreferenceCard = () => {
 	const [newLike, setNewLike] = useState("");
 	const [newDislike, setNewDislike] = useState("");
 	const userId = 1;
+
+	useEffect(() => {
+		const fetchPreferences = async () => {
+			try {
+				const response = await fetch(`http://localhost:3001/user/${userId}`);
+				if (!response.ok) {
+					throw new Error(`HTTP error! Status: ${response.status}`);
+				}
+
+				const data = await response.json();
+				// Update state with fetched preferences
+				setAllergens(data.allergies || {});
+				setLikes(data.likes || []);
+				setDislikes(data.dislikes || []);
+			} catch (error) {
+				console.error("Error fetching preferences:", error.message);
+			}
+		};
+
+		// Fetch user preferences on the first run
+		fetchPreferences();
+	}, []); // Empty dependency array ensures it runs only once
 
 	useEffect(() => {
 		const savePreferences = async (prefType, preferences) => {
@@ -56,7 +79,7 @@ const PreferenceCard = () => {
 			console.log("Sending dislikes data to the backend:", dislikes);
 			savePreferences("dislikes", dislikes);
 		}
-	}, [userId, allergens, likes, dislikes]);
+	}, [userId, allergens, likes, dislikes]); //pending:  add functionality for only sending data when there is a change
 
 	const handleAddAllergen = (e) => {
 		e.preventDefault();
