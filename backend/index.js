@@ -1,3 +1,4 @@
+
 import express from "express";
 import { generateDummyData } from "./generate_firebase_dummydata.js";
 import {
@@ -8,6 +9,10 @@ import {
 	updateDoc,
 } from "firebase/firestore";
 import { DATABASE } from "./firebase.js";
+
+const express = require("express");
+const cors = require("cors");
+
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -23,6 +28,22 @@ const headers = new Headers({
 const model = "mistralai/Mixtral-8x7B-Instruct-v0.1";
 const maxTokens = 20; // Keeping this low for now to not use up $$$
 
+
+// Use CORS middleware
+app.use(
+	cors({
+		origin: "http://localhost:3000", // Allow requests only from this origin
+	})
+);
+
+// Middleware to log request method and URL (for dev purposes)
+app.use((req, res, next) => {
+	// console.log(`HTTP Method: ${req.method}`);
+	// console.log(`URL: ${req.url}`);
+	next();
+});
+
+
 // Middleware to parse JSON request body
 app.use(express.json());
 
@@ -30,6 +51,7 @@ app.use(express.json());
 /** Get information for a single user */
 app.get("/user/:userId", async (req, res) => {
 	const userId = req.params.userId;
+
 
 	try {
 		const docRef = doc(DATABASE, "users", userId);
@@ -43,8 +65,29 @@ app.get("/user/:userId", async (req, res) => {
 	} catch (error) {
 		console.error(error);
 		res.status(500).send("Internal Server Error");
+
+/** Save user preferences */
+app.post("/user/:userId/preferences", (req, res) => {
+	const userId = Number(req.params.userId);
+	const prefType = req.body.prefType;
+
+	if (prefType === "likes") {
+		console.log(`userId: ${userId} likes ${req.body.preferences}`);
+		// TODO: update firebase with user likes
+	} else if (prefType === "dislikes") {
+		console.log(`userId: ${userId} dislikes ${req.body.preferences}`);
+		// TODO: update firebase with user dislikes
+	} else if (prefType === "allergies") {
+		console.log(
+			`userId: ${userId} allergies ${JSON.stringify(req.body.preferences)}`
+		);
+		// TODO: update firebase with user allergies
+	} else {
+		return res.status(400).json({ error: "Invalid prefType" });
+
 	}
 });
+
 
 /** Save user preferences */
 app.post("/user/:userId/preferences", async (req, res) => {
@@ -100,6 +143,7 @@ app.get("/recipe_book/:userId", async (req, res) => {
 	}
 });
 
+
 /* ########################### Recipe ########################## */
 /** Get information for a single recipe */
 app.get("/user/:userId/recipe/:recipeId", async (req, res) => {
@@ -120,6 +164,34 @@ app.get("/user/:userId/recipe/:recipeId", async (req, res) => {
 		res.status(500).send("Internal Server Error");
 	}
 });
+
+/** Add or Remove a recipe from a user's recipe book */
+app.post("/recipe_book/:userId/:recipeId", (req, res) => {
+	const userId = Number(req.params.userId);
+	const recipeId =  Number(req.params.recipeId);
+	const {action, recipeInfo} = req.body;
+
+	if (action == "add") {
+		console.log(`Recipe with ID ${recipeId} added to the recipe book for user ${userId}`);
+		const { name, chat_id, text, picture_url, cuisine } = recipeInfo;
+		console.log("Additional recipe information:");
+		console.log(`Name: ${name}`);
+		console.log(`Chat ID: ${chat_id}`);
+		console.log(`Text: ${text}`);
+		console.log(`Picture URL: ${picture_url}`);
+		console.log(`Cuisine: ${cuisine}`);
+		// TODO: update firebase with new recipe
+	}
+	else if (action == "remove") {
+		console.log(`Recipe with ID ${recipeId} removed from the recipe book for user ${userId}`);
+		// TODO: remove recipe from firebase
+	}
+	else {
+		return res.status(400).json({ error: "Invalid action (not 'add' or 'remove')" });
+	}
+	res.status(200).json({ success: true });
+});
+
 
 /* ########################### Chat ########################## */
 /** Get all the information for a single chat */
@@ -156,8 +228,9 @@ app.get("/firebase/dummy_data", (req, res) => {
 /** Get response message from TasteBud after receiving user message */
 app.post("/chat/:chatID", async (req, res) => {
 	const chatID = Number(req.params.chatID);
-	// const messages = req.body.messages; // History of messages from front end state
+	const messages = req.body.messages;
 	const input = req.body.message;
+
 
 	const messages = [
 		{
@@ -168,6 +241,7 @@ app.post("/chat/:chatID", async (req, res) => {
 	];
 
 	messages.push({ role: "user", content: input });
+
 
 	const data = {
 		model: model,
@@ -182,6 +256,7 @@ app.post("/chat/:chatID", async (req, res) => {
 	};
 
 	try {
+
 		const response = await fetch(url, options);
 		const result = await response.text();
 		const resMessage = JSON.parse(result).choices[0].message;
@@ -196,6 +271,7 @@ app.post("/chat/:chatID", async (req, res) => {
 	} catch (error) {
 		res.status(500).json({ error: "API Internal server error" });
 	}
+
 
 	// TODO: Think about how to organize recipe data with chat
 });
