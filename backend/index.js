@@ -9,6 +9,17 @@ import {
 	updateDoc,
 } from "firebase/firestore";
 import { DATABASE } from "./firebase.js";
+import express from "express";
+import cors from "cors";
+import { generateDummyData } from "./generate_firebase_dummydata.js";
+import {
+	doc,
+	getDoc,
+	collection,
+	getDocs,
+	updateDoc,
+} from "firebase/firestore";
+import { DATABASE } from "./firebase.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
