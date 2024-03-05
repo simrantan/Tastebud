@@ -9,17 +9,6 @@ import {
 	updateDoc,
 } from "firebase/firestore";
 import { DATABASE } from "./firebase.js";
-import express from "express";
-import cors from "cors";
-import { generateDummyData } from "./generate_firebase_dummydata.js";
-import {
-	doc,
-	getDoc,
-	collection,
-	getDocs,
-	updateDoc,
-} from "firebase/firestore";
-import { DATABASE } from "./firebase.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -179,34 +168,6 @@ app.post("/recipe_book/:userId/:recipeId", (req, res) => {
 	res.status(200).json({ success: true });
 });
 
-/** Add or Remove a recipe from a user's recipe book */
-app.post("/recipe_book/:userId/:recipeId", (req, res) => {
-	const userId = Number(req.params.userId);
-	const recipeId =  Number(req.params.recipeId);
-	const {action, recipeInfo} = req.body;
-
-	if (action == "add") {
-		console.log(`Recipe with ID ${recipeId} added to the recipe book for user ${userId}`);
-		const { name, chat_id, text, picture_url, cuisine } = recipeInfo;
-		console.log("Additional recipe information:");
-		console.log(`Name: ${name}`);
-		console.log(`Chat ID: ${chat_id}`);
-		console.log(`Text: ${text}`);
-		console.log(`Picture URL: ${picture_url}`);
-		console.log(`Cuisine: ${cuisine}`);
-		// TODO: update firebase with new recipe
-	}
-	else if (action == "remove") {
-		console.log(`Recipe with ID ${recipeId} removed from the recipe book for user ${userId}`);
-		// TODO: remove recipe from firebase
-	}
-	else {
-		return res.status(400).json({ error: "Invalid action (not 'add' or 'remove')" });
-	}
-	res.status(200).json({ success: true });
-});
-
-
 /* ########################### Chat ########################## */
 // TODO: should return info about the chat, including the messages
 /** Get all the information for a single chat */
@@ -237,14 +198,12 @@ app.get("/firebase/dummy_data", (req, res) => {
 	console.log("Creating dummy data...");
 	generateDummyData();
 	res.json({ message: "Dummy data created!" });
-	res.json({ message: "Dummy data created!" });
 });
 
 /* ###################################################### Chat Methods ##################################################### */
 /** Get response message from TasteBud after receiving user message */
 app.post("/chat/:chatID", async (req, res) => {
 	const chatID = Number(req.params.chatID);
-	const messages = req.body.messages;
 	const messages = req.body.messages;
 	const input = req.body.message;
 	// TO-DO: Add user input to Firebase
@@ -275,7 +234,7 @@ app.post("/chat/:chatID", async (req, res) => {
 			formattedResponse: resMessage
         });
     } catch (error) {
-        res.status(500).json({ error: 'API Internal server error' });
+        res.status(500).json({ error: "Error fetching response from API" });
     }
 
 	// TODO: Think about how to organize recipe data with chat
