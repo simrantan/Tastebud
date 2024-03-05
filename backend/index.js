@@ -1,5 +1,14 @@
-const express = require("express");
-const cors = require("cors");
+import express from "express";
+import cors from "cors";
+import { generateDummyData } from "./generate_firebase_dummydata.js";
+import {
+	doc,
+	getDoc,
+	collection,
+	getDocs,
+	updateDoc,
+} from "firebase/firestore";
+import { DATABASE } from "./firebase.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -33,121 +42,180 @@ app.use((req, res, next) => {
 app.use(express.json());
 
 /* ########################### User ########################## */
-
 /** Get information for a single user */
-app.get("/user/:userId", (req, res) => {
-	const userId = Number(req.params.userId);
+app.get("/user/:userId", async (req, res) => {
+	const userId = req.params.userId;
 
-	res.json({
-		id: userId,
-		name: "John",
-		likes: ["bananas", "corn"],
-		dislikes: ["apple", "orange"],
-		allergies: {
-			milk: "1",
-			peanuts: "1",
-			gluten: "2",
-			beef: "2",
-		},
-		individual_chats: [0, 1],
-		group_chats: [2, 3],
-		recipe_book: [11, 22, 33],
-	});
+	try {
+		const docRef = doc(DATABASE, "users", userId);
+		const docSnap = await getDoc(docRef);
+
+		if (docSnap.exists()) {
+			res.json(docSnap.data());
+		} else {
+			console.log("no user exists in Firebase with that ID");
+		}
+	} catch (error) {
+		console.error(error);
+		res.status(500).send("Internal Server Error");
+	}
 });
 
 /** Save user preferences */
-app.post("/user/:userId/preferences", (req, res) => {
-	const userId = Number(req.params.userId);
+app.post("/user/:userId/preferences", async (req, res) => {
+	const userId = req.params.userId;
 	const prefType = req.body.prefType;
 
-	if (prefType === "likes") {
-		console.log(`userId: ${userId} likes ${req.body.preferences}`);
-		// TODO: update firebase with user likes
-	} else if (prefType === "dislikes") {
-		console.log(`userId: ${userId} dislikes ${req.body.preferences}`);
-		// TODO: update firebase with user dislikes
-	} else if (prefType === "allergies") {
-		console.log(
-			`userId: ${userId} allergies ${JSON.stringify(req.body.preferences)}`
-		);
-		// TODO: update firebase with user allergies
-	} else {
-		return res.status(400).json({ error: "Invalid prefType" });
+	try {
+		const userRef = doc(DATABASE, "users", userId);
+
+		// Test with: curl -X POST -H "Content-Type: application/json" -d '{"prefType": "likes", "preferences": ["cheese", "strawberries"]}' http://localhost:3001/user/00000000_sample_user/preferences
+		if (prefType === "likes") {
+			await updateDoc(userRef, {
+				likes: req.body.preferences,
+			});
+			// Test with: curl -X POST -H "Content-Type: application/json" -d '{"prefType": "dislikes", "preferences": ["cheese", "strawberries"]}' http://localhost:3001/user/00000000_sample_user/preferences
+		} else if (prefType === "dislikes") {
+			await updateDoc(userRef, {
+				dislikes: req.body.preferences,
+			});
+			// Test with: curl -X POST -H "Content-Type: application/json" -d '{"prefType": "allergies", "preferences": {"milk": 1, "peanuts": 2}}' http://localhost:3001/user/00000000_sample_user/preferences
+		} else if (prefType === "allergies") {
+			await updateDoc(userRef, {
+				allergies: req.body.preferences,
+			});
+		} else {
+			return res.status(400).json({ error: "Invalid prefType" });
+		}
+		res.status(200).json({ success: true });
+	} catch (error) {
+		console.error(error);
+		res.status(500).send("Internal Server Error");
 	}
-	res.status(200).json({ success: true });
 });
 
 /** Get the recipes in a user's recipe book */
-app.get("/recipe_book/:userId", (req, res) => {
-	const userId = Number(req.params.userId);
+app.get("/recipe_book/:userId", async (req, res) => {
+	const userId = req.params.userId;
 
-	res.json({
-		recipes: [
-			{
-				id: 11,
-				name: "Banana Bread",
-				chat_id: 111,
-				text: "## Banana Bread Recipe\n\n**Ingredients:**\n- 2 to 3 ripe bananas, mashed\n- 1/3 cup (75g) melted butter\n- 1 teaspoon baking soda\n- Pinch of salt\n- 3/4 cup (150g) sugar\n- 1 large egg, beaten\n- 1 teaspoon vanilla extract\n- 1 1/2 cups (190g) all-purpose flour\n\n**Optional Add-ins:**\n- 1/2 cup (50g) chopped nuts (walnuts or pecans)\n- 1/2 cup (80g) chocolate chips\n\n**Instructions:**\n1. Preheat your oven to 350°F (175°C). Grease a 9x5-inch loaf pan.\n2. In a mixing bowl, mash the ripe bananas with a fork until smooth.\n3. Stir the melted butter into the mashed bananas.\n4. Mix in the baking soda and salt.\n5. Stir in the sugar, beaten egg, and vanilla extract.\n6. Mix in the flour until just combined. Do not overmix.\n7. If using, fold in the chopped nuts or chocolate chips.\n8. Pour the batter into the prepared loaf pan.\n9. Bake in the preheated oven for 50 to 60 minutes, or until a toothpick inserted into the center comes out clean.\n10. Remove the banana bread from the oven and let it cool in the pan for 10 minutes.\n11. Transfer the bread to a wire rack to cool completely before slicing.",
-				picture_url: "https://placekitten.com/1000/1000",
-				cuisine: "American",
-			},
-			{
-				id: 22,
-				name: "Cornbread",
-				chat_id: 222,
-				text: "## Cornbread Recipe\n\n**Ingredients:**\n- 1 cup (125g) all-purpose flour\n- 1 cup (150g) yellow cornmeal\n- 1/4 cup (50g) granulated sugar\n- 1 teaspoon salt\n- 1 tablespoon baking powder\n- 1 cup (240ml) milk\n- 1/3 cup (80ml) vegetable oil\n- 2 large eggs\n\n**Instructions:**\n1. Preheat your oven to 400°F (200°C). Grease a 9x9-inch baking dish.\n2. In a mixing bowl, whisk together the flour, cornmeal, sugar, salt, and baking powder.\n3. In a separate bowl, whisk together the milk, oil, and eggs.\n4. Add the wet ingredients to the dry ingredients and stir until just combined. Do not overmix.\n5. Pour the batter into the prepared baking dish.\n6. Bake in the preheated oven for 20 to 25 minutes, or until a toothpick inserted into the center comes out clean.\n7. Remove the cornbread from the oven and let it cool for 10 minutes before slicing.",
-				picture_url: "https://placekitten.com/1000/1000",
-				cuisine: "American",
-			},
-			{
-				id: 33,
-				name: "Empanadas",
-				chat_id: 333,
-				text: "## Empanadas Recipe\n\n**Ingredients:**\n- 1 recipe pastry for a 9-inch double-crust pie\n- 1/2 cup (100g) unsalted butter\n- 3 tablespoons all-purpose flour\n- 1/4 cup (60ml) water\n- 1/2 cup (100g) white sugar\n- 1/2 cup (100g) packed brown sugar\n- 8 Granny Smith apples - peeled, cored, and sliced\n\n**Instructions:**\n1. Preheat your oven to 425°F (220°C). Place the bottom crust in your pan.\n2. Melt the butter in a saucepan. Stir in flour to form a paste. Add water, white sugar, and brown sugar, and bring to a boil. Reduce temperature and let simmer.\n3. Place the apples in the prepared crust. Pour the sugar and butter mixture over the apples. Place the second crust on top of the apples.\n4. Bake in the preheated oven for 15 minutes. Reduce the temperature to 350°F (175°C) and continue baking for 35 to 45 minutes, until apples are soft.",
-				picture_url: "https://placekitten.com/1000/1000",
-				cuisine: "Argentine",
-			},
-		],
-	});
+	try {
+		const querySnapshot = await getDocs(
+			collection(DATABASE, "users", userId, "recipes")
+		);
+
+		let data = [];
+		querySnapshot.forEach((doc) => {
+			data.push(doc.data());
+		});
+
+		res.json(data);
+	} catch (error) {
+		console.error(error);
+		res.status(500).send("Internal Server Error");
+	}
 });
 
 /* ########################### Recipe ########################## */
 /** Get information for a single recipe */
-app.get("/recipe/:recipeId", (req, res) => {
-	const recipeId = Number(req.params.recipeId);
+app.get("/user/:userId/recipe/:recipeId", async (req, res) => {
+	const userId = req.params.userId;
+	const recipeId = req.params.recipeId;
 
-	res.json({
-		id: recipeId,
-		name: "Banana Bread",
-		chat_id: 111,
-		text: "## Banana Bread Recipe\n\n**Ingredients:**\n- 2 to 3 ripe bananas, mashed\n- 1/3 cup (75g) melted butter\n- 1 teaspoon baking soda\n- Pinch of salt\n- 3/4 cup (150g) sugar\n- 1 large egg, beaten\n- 1 teaspoon vanilla extract\n- 1 1/2 cups (190g) all-purpose flour\n\n**Optional Add-ins:**\n- 1/2 cup (50g) chopped nuts (walnuts or pecans)\n- 1/2 cup (80g) chocolate chips\n\n**Instructions:**\n1. Preheat your oven to 350°F (175°C). Grease a 9x5-inch loaf pan.\n2. In a mixing bowl, mash the ripe bananas with a fork until smooth.\n3. Stir the melted butter into the mashed bananas.\n4. Mix in the baking soda and salt.\n5. Stir in the sugar, beaten egg, and vanilla extract.\n6. Mix in the flour until just combined. Do not overmix.\n7. If using, fold in the chopped nuts or chocolate chips.\n8. Pour the batter into the prepared loaf pan.\n9. Bake in the preheated oven for 50 to 60 minutes, or until a toothpick inserted into the center comes out clean.\n10. Remove the banana bread from the oven and let it cool in the pan for 10 minutes.\n11. Transfer the bread to a wire rack to cool completely before slicing.",
-		picture_url: "https://placekitten.com/1000/1000",
-		cuisine: "American",
-	});
+	try {
+		const docRef = doc(DATABASE, "users", userId, "recipes", recipeId);
+		const docSnap = await getDoc(docRef);
+
+		if (docSnap.exists()) {
+			res.json(docSnap.data());
+		} else {
+			console.log("can't find recipe");
+		}
+	} catch (error) {
+		console.error(error);
+		res.status(500).send("Internal Server Error");
+	}
+});
+
+// TODO: add the firebase stuff into this
+/** Add or Remove a recipe from a user's recipe book */
+app.post("/recipe_book/:userId/:recipeId", (req, res) => {
+	const userId = Number(req.params.userId);
+	const recipeId = Number(req.params.recipeId);
+	const { action, recipeInfo } = req.body;
+
+	if (action == "add") {
+		console.log(
+			`Recipe with ID ${recipeId} added to the recipe book for user ${userId}`
+		);
+		const { name, chat_id, text, picture_url, cuisine } = recipeInfo;
+		console.log("Additional recipe information:");
+		console.log(`Name: ${name}`);
+		console.log(`Chat ID: ${chat_id}`);
+		console.log(`Text: ${text}`);
+		console.log(`Picture URL: ${picture_url}`);
+		console.log(`Cuisine: ${cuisine}`);
+		// TODO: update firebase with new recipe
+	} else if (action == "remove") {
+		console.log(
+			`Recipe with ID ${recipeId} removed from the recipe book for user ${userId}`
+		);
+		// TODO: remove recipe from firebase
+	} else {
+		return res
+			.status(400)
+			.json({ error: "Invalid action (not 'add' or 'remove')" });
+	}
+	res.status(200).json({ success: true });
 });
 
 /* ########################### Chat ########################## */
-/** Get information for a single chat */
-app.get("/chat/:chatID", (req, res) => {
-	const chatID = Number(req.params.chatID);
+// TODO: should return info about the chat, including the messages
+/** Get all the information for a single chat */
+app.get("/chat/:userID/:chatID", async (req, res) => {
+	const userId = req.params.userID;
+	const chatID = req.params.chatID;
 
-	res.json({
-		id: chatID,
-		name: "Post-Show Treat",
-		is_group: true,
-		host_id: 0,
-		recipes: [111, 222, 333],
-		guests: [1, 2, 3],
-		created_at: "2021-04-20T12:00:00Z",
-	});
+	try {
+		const querySnapshot = await getDocs(
+			collection(DATABASE, "users", userId, "chats", chatID, "messages")
+		);
+
+		let chats = [];
+
+		for (const doc of querySnapshot.docs) {
+			chats.push(doc.data());
+		}
+
+		res.json(chats);
+	} catch (error) {
+		console.error(error);
+		res.status(500).send("Internal Server Error");
+	}
 });
 
+/* ########################### Firebase Testing ########################## */
+app.get("/firebase/dummy_data", (req, res) => {
+	console.log("Creating dummy data...");
+	generateDummyData();
+	res.json({ message: "Dummy data created!" });
+});
+
+/* ###################################################### Chat Methods ##################################################### */
 /** Get response message from TasteBud after receiving user message */
 app.post("/chat/:chatID", async (req, res) => {
 	const chatID = Number(req.params.chatID);
-	const messages = req.body.messages;
+	// const messages = req.body.messages;
 	const input = req.body.message;
-	// TO-DO: Add user input to Firebase
+
+	const messages = [
+		{
+			role: "system",
+			content:
+				"You are TasteBud! You help users find recipes based off of their dietary restrictions and preferences. Respond with 'Yes Chef!' to requests when appropriate.",
+		},
+	];
+
+	messages.push({ role: "user", content: input });
 
 	const data = {
 		model: model,
@@ -165,11 +233,13 @@ app.post("/chat/:chatID", async (req, res) => {
 		const response = await fetch(url, options);
 		const result = await response.text();
 		const resMessage = JSON.parse(result).choices[0].message;
-		// TO-DO: Add AI response to Firebase
+		const content = resMessage.content;
+		messages.push(resMessage);
 
 		res.json({
 			chat_id: chatID,
-			response: resMessage,
+			response: content,
+			messages: messages,
 		});
 	} catch (error) {
 		res.status(500).json({ error: "API Internal server error" });
