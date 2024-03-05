@@ -22,7 +22,7 @@ const headers = new Headers({
 	Authorization: `Bearer ${apiKey}`,
 });
 const model = "mistralai/Mixtral-8x7B-Instruct-v0.1";
-const maxTokens = 20; // Keeping this low for now to not use up $$$
+const maxTokens = 2000; // Keeping this low for now to not use up $$$
 
 // Use CORS middleware
 app.use(
