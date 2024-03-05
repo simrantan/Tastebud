@@ -218,6 +218,7 @@ app.get("/firebase/dummy_data", (req, res) => {
 	console.log("Creating dummy data...");
 	generateDummyData();
 	res.json({ message: "Dummy data created!" });
+	res.json({ message: "Dummy data created!" });
 });
 
 /* ###################################################### Chat Methods ##################################################### */

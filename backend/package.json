@@ -3,6 +3,7 @@
 	"version": "1.0.0",
 	"main": "index.js",
 	"type": "module",
+	"type": "module",
 	"devDependencies": {
 		"nodemon": "^3.0.3"
 	},
