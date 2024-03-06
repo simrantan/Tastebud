@@ -30,7 +30,6 @@ export default function RecipeBook() {
 				console.error("Error fetching recipe book:", error);
 				// You may want to handle the error appropriately, e.g., display an error message
 			});
-		console.log(recipeBook);
 	}, []); // Add userId as a dependency if it's used in the useEffect
 
 	const handleSearchChange = (e) => {
