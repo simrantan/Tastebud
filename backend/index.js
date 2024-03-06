@@ -6,6 +6,8 @@ import {
 	collection,
 	getDocs,
 	updateDoc,
+	setDoc,
+	deleteDoc,
 } from "firebase/firestore";
 import { DATABASE } from "./firebase.js";
 import { generateDummyData } from "./generate_firebase_dummydata.js";
@@ -30,13 +32,6 @@ app.use(
 		origin: "http://localhost:3000", // Allow requests only from this origin
 	})
 );
-
-// Middleware to log request method and URL (for dev purposes)
-app.use((req, res, next) => {
-	// console.log(`HTTP Method: ${req.method}`);
-	// console.log(`URL: ${req.url}`);
-	next();
-});
 
 // Middleware to parse JSON request body
 app.use(express.json());
@@ -136,36 +131,37 @@ app.get("/user/:userId/recipe/:recipeId", async (req, res) => {
 	}
 });
 
-// TODO: add the firebase stuff into this
 /** Add or Remove a recipe from a user's recipe book */
-app.post("/recipe_book/:userId/:recipeId", (req, res) => {
-	const userId = Number(req.params.userId);
-	const recipeId = Number(req.params.recipeId);
+app.post("/recipe_book/:userId/:recipeId", async (req, res) => {
+	const userId = req.params.userId;
+	const recipeId = req.params.recipeId;
 	const { action, recipeInfo } = req.body;
 
-	if (action == "add") {
-		console.log(
-			`Recipe with ID ${recipeId} added to the recipe book for user ${userId}`
-		);
-		const { name, chat_id, text, picture_url, cuisine } = recipeInfo;
-		console.log("Additional recipe information:");
-		console.log(`Name: ${name}`);
-		console.log(`Chat ID: ${chat_id}`);
-		console.log(`Text: ${text}`);
-		console.log(`Picture URL: ${picture_url}`);
-		console.log(`Cuisine: ${cuisine}`);
-		// TODO: update firebase with new recipe
-	} else if (action == "remove") {
-		console.log(
-			`Recipe with ID ${recipeId} removed from the recipe book for user ${userId}`
-		);
-		// TODO: remove recipe from firebase
+	if (action === "add") {
+		// Test with: curl -X POST -H "Content-Type: application/json" -d '{"action": "add", "recipeInfo": {"name": "Banana Bread", "chat_id": "RECIPE_ID", "text": "easy to make and delicious", "picture_url": "https://placekitten.com/1000/1000", "cuisine": "American"}}' http://localhost:3001/recipe_book/00000000_sample_user/111
+		try {
+			const recipeRef = collection(DATABASE, `users/${userId}/recipes`);
+			await setDoc(doc(recipeRef, recipeId), recipeInfo);
+			res.status(200).json({ success: true });
+		} catch (error) {
+			console.error(error);
+			res.status(500).send("Internal Server Error");
+		}
+	} else if (action === "remove") {
+		// Test with: curl -X POST -H "Content-Type: application/json" -d '{"action": "remove", "recipeInfo": {"name": "Banana Bread", "chat_id": "RECIPE_ID", "text": "easy to make and delicious", "picture_url": "https://placekitten.com/1000/1000", "cuisine": "American"}}' http://localhost:3001/recipe_book/00000000_sample_user/111
+		try {
+			const recipeRef = collection(DATABASE, `users/${userId}/recipes`);
+			await deleteDoc(doc(recipeRef, recipeId));
+			res.status(200).json({ success: true });
+		} catch (error) {
+			console.error(error);
+			res.status(500).send("Internal Server Error");
+		}
 	} else {
 		return res
 			.status(400)
 			.json({ error: "Invalid action (not 'add' or 'remove')" });
 	}
-	res.status(200).json({ success: true });
 });
 
 /* ########################### Chat ########################## */
