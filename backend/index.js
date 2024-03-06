@@ -103,7 +103,7 @@ app.get("/recipe_book/:userId", async (req, res) => {
 
 		let data = [];
 		querySnapshot.forEach((doc) => {
-			data.push(doc.data());
+			data.push({ ...doc.data(), id: doc.id });
 		});
 
 		res.json(data);
