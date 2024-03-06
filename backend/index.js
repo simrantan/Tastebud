@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import { generateDummyData } from "./generate_firebase_dummydata.js";
 import {
 	doc,
 	getDoc,
@@ -9,6 +8,7 @@ import {
 	updateDoc,
 } from "firebase/firestore";
 import { DATABASE } from "./firebase.js";
+import { generateDummyData } from "./generate_firebase_dummydata.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -169,16 +169,15 @@ app.post("/recipe_book/:userId/:recipeId", (req, res) => {
 });
 
 /* ########################### Chat ########################## */
-// TODO: should return info about the chat, including the messages
 /** Get all the information for a single chat */
 app.get("/chat/:userID/:chatID", async (req, res) => {
 	const userId = req.params.userID;
 	const chatID = req.params.chatID;
 
 	try {
-		const querySnapshot = await getDocs(
-			collection(DATABASE, "users", userId, "chats", chatID, "messages")
-		);
+		const chatRef = doc(DATABASE, "users", userId, "chats", chatID);
+		const docSnap = await getDoc(chatRef);
+		const querySnapshot = await getDocs(collection(chatRef, "messages"));
 
 		let chats = [];
 
@@ -186,7 +185,10 @@ app.get("/chat/:userID/:chatID", async (req, res) => {
 			chats.push(doc.data());
 		}
 
-		res.json(chats);
+		res.json({
+			chats: chats,
+			fields: docSnap.data(),
+		});
 	} catch (error) {
 		console.error(error);
 		res.status(500).send("Internal Server Error");
