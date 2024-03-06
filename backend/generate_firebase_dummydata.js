@@ -69,6 +69,6 @@ export async function generateDummyData() {
 	});
 }
 
-function getTimestamp() {
+export function getTimestamp() {
 	return String(new Date().getTime());
 }
