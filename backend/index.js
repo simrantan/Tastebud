@@ -10,7 +10,10 @@ import {
 	deleteDoc,
 } from "firebase/firestore";
 import { DATABASE } from "./firebase.js";
-import { generateDummyData } from "./generate_firebase_dummydata.js";
+import {
+	generateDummyData,
+	getTimestamp,
+} from "./generate_firebase_dummydata.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -204,7 +207,7 @@ app.post("/chat/:userID/:chatID", async (req, res) => {
 			name: name,
 			is_group: false,
 			host_id: userId,
-			created_at: String(new Date().getTime()),
+			created_at: getTimestamp(),
 		});
 		res.status(200).json({ success: true });
 	} catch (error) {
@@ -222,20 +225,36 @@ app.get("/firebase/dummy_data", (req, res) => {
 
 /* ###################################################### Chat Methods ##################################################### */
 /** Get response message from TasteBud after receiving user message */
-app.post("/chat/:chatID", async (req, res) => {
-	const chatID = Number(req.params.chatID);
-	// const messages = req.body.messages;
+app.post("/chat/:userID/:chatID/message", async (req, res) => {
+	// Test with: curl -X POST -H "Content-Type: application/json" -d '{"message": "I want to make a cake"}' http://localhost:3001/chat/00000000_sample_user/00000000_sample_chat/message
+	const userId = req.params.userID;
+	const chatID = req.params.chatID;
 	const input = req.body.message;
 
-	const messages = [
+	const newMessage = {
+		role: "user",
+		content: input,
+		created_at: new Date(),
+	};
+
+	// Get message history from request body, or default prompt
+	const messages = req.body.messages || [
 		{
 			role: "system",
 			content:
 				"You are TasteBud! You help users find recipes based off of their dietary restrictions and preferences. Respond with 'Yes Chef!' to requests when appropriate.",
+			created_at: getTimestamp(),
 		},
 	];
 
-	messages.push({ role: "user", content: input });
+	// Save the user's message to Firebase
+	setDoc(
+		doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()),
+		newMessage
+	);
+
+	// Add user's message to array of all messages to send to the API
+	messages.push(newMessage);
 
 	const data = {
 		model: model,
@@ -252,13 +271,28 @@ app.post("/chat/:chatID", async (req, res) => {
 	try {
 		const response = await fetch(url, options);
 		const result = await response.text();
-		const resMessage = JSON.parse(result).choices[0].message;
-		const content = resMessage.content;
+		let resMessage = JSON.parse(result).choices[0].message;
+
+		resMessage.created_at = new Date();
 		messages.push(resMessage);
+
+		// Save TasteBud's response to Firebase
+		setDoc(
+			doc(
+				DATABASE,
+				"users",
+				userId,
+				"chats",
+				chatID,
+				"messages",
+				getTimestamp()
+			),
+			resMessage
+		);
 
 		res.json({
 			chat_id: chatID,
-			response: content,
+			response: resMessage.content,
 			messages: messages,
 		});
 	} catch (error) {
