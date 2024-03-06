@@ -18,7 +18,7 @@ const PreferenceCard = () => {
 	const [newAllergen, setNewAllergen] = useState("");
 	const [newLike, setNewLike] = useState("");
 	const [newDislike, setNewDislike] = useState("");
-	const userId = 1;
+	const userId = "00000000_sample_user";
 
 	useEffect(() => {
 		const fetchPreferences = async () => {
@@ -33,6 +33,7 @@ const PreferenceCard = () => {
 				setAllergens(data.allergies || {});
 				setLikes(data.likes || []);
 				setDislikes(data.dislikes || []);
+				console.log("set user data");
 			} catch (error) {
 				console.error("Error fetching preferences:", error.message);
 			}
@@ -79,7 +80,7 @@ const PreferenceCard = () => {
 			console.log("Sending dislikes data to the backend:", dislikes);
 			savePreferences("dislikes", dislikes);
 		}
-	}, [userId, allergens, likes, dislikes]); //pending:  add functionality for only sending data when there is a change
+	}, [allergens, likes, dislikes]); //pending:  add functionality for only sending data when there is a change
 
 	const handleAddAllergen = (e) => {
 		e.preventDefault();
