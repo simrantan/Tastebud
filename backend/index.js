@@ -191,6 +191,28 @@ app.get("/chat/:userID/:chatID", async (req, res) => {
 	}
 });
 
+/** Set the metadata for a chat */
+app.post("/chat/:userID/:chatID", async (req, res) => {
+	// Test with curl -X POST -H "Content-Type: application/json" -d '{"name": "Example Chat"}' http://localhost:3001/chat/00000000_sample_user/new_chat
+	const userId = req.params.userID;
+	const chatID = req.params.chatID;
+	const { name } = req.body;
+
+	try {
+		const chatRef = doc(DATABASE, "users", userId, "chats", chatID);
+		await setDoc(chatRef, {
+			name: name,
+			is_group: false,
+			host_id: userId,
+			created_at: String(new Date().getTime()),
+		});
+		res.status(200).json({ success: true });
+	} catch (error) {
+		console.error(error);
+		res.status(500).send("Internal Server Error");
+	}
+});
+
 /* ########################### Firebase Testing ########################## */
 app.get("/firebase/dummy_data", (req, res) => {
 	console.log("Creating dummy data...");
