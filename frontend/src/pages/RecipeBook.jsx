@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "./RecipeBook.css"; // Import the CSS file
 
 export default function RecipeBook() {
-	const userId = 1;
+	const userId = "00000000_sample_user";
 	const navigate = useNavigate();
 
 	const [recipeBook, setRecipeBook] = useState([]);
@@ -23,14 +23,15 @@ export default function RecipeBook() {
 			.then((response) => response.json())
 			.then((data) => {
 				// Assuming data.recipes is an array of recipes
-				const recipes = data.recipes || []; // Use an empty array if recipes is undefined
+				const recipes = data || []; // Use an empty array if recipes is undefined
 				setRecipeBook(recipes);
 			})
 			.catch((error) => {
 				console.error("Error fetching recipe book:", error);
 				// You may want to handle the error appropriately, e.g., display an error message
 			});
-	}, [userId]); // Add userId as a dependency if it's used in the useEffect
+		console.log(recipeBook);
+	}, []); // Add userId as a dependency if it's used in the useEffect
 
 	const handleSearchChange = (e) => {
 		setSearchQuery(e.target.value);
@@ -139,8 +140,8 @@ export default function RecipeBook() {
 				value={searchQuery}
 				onChange={handleSearchChange}
 			/>
-			{Object.keys(groupedRecipes).map((cuisine) => (
-				<div key={cuisine} className="cuisine-container">
+			{Object.keys(groupedRecipes).map((cuisine, index) => (
+				<div key={`${cuisine}-${index}`} className="cuisine-container">
 					<h3>{cuisine}</h3>
 					<div className="recipe-container">
 						{groupedRecipes[cuisine].map((recipe) => (
@@ -173,7 +174,6 @@ export default function RecipeBook() {
 					{selectedRecipe && (
 						<>
 							<ReactMarkdown>{selectedRecipe?.text}</ReactMarkdown>
-							<div dangerouslySetInnerHTML={{ __html: selectedRecipe?.text }} />
 						</>
 					)}
 				</Modal.Body>
