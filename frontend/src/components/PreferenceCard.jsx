@@ -43,49 +43,38 @@ const PreferenceCard = () => {
 		fetchPreferences();
 	}, []); // Empty dependency array ensures it runs only once
 
-	useEffect(() => {
-		const savePreferences = async (prefType, preferences) => {
-			try {
-				const response = await fetch(
-					`http://localhost:3001/user/${userId}/preferences`,
-					{
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						body: JSON.stringify({ prefType, preferences }),
-					}
-				);
-
-				if (!response.ok) {
-					throw new Error(`HTTP error! Status: ${response.status}`);
+	const savePreferences = async (prefType, preferences) => {
+		try {
+			const response = await fetch(
+				`http://localhost:3001/user/${userId}/preferences`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({ prefType, preferences }),
 				}
+			);
 
-				const data = await response.json();
-			} catch (error) {
-				console.error("Error saving preferences:", error.message);
+			if (!response.ok) {
+				throw new Error(`HTTP error! Status: ${response.status}`);
 			}
-		};
 
-		// Check for allergens, likes, and dislikes and make API calls
-		if (Object.keys(allergens).length >= 0) {
-			console.log("Sending allergens data to the backend:", allergens);
-			savePreferences("allergies", allergens);
+			const data = await response.json();
+		} catch (error) {
+			console.error("Error saving preferences:", error.message);
 		}
-		if (likes.length >= 0) {
-			console.log("Sending likes data to the backend:", likes);
-			savePreferences("likes", likes);
-		}
-		if (dislikes.length >= 0) {
-			console.log("Sending dislikes data to the backend:", dislikes);
-			savePreferences("dislikes", dislikes);
-		}
-	}, [allergens, likes, dislikes]); //pending:  add functionality for only sending data when there is a change
+	};
 
 	const handleAddAllergen = (e) => {
 		e.preventDefault();
 		if (newAllergen.trim() !== "") {
-			setAllergens({ ...allergens, [newAllergen]: 1 });
+			setAllergens((prevAllergens) => {
+				const updatedAllergens = { ...prevAllergens, [newAllergen]: 1 };
+				// Now, you can call savePreferences as a callback
+				savePreferences("allergies", updatedAllergens);
+				return updatedAllergens;
+			});
 			setNewAllergen("");
 		}
 	};
@@ -93,38 +82,65 @@ const PreferenceCard = () => {
 	const handleRemoveAllergen = (allergen) => {
 		const updatedAllergens = { ...allergens };
 		delete updatedAllergens[allergen];
-		setAllergens(updatedAllergens);
+		// Use the functional update form of setAllergens
+		setAllergens((prevAllergens) => {
+			// This callback will be executed after setAllergens is completed
+			savePreferences("allergies", updatedAllergens);
+			return updatedAllergens;
+		});
 	};
 
 	const handleCategoryChange = (allergen, category) => {
-		setAllergens({ ...allergens, [allergen]: category });
+		setAllergens((prevAllergens) => {
+			const updatedAllergens = { ...prevAllergens, [allergen]: category };
+			// Call savePreferences as a callback
+			savePreferences("allergies", updatedAllergens);
+			return updatedAllergens;
+		});
 	};
-
 	const handleAddLike = (e) => {
 		e.preventDefault();
 		if (newLike.trim() !== "") {
-			setLikes([...likes, newLike]);
+			setLikes((prevLikes) => {
+				const updatedLikes = [...prevLikes, newLike];
+				// Call savePreferences as a callback
+				savePreferences("likes", updatedLikes);
+				return updatedLikes;
+			});
 			setNewLike("");
 			console.log(likes);
 		}
 	};
 
 	const handleRemoveLike = (like) => {
-		const updatedLikes = likes.filter((item) => item !== like);
-		setLikes(updatedLikes);
+		setLikes((prevLikes) => {
+			const updatedLikes = prevLikes.filter((item) => item !== like);
+			// Call savePreferences as a callback
+			savePreferences("likes", updatedLikes);
+			return updatedLikes;
+		});
 	};
 
 	const handleAddDislike = (e) => {
 		e.preventDefault();
 		if (newDislike.trim() !== "") {
-			setDislikes([...dislikes, newDislike]);
+			setDislikes((prevDislikes) => {
+				const updatedDislikes = [...prevDislikes, newDislike];
+				// Call savePreferences as a callback
+				savePreferences("dislikes", updatedDislikes);
+				return updatedDislikes;
+			});
 			setNewDislike("");
 		}
 	};
 
 	const handleRemoveDislike = (dislike) => {
-		const updatedDislikes = dislikes.filter((item) => item !== dislike);
-		setDislikes(updatedDislikes);
+		setDislikes((prevDislikes) => {
+			const updatedDislikes = prevDislikes.filter((item) => item !== dislike);
+			// Call savePreferences as a callback
+			savePreferences("dislikes", updatedDislikes);
+			return updatedDislikes;
+		});
 	};
 
 	return (
