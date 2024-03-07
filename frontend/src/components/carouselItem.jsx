@@ -1,9 +1,9 @@
 import React from "react";
 import { Card, Image } from "react-bootstrap";
 
-const RecipeItem = ({ recipe, onRecipeClick }) => {
+const RecipeItem = ({ recipe, onRecipeClick, isSelected }) => {
 	const handleRecipeClick = () => {
-		onRecipeClick(recipe.name);
+		onRecipeClick(recipe.index);
 	};
 
 	return (
@@ -11,7 +11,7 @@ const RecipeItem = ({ recipe, onRecipeClick }) => {
 			style={{
 				borderRadius: "15px",
 				cursor: "pointer",
-				border: "1px solid #ccc",
+				border: isSelected ? "2px solid #007bff" : "1px solid #ccc", // Highlight the selected recipe
 				overflow: "hidden",
 			}}
 			onClick={handleRecipeClick}
