@@ -6,7 +6,8 @@ import ConversationStarters from "./conversationStarters";
 
 const hardcodedUserId = "00000000_sample_user";
 const API_CHAT_ENDPOINT = "http://localhost:3001/chat";
-const AI_SIMULATION_ENDPOINT = `${API_CHAT_ENDPOINT}/${hardcodedUserId}/sample_chat/message`;
+const AI_SIMULATION_ENDPOINT =
+	"http://localhost:3001/chat/00000000_sample_user/00000000_sample_chat/message";
 
 export default function ChatsMain() {
 	const [userInput, setUserInput] = useState("");
@@ -38,7 +39,7 @@ export default function ChatsMain() {
 						"Content-Type": "application/json",
 					},
 					body: JSON.stringify({
-						userMessage,
+						message: userMessage.content, // Send only the content
 						// Include other necessary data for the backend
 					}),
 				});
@@ -56,7 +57,7 @@ export default function ChatsMain() {
 
 					setReceivedIsRecipeList(isRecipeList);
 
-					if (receivedIsRecipeList) {
+					if (isRecipeList) {
 						// Set recipePanelData to the list of recipes
 						setRecipePanelData({ recipes: parsedContent.Recipes });
 					}
@@ -166,7 +167,7 @@ export default function ChatsMain() {
 									recipes={recipePanelData.recipes}
 									onRecipeClick={(index) => {
 										const selectedRecipe = recipePanelData.recipes[index];
-										setRecipePanelData(index);
+										setRecipePanelData(selectedRecipe);
 										setSelectedRecipe(selectedRecipe);
 										handleRecipeSelection(selectedRecipe.title);
 									}}
