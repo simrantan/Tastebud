@@ -12,7 +12,7 @@ export default function ChatsMain() {
 	const [userInput, setUserInput] = useState("");
 	const [chatHistory, setChatHistory] = useState([{}]);
 	const [recipePanelData, setRecipePanelData] = useState({ recipes: [] });
-	const [isRecipeList, setIsRecipeList] = useState(false);
+	const [receivedIsRecipeList, setReceivedIsRecipeList] = useState(false);
 	const [selectedRecipe, setSelectedRecipe] = useState(null);
 	const [showConversationStarters, setShowConversationStarters] =
 		useState(true);
@@ -45,70 +45,40 @@ export default function ChatsMain() {
 
 				const responseData = await response.json();
 
-				const aiMessage = {
-					role: responseData.response,
-					content: responseData.formattedResponse.content.content,
-					isRecipeList: responseData.formattedResponse.content.isRecipeList,
-					recipes: responseData.formattedResponse.content.isRecipeList
-						? responseData.formattedResponse.content.recipes
-						: null,
-					// Include other properties from the backend response if needed
-				};
+				if (responseData.Messages && responseData.Messages.length > 0) {
+					const lastMessage =
+						responseData.Messages[responseData.Messages.length - 1];
+					const parsedContent = JSON.parse(lastMessage.Content);
 
-				setChatHistory((prevChatHistory) => [
-					...prevChatHistory,
-					responseData.formattedResponse,
-				]);
-				scrollToBottom();
+					const isRecipeList = parsedContent.isRecipeList;
+					const receivedChatTitle = parsedContent.chatTitle;
+					const receivedContent = parsedContent.Message;
+
+					setReceivedIsRecipeList(isRecipeList);
+
+					if (receivedIsRecipeList) {
+						// Set recipePanelData to the list of recipes
+						setRecipePanelData({ recipes: parsedContent.Recipes });
+					}
+
+					// Add the AI message to chatHistory
+					const newAIMessage = {
+						role: "ai",
+						content: receivedContent,
+					};
+
+					const updatedChatHistory = [...chatHistory, newAIMessage];
+
+					setChatHistory(updatedChatHistory);
+
+					scrollToBottom();
+				}
 			} catch (error) {
 				console.error("Error fetching AI response:", error);
 			}
 		},
-		[] // Add dependencies if needed
+		[chatHistory]
 	);
-
-	const handleBackendResponse = async (data) => {
-		if (data.formattedResponse) {
-			setIsRecipeList(data.response.content.isRecipeList);
-
-			if (data.response.content.isRecipeList) {
-				try {
-					const updatedRecipePanelData = await fetchRecipePanelData();
-					setRecipePanelData(updatedRecipePanelData);
-				} catch (error) {
-					console.error("Error fetching recipe panel data:", error);
-				}
-			} else {
-				// Handle non-recipe messages from AI if needed
-			}
-		} else {
-			console.error("Unexpected response format:", data);
-		}
-	};
-
-	const fetchRecipePanelData = async () => {
-		try {
-			const response = await fetch(`${API_CHAT_ENDPOINT}/recipe-panel`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					// Include any necessary data for the backend
-				}),
-			});
-
-			if (!response.ok) {
-				throw new Error(`Failed to fetch. Status: ${response.status}`);
-			}
-
-			const data = await response.json();
-			return data;
-		} catch (error) {
-			console.error("Error fetching recipe panel data:", error);
-			throw error; // Propagate the error up the call stack if needed
-		}
-	};
 
 	const handleRecipeSelection = useCallback(
 		async (recipeName) => {
@@ -191,7 +161,7 @@ export default function ChatsMain() {
 							<h5 className="mb-0">Chat</h5>
 						</Card.Header>
 						<Card.Body style={{ maxHeight: "400px", overflowY: "auto" }}>
-							{isRecipeList && recipePanelData && (
+							{receivedIsRecipeList && recipePanelData && (
 								<RecipeCarousel
 									recipes={recipePanelData.recipes}
 									onRecipeClick={(index) => {
@@ -259,7 +229,7 @@ export default function ChatsMain() {
 						</Card.Footer>
 					</Card>
 				</Col>
-				{isRecipeList && selectedRecipe && (
+				{receivedIsRecipeList && selectedRecipe && (
 					<RecipePanel selectedRecipe={selectedRecipe} />
 				)}
 			</Row>
