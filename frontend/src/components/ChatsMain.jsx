@@ -46,7 +46,7 @@ export default function ChatsMain() {
 				const responseData = await response.json();
 
 				const aiMessage = {
-					role: responseData.formattedResponse.role,
+					role: responseData.response,
 					content: responseData.formattedResponse.content.content,
 					isRecipeList: responseData.formattedResponse.content.isRecipeList,
 					recipes: responseData.formattedResponse.content.isRecipeList
@@ -55,7 +55,10 @@ export default function ChatsMain() {
 					// Include other properties from the backend response if needed
 				};
 
-				setChatHistory((prevChatHistory) => [...prevChatHistory, aiMessage]);
+				setChatHistory((prevChatHistory) => [
+					...prevChatHistory,
+					responseData.formattedResponse,
+				]);
 				scrollToBottom();
 			} catch (error) {
 				console.error("Error fetching AI response:", error);
@@ -66,9 +69,9 @@ export default function ChatsMain() {
 
 	const handleBackendResponse = async (data) => {
 		if (data.formattedResponse) {
-			setIsRecipeList(data.formattedResponse.content.isRecipeList);
+			setIsRecipeList(data.response.content.isRecipeList);
 
-			if (data.formattedResponse.content.isRecipeList) {
+			if (data.response.content.isRecipeList) {
 				try {
 					const updatedRecipePanelData = await fetchRecipePanelData();
 					setRecipePanelData(updatedRecipePanelData);
