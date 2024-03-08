@@ -96,7 +96,21 @@ const RecipePanel = ({ recipe }) => {
 			<p>{recipe.name}</p>
 			<Card.Img variant="top" src={recipe.picture_url} />
 
-			<ReactMarkdown>{recipe.text}</ReactMarkdown>
+			<div
+				className="scrollable-container"
+				style={{
+					maxHeight: "300px", // Adjust the maximum height as needed
+					overflowY: "auto",
+					border: "1px solid #ccc", // Optional: Add a border for visual clarity
+					padding: "10px", // Optional: Add padding for spacing
+				}}
+			>
+				<h4>Ingredients</h4>
+				<ReactMarkdown>{recipe.ingredients}</ReactMarkdown>
+
+				<h4>Directions</h4>
+				<ReactMarkdown>{recipe.directions}</ReactMarkdown>
+			</div>
 
 			<Button
 				onClick={handleToggleRecipe}

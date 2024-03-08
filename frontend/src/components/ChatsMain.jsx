@@ -63,7 +63,7 @@ export default function ChatsMain() {
 
 					// Add the AI message to chatHistory
 					const newAIMessage = {
-						role: "ai",
+						role: "assistant",
 						content: receivedContent,
 					};
 
@@ -173,7 +173,7 @@ export default function ChatsMain() {
 									selectedRecipe={selectedRecipe}
 								/>
 							)}
-							{!isRecipeList && (
+							{!receivedIsRecipeList && (
 								<>
 									{showConversationStarters && chatHistory.length <= 1 && (
 										<ConversationStarters
