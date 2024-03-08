@@ -32,26 +32,51 @@ export default function LoginPage({ props }) {
 			const uiConfig = {
 				signInFlow: "popup",
 				signInSuccessUrl: "/",
-				signInOptions: [
-					firebase.auth.EmailAuthProvider.PROVIDER_ID,
-					firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-					firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-					firebase.auth.TwitterAuthProvider.PROVIDER_ID,
-					firebase.auth.GithubAuthProvider.PROVIDER_ID,
-				],
-				tosUrl: "/terms-of-service",
-				privacyPolicyUrl: "/privacy-policy",
+				signInOptions: [firebase.auth.EmailAuthProvider.PROVIDER_ID],
 			};
 
 			const ui = new firebaseui.auth.AuthUI(firebase.auth());
-			ui.start("#firebaseui-auth-container", uiConfig);
+			if (ui.isPendingRedirect()) {
+				ui.start("#firebaseui-auth-container", uiConfig);
+			}
 		}
 	}, []);
 
+	firebase.auth().onAuthStateChanged(function (user) {
+		let currentUid;
+		// onAuthStateChanged listener triggers every time the user ID token changes.
+		// This could happen when a new user signs in or signs out.
+		// It could also happen when the current user ID token expires and is refreshed.
+		if (user && user.uid !== currentUid) {
+			// Update the UI when a new user signs in.
+			// Otherwise ignore if this is a token refresh.
+			// Update the current user UID.
+			currentUid = user.uid;
+			console.log("User is signed in: ", user.displayName, user.uid);
+		} else {
+			// Sign out operation. Reset the current user UID.
+			currentUid = null;
+			console.log("no user signed in");
+		}
+	});
+
 	const handleLogin = async (e) => {
 		e.preventDefault();
+		console.log("Logging in with email and password");
 		try {
-			await firebase.auth().signInWithEmailAndPassword(email, password);
+			await firebase
+				.auth()
+				.signInWithEmailAndPassword(email, password)
+				.then((userCredential) => {
+					// Signed in
+					const user = userCredential.user;
+					console.log("User logged in:", user);
+				})
+				.catch((error) => {
+					const errorCode = error.code;
+					const errorMessage = error.message;
+					console.log(errorCode, errorMessage);
+				});
 		} catch (error) {
 			console.error("Error signing in:", error);
 		}
@@ -59,6 +84,7 @@ export default function LoginPage({ props }) {
 
 	const handleSignup = async (e) => {
 		e.preventDefault();
+		console.log("Signing up with email and password");
 		try {
 			await firebase.auth().createUserWithEmailAndPassword(email, password);
 		} catch (error) {
@@ -66,18 +92,14 @@ export default function LoginPage({ props }) {
 		}
 	};
 
-	const uiConfig = {
-		signInFlow: "popup",
-		signInSuccessUrl: "/",
-		signInOptions: [
-			firebase.auth.EmailAuthProvider.PROVIDER_ID,
-			firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-			firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-			firebase.auth.TwitterAuthProvider.PROVIDER_ID,
-			firebase.auth.GithubAuthProvider.PROVIDER_ID,
-		],
-		tosUrl: "/terms-of-service",
-		privacyPolicyUrl: "/privacy-policy",
+	const handleLogout = async (e) => {
+		e.preventDefault();
+		console.log("Logging out");
+		try {
+			await firebase.auth().signOut();
+		} catch (error) {
+			console.error("Error signing out:", error);
+		}
 	};
 
 	return (
@@ -96,6 +118,7 @@ export default function LoginPage({ props }) {
 						onChange={(e) => setEmail(e.target.value)}
 					/>
 				</div>
+
 				<div className="mb-3">
 					<label htmlFor="password" className="form-label">
 						Password
@@ -108,15 +131,21 @@ export default function LoginPage({ props }) {
 						onChange={(e) => setPassword(e.target.value)}
 					/>
 				</div>
+
 				<button type="submit" className="btn btn-primary" onClick={handleLogin}>
 					Login
 				</button>
+
 				<button
 					type="submit"
 					className="btn btn-primary"
 					onClick={handleSignup}
 				>
 					Sign Up
+				</button>
+
+				<button className="btn btn-primary" onClick={handleLogout}>
+					Log Out
 				</button>
 			</form>
 			<div id="firebaseui-auth-container"></div>
