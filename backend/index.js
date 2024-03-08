@@ -264,7 +264,7 @@ app.post("/chat/:userID/:chatID/message", async (req, res) => {
 			doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()),
 			systemMessage
 		);
-		input += " Generate a title for this chat in the 'chat_title' field in your response."
+		input += ". Generate a title for this chat in the 'chat_title' field in your response."
 	}
 
 	const newMessage = {
