@@ -45,11 +45,13 @@ export default function ChatsMain() {
 				});
 
 				const responseData = await response.json();
+				console.log(JSON.stringify(responseData, null, 2));
 
 				if (responseData.Messages && responseData.Messages.length > 0) {
 					const lastMessage =
 						responseData.Messages[responseData.Messages.length - 1];
 					const parsedContent = JSON.parse(lastMessage.Content);
+					console.log("parsed", parsedContent);
 
 					const isRecipeList = parsedContent.isRecipeList;
 					const receivedChatTitle = parsedContent.chatTitle;
@@ -162,13 +164,12 @@ export default function ChatsMain() {
 							<h5 className="mb-0">Chat</h5>
 						</Card.Header>
 						<Card.Body style={{ maxHeight: "400px", overflowY: "auto" }}>
-							{receivedIsRecipeList && recipePanelData && (
+							{receivedIsRecipeList && recipePanelData.recipes.length > 0 && (
 								<RecipeCarousel
 									recipes={recipePanelData.recipes}
 									onRecipeClick={(index) => {
 										const selectedRecipe = recipePanelData.recipes[index];
-										setRecipePanelData(selectedRecipe);
-										setSelectedRecipe(selectedRecipe);
+										setRecipePanelData({ recipes: [selectedRecipe] });
 										handleRecipeSelection(selectedRecipe.title);
 									}}
 									selectedRecipe={selectedRecipe}
