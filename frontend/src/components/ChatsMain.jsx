@@ -32,7 +32,7 @@ export default function ChatsMain() {
 	const fetchAIResponse = useCallback(
 		async ({ userMessage }) => {
 			try {
-				const response = await fetch(API_CHAT_ENDPOINT, {
+				const response = await fetch(AI_SIMULATION_ENDPOINT, {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
