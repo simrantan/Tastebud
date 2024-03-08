@@ -4,9 +4,9 @@ import RecipePanel from "./recipeSidebar";
 import RecipeCarousel from "./carousel";
 import ConversationStarters from "./conversationStarters";
 
-const hardcodedUserId = "sample_chat";
+const hardcodedUserId = "00000000_sample_user";
 const API_CHAT_ENDPOINT = "http://localhost:3001/chat";
-const AI_SIMULATION_ENDPOINT = `${API_CHAT_ENDPOINT}/${hardcodedUserId}`;
+const AI_SIMULATION_ENDPOINT = `${API_CHAT_ENDPOINT}/${hardcodedUserId}/sample_chat/message`;
 
 export default function ChatsMain() {
 	const [userInput, setUserInput] = useState("");
@@ -131,9 +131,17 @@ export default function ChatsMain() {
 	useEffect(() => {
 		const simulateBackendResponse = async () => {
 			try {
-				const responseData = await fetch(AI_SIMULATION_ENDPOINT).then(
-					(response) => response.json()
-				);
+				const responseData = await fetch(AI_SIMULATION_ENDPOINT, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json", // Adjust the content type if needed
+						// Add any other headers if required
+					},
+					// Add the request body if needed
+					body: JSON.stringify({
+						message: "I want to make a cake",
+					}),
+				}).then((response) => response.json());
 
 				console.log("Simulated Backend Response:", responseData);
 
