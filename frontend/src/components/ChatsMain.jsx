@@ -4,7 +4,7 @@ import RecipePanel from "./recipeSidebar";
 import RecipeCarousel from "./carousel";
 import ConversationStarters from "./conversationStarters";
 
-const hardcodedUserId = 1;
+const hardcodedUserId = "sample_chat";
 const API_CHAT_ENDPOINT = "http://localhost:3001/chat";
 const AI_SIMULATION_ENDPOINT = `${API_CHAT_ENDPOINT}/${hardcodedUserId}`;
 
@@ -14,6 +14,8 @@ export default function ChatsMain() {
 	const [recipePanelData, setRecipePanelData] = useState({ recipes: [] });
 	const [isRecipeList, setIsRecipeList] = useState(false);
 	const [selectedRecipe, setSelectedRecipe] = useState(null);
+	const [showConversationStarters, setShowConversationStarters] =
+		useState(true);
 
 	const messagesEndRef = useRef(null);
 
@@ -120,6 +122,8 @@ export default function ChatsMain() {
 				chatHistory: [...chatHistory, { role: "user", content: starterOption }],
 				userMessage: { role: "user", content: starterOption },
 			});
+
+			setShowConversationStarters(false); // Hide conversation starters
 		},
 		[chatHistory, fetchAIResponse]
 	);
@@ -191,30 +195,34 @@ export default function ChatsMain() {
 								/>
 							)}
 							{!isRecipeList && (
-								<ConversationStarters
-									onStartConversation={handleStartConversation}
-								/>
-							)}
-							{chatHistory.map((message, index) => (
-								<div
-									key={index}
-									className={`d-flex flex-row justify-content-${
-										message.role === "user" ? "end" : "start"
-									} mb-4`}
-								>
-									<div>
-										<p
-											className={`small p-2 ms-3 mb-1 rounded-3 ${
-												message.role === "user"
-													? "text-white bg-primary"
-													: "bg-light"
-											}`}
+								<>
+									{showConversationStarters && chatHistory.length <= 1 && (
+										<ConversationStarters
+											onStartConversation={handleStartConversation}
+										/>
+									)}
+									{chatHistory.map((message, index) => (
+										<div
+											key={index}
+											className={`d-flex flex-row justify-content-${
+												message.role === "user" ? "end" : "start"
+											} mb-4`}
 										>
-											{message.content}
-										</p>
-									</div>
-								</div>
-							))}
+											<div>
+												<p
+													className={`small p-2 ms-3 mb-1 rounded-3 ${
+														message.role === "user"
+															? "text-white bg-primary"
+															: "bg-light"
+													}`}
+												>
+													{message.content}
+												</p>
+											</div>
+										</div>
+									))}
+								</>
+							)}
 							<div ref={messagesEndRef} />
 						</Card.Body>
 						<Card.Footer className="text-muted d-flex justify-content-start align-items-center p-3">
