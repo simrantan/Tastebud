@@ -14,6 +14,7 @@ import {
 	generateDummyData,
 	getTimestamp,
 } from "./generate_firebase_dummydata.js";
+import systemMessage from './system_message.json' assert { type: 'json' };
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -27,7 +28,7 @@ const headers = new Headers({
 	Authorization: `Bearer ${apiKey}`,
 });
 const model = "mistralai/Mixtral-8x7B-Instruct-v0.1";
-const maxTokens = 20; // Keeping this low for now to not use up $$$
+const maxTokens = 1000; // Keeping this low for now to not use up $$$
 
 // Use CORS middleware
 app.use(
@@ -242,23 +243,34 @@ app.post("/chat/:userID/:chatID/message", async (req, res) => {
 	// Test with: curl -X POST -H "Content-Type: application/json" -d '{"message": "I want to make a cake"}' http://localhost:3001/chat/00000000_sample_user/00000000_sample_chat/message
 	const userId = req.params.userID;
 	const chatID = req.params.chatID;
-	const input = req.body.message;
+	var input = req.body.message;
+	var messages = null;
+	const chatRef = doc(DATABASE, "users", userId, "chats", chatID);
+
+	// Get existing message history from request body, else create new chat with system message
+	if (req.body.messages) {
+		messages = req.body.messages;
+	} else {
+		// Create new chat in firebase
+		await setDoc(chatRef, {
+			name: "New Chat",
+			is_group: false,
+			host_id: userId,
+			created_at: getTimestamp(),
+		});
+		messages = [systemMessage];
+		// Save the system message to chat history in Firebase
+		await setDoc(
+			doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()),
+			systemMessage
+		);
+		input += " Generate a title for this chat in the 'chat_title' field in your response."
+	}
 
 	const newMessage = {
 		role: "user",
 		content: input,
-		created_at: new Date(),
 	};
-
-	// Get message history from request body, or default prompt
-	const messages = req.body.messages || [
-		{
-			role: "system",
-			content:
-				"You are TasteBud! You help users find recipes based off of their dietary restrictions and preferences. Respond with 'Yes Chef!' to requests when appropriate.",
-			created_at: getTimestamp(),
-		},
-	];
 
 	// Save the user's message to Firebase
 	setDoc(
@@ -285,34 +297,26 @@ app.post("/chat/:userID/:chatID/message", async (req, res) => {
 		const response = await fetch(url, options);
 		const result = await response.text();
 		let resMessage = JSON.parse(result).choices[0].message;
-
-		resMessage.created_at = new Date();
 		messages.push(resMessage);
 
 		// Save TasteBud's response to Firebase
 		setDoc(
-			doc(
-				DATABASE,
-				"users",
-				userId,
-				"chats",
-				chatID,
-				"messages",
-				getTimestamp()
-			),
+			doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()),
 			resMessage
 		);
 
+		// Update the chat title
+		await updateDoc(chatRef, {
+			name: JSON.parse(resMessage.content).chatTitle
+		});
+
 		res.json({
 			chat_id: chatID,
-			response: resMessage.content,
 			messages: messages,
 		});
 	} catch (error) {
-		res.status(500).json({ error: "API Internal server error" });
+		res.status(500).json({ error: error.message });
 	}
-
-	// TODO: Think about how to organize recipe data with chat
 });
 
 app.get("/", (req, res) => {
