@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import RecipeItem from "./RecipeItem";
+import RecipeItem from "./carouselItem";
 
 const RecipeCarousel = ({ recipes, onRecipeClick }) => {
 	const responsive = {

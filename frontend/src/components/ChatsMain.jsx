@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Container, Row, Col, Card, Form, Button } from "react-bootstrap";
 import RecipePanel from "./recipeSidebar";
-import RecipeCarousel from "./RecipeCarousel";
+import RecipeCarousel from "./carousel";
 import ConversationStarters from "./conversationStarters";
 
 const hardcodedUserId = 1;
@@ -11,11 +11,8 @@ const AI_SIMULATION_ENDPOINT = `${API_CHAT_ENDPOINT}/${hardcodedUserId}`;
 export default function ChatsMain() {
 	const [userInput, setUserInput] = useState("");
 	const [chatHistory, setChatHistory] = useState([{}]);
-	const [canSendAiMessage, setCanSendAiMessage] = useState(true);
-	const [recipePanelData, setRecipePanelData] = useState(null);
+	const [recipePanelData, setRecipePanelData] = useState({ recipes: [] });
 	const [isRecipeList, setIsRecipeList] = useState(false);
-	const [selectedRecipeIndex, setSelectedRecipeIndex] = useState(null);
-	const [selectedRecipeName, setSelectedRecipeName] = useState(null);
 	const [selectedRecipe, setSelectedRecipe] = useState(null);
 
 	const messagesEndRef = useRef(null);
@@ -30,37 +27,45 @@ export default function ChatsMain() {
 		setUserInput(e.target.value);
 	};
 
-	const fetchAIResponse = async ({ chatHistory, userMessage }) => {
-		try {
-			const response = await fetch(API_CHAT_ENDPOINT, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					userMessage,
-					// Include other necessary data for the backend
-				}),
-			});
+	const fetchAIResponse = useCallback(
+		async ({ userMessage }) => {
+			try {
+				const response = await fetch(API_CHAT_ENDPOINT, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						userMessage,
+						// Include other necessary data for the backend
+					}),
+				});
 
-			const responseData = await response.json();
+				const responseData = await response.json();
 
-			const aiMessage = {
-				role: "assistant",
-				content: responseData.message.content,
-			};
+				const aiMessage = {
+					role: responseData.formattedResponse.role,
+					content: responseData.formattedResponse.content.content,
+					isRecipeList: responseData.formattedResponse.content.isRecipeList,
+					recipes: responseData.formattedResponse.content.isRecipeList
+						? responseData.formattedResponse.content.recipes
+						: null,
+					// Include other properties from the backend response if needed
+				};
 
-			setChatHistory((prevChatHistory) => [...prevChatHistory, aiMessage]);
-			scrollToBottom();
-		} catch (error) {
-			console.error("Error fetching AI response:", error);
-		}
-	};
+				setChatHistory((prevChatHistory) => [...prevChatHistory, aiMessage]);
+				scrollToBottom();
+			} catch (error) {
+				console.error("Error fetching AI response:", error);
+			}
+		},
+		[] // Add dependencies if needed
+	);
 
 	const handleBackendResponse = async (data) => {
-		setIsRecipeList(data.isRecipeList);
+		setIsRecipeList(data.formattedResponse.content.isRecipeList);
 
-		if (data.isRecipeList) {
+		if (data.formattedResponse.content.isRecipeList) {
 			const updatedRecipePanelData = await fetchRecipePanelData();
 			setRecipePanelData(updatedRecipePanelData);
 		} else {
@@ -78,17 +83,11 @@ export default function ChatsMain() {
 	const handleRecipeSelection = useCallback(
 		async (recipeName) => {
 			try {
-				// Find the selected recipe index based on the name
 				const index = recipePanelData.recipes.findIndex(
 					(recipe) => recipe.title === recipeName
 				);
 
 				if (index !== -1) {
-					// Set the selected recipe index and name in the state
-					setSelectedRecipeIndex(index);
-					setSelectedRecipeName(recipeName);
-
-					// Send the selected recipe name to the AI as a user message
 					const newUserMessage = {
 						role: "user",
 						content: recipeName,
@@ -97,7 +96,6 @@ export default function ChatsMain() {
 					const updatedChatHistory = [...chatHistory, newUserMessage];
 
 					setChatHistory(updatedChatHistory);
-					setCanSendAiMessage(true);
 
 					fetchAIResponse({
 						chatHistory: updatedChatHistory,
@@ -143,7 +141,7 @@ export default function ChatsMain() {
 
 		simulateBackendResponse();
 		scrollToBottom();
-	}, []);
+	}, [handleBackendResponse]);
 
 	const handleSendMessage = () => {
 		if (userInput.trim() === "") return;
@@ -157,7 +155,6 @@ export default function ChatsMain() {
 
 		setChatHistory(updatedChatHistory);
 		setUserInput("");
-		setCanSendAiMessage(true);
 
 		fetchAIResponse({
 			chatHistory: updatedChatHistory,
@@ -181,18 +178,19 @@ export default function ChatsMain() {
 							<h5 className="mb-0">Chat</h5>
 						</Card.Header>
 						<Card.Body style={{ maxHeight: "400px", overflowY: "auto" }}>
-							{isRecipeList ? (
+							{isRecipeList && recipePanelData && (
 								<RecipeCarousel
 									recipes={recipePanelData.recipes}
 									onRecipeClick={(index) => {
 										const selectedRecipe = recipePanelData.recipes[index];
-										setSelectedRecipeIndex(index);
+										setRecipePanelData(index);
 										setSelectedRecipe(selectedRecipe);
 										handleRecipeSelection(selectedRecipe.title);
 									}}
 									selectedRecipe={selectedRecipe}
 								/>
-							) : (
+							)}
+							{!isRecipeList && (
 								<ConversationStarters
 									onStartConversation={handleStartConversation}
 								/>
