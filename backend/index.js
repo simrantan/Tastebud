@@ -1,14 +1,19 @@
 import express from "express";
 import cors from "cors";
-import { generateDummyData } from "./generate_firebase_dummydata.js";
 import {
 	doc,
 	getDoc,
 	collection,
 	getDocs,
 	updateDoc,
+	setDoc,
+	deleteDoc,
 } from "firebase/firestore";
 import { DATABASE } from "./firebase.js";
+import {
+	generateDummyData,
+	getTimestamp,
+} from "./generate_firebase_dummydata.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -31,13 +36,6 @@ app.use(
 	})
 );
 
-// Middleware to log request method and URL (for dev purposes)
-app.use((req, res, next) => {
-	// console.log(`HTTP Method: ${req.method}`);
-	// console.log(`URL: ${req.url}`);
-	next();
-});
-
 // Middleware to parse JSON request body
 app.use(express.json());
 
@@ -49,9 +47,22 @@ app.get("/user/:userId", async (req, res) => {
 	try {
 		const docRef = doc(DATABASE, "users", userId);
 		const docSnap = await getDoc(docRef);
+		const recipesSnapshot = await getDocs(collection(docRef, "recipes"));
+		const chatsSnapshot = await getDocs(collection(docRef, "chats"));
 
 		if (docSnap.exists()) {
-			res.json(docSnap.data());
+			let user = docSnap.data();
+			user.recipes = [];
+			user.chats = [];
+
+			recipesSnapshot.forEach((doc) => {
+				user.recipes.push({ ...doc.data(), id: doc.id });
+			});
+			chatsSnapshot.forEach((doc) => {
+				user.chats.push({ ...doc.data(), id: doc.id });
+			});
+
+			res.json(user);
 		} else {
 			console.log("no user exists in Firebase with that ID");
 		}
@@ -105,7 +116,7 @@ app.get("/recipe_book/:userId", async (req, res) => {
 
 		let data = [];
 		querySnapshot.forEach((doc) => {
-			data.push(doc.data());
+			data.push({ ...doc.data(), id: doc.id });
 		});
 
 		res.json(data);
@@ -136,49 +147,49 @@ app.get("/user/:userId/recipe/:recipeId", async (req, res) => {
 	}
 });
 
-// TODO: add the firebase stuff into this
 /** Add or Remove a recipe from a user's recipe book */
-app.post("/recipe_book/:userId/:recipeId", (req, res) => {
-	const userId = Number(req.params.userId);
-	const recipeId = Number(req.params.recipeId);
+app.post("/recipe_book/:userId/:recipeId", async (req, res) => {
+	const userId = req.params.userId;
+	const recipeId = req.params.recipeId;
 	const { action, recipeInfo } = req.body;
 
-	if (action == "add") {
-		console.log(
-			`Recipe with ID ${recipeId} added to the recipe book for user ${userId}`
-		);
-		const { name, chat_id, text, picture_url, cuisine } = recipeInfo;
-		console.log("Additional recipe information:");
-		console.log(`Name: ${name}`);
-		console.log(`Chat ID: ${chat_id}`);
-		console.log(`Text: ${text}`);
-		console.log(`Picture URL: ${picture_url}`);
-		console.log(`Cuisine: ${cuisine}`);
-		// TODO: update firebase with new recipe
-	} else if (action == "remove") {
-		console.log(
-			`Recipe with ID ${recipeId} removed from the recipe book for user ${userId}`
-		);
-		// TODO: remove recipe from firebase
+	if (action === "add") {
+		// Test with: curl -X POST -H "Content-Type: application/json" -d '{"action": "add", "recipeInfo": {"name": "Banana Bread", "chat_id": "RECIPE_ID", "text": "easy to make and delicious", "picture_url": "https://placekitten.com/1000/1000", "cuisine": "American"}}' http://localhost:3001/recipe_book/00000000_sample_user/111
+		try {
+			const recipeRef = collection(DATABASE, `users/${userId}/recipes`);
+			await setDoc(doc(recipeRef, recipeId), recipeInfo);
+			res.status(200).json({ success: true });
+		} catch (error) {
+			console.error(error);
+			res.status(500).send("Internal Server Error");
+		}
+	} else if (action === "remove") {
+		// Test with: curl -X POST -H "Content-Type: application/json" -d '{"action": "remove", "recipeInfo": {"name": "Banana Bread", "chat_id": "RECIPE_ID", "text": "easy to make and delicious", "picture_url": "https://placekitten.com/1000/1000", "cuisine": "American"}}' http://localhost:3001/recipe_book/00000000_sample_user/111
+		try {
+			const recipeRef = collection(DATABASE, `users/${userId}/recipes`);
+			await deleteDoc(doc(recipeRef, recipeId));
+			res.status(200).json({ success: true });
+		} catch (error) {
+			console.error(error);
+			res.status(500).send("Internal Server Error");
+		}
 	} else {
 		return res
 			.status(400)
 			.json({ error: "Invalid action (not 'add' or 'remove')" });
 	}
-	res.status(200).json({ success: true });
 });
 
 /* ########################### Chat ########################## */
-// TODO: should return info about the chat, including the messages
 /** Get all the information for a single chat */
 app.get("/chat/:userID/:chatID", async (req, res) => {
 	const userId = req.params.userID;
 	const chatID = req.params.chatID;
 
 	try {
-		const querySnapshot = await getDocs(
-			collection(DATABASE, "users", userId, "chats", chatID, "messages")
-		);
+		const chatRef = doc(DATABASE, "users", userId, "chats", chatID);
+		const docSnap = await getDoc(chatRef);
+		const querySnapshot = await getDocs(collection(chatRef, "messages"));
 
 		let chats = [];
 
@@ -186,7 +197,32 @@ app.get("/chat/:userID/:chatID", async (req, res) => {
 			chats.push(doc.data());
 		}
 
-		res.json(chats);
+		res.json({
+			chats: chats,
+			fields: docSnap.data(),
+		});
+	} catch (error) {
+		console.error(error);
+		res.status(500).send("Internal Server Error");
+	}
+});
+
+/** Set the metadata for a chat */
+app.post("/chat/:userID/:chatID", async (req, res) => {
+	// Test with curl -X POST -H "Content-Type: application/json" -d '{"name": "Example Chat"}' http://localhost:3001/chat/00000000_sample_user/new_chat
+	const userId = req.params.userID;
+	const chatID = req.params.chatID;
+	const { name } = req.body;
+
+	try {
+		const chatRef = doc(DATABASE, "users", userId, "chats", chatID);
+		await setDoc(chatRef, {
+			name: name,
+			is_group: false,
+			host_id: userId,
+			created_at: getTimestamp(),
+		});
+		res.status(200).json({ success: true });
 	} catch (error) {
 		console.error(error);
 		res.status(500).send("Internal Server Error");
@@ -202,20 +238,36 @@ app.get("/firebase/dummy_data", (req, res) => {
 
 /* ###################################################### Chat Methods ##################################################### */
 /** Get response message from TasteBud after receiving user message */
-app.post("/chat/:chatID", async (req, res) => {
-	const chatID = Number(req.params.chatID);
-	// const messages = req.body.messages;
+app.post("/chat/:userID/:chatID/message", async (req, res) => {
+	// Test with: curl -X POST -H "Content-Type: application/json" -d '{"message": "I want to make a cake"}' http://localhost:3001/chat/00000000_sample_user/00000000_sample_chat/message
+	const userId = req.params.userID;
+	const chatID = req.params.chatID;
 	const input = req.body.message;
 
-	const messages = [
+	const newMessage = {
+		role: "user",
+		content: input,
+		created_at: new Date(),
+	};
+
+	// Get message history from request body, or default prompt
+	const messages = req.body.messages || [
 		{
 			role: "system",
 			content:
 				"You are TasteBud! You help users find recipes based off of their dietary restrictions and preferences. Respond with 'Yes Chef!' to requests when appropriate.",
+			created_at: getTimestamp(),
 		},
 	];
 
-	messages.push({ role: "user", content: input });
+	// Save the user's message to Firebase
+	setDoc(
+		doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()),
+		newMessage
+	);
+
+	// Add user's message to array of all messages to send to the API
+	messages.push(newMessage);
 
 	const data = {
 		model: model,
@@ -232,13 +284,28 @@ app.post("/chat/:chatID", async (req, res) => {
 	try {
 		const response = await fetch(url, options);
 		const result = await response.text();
-		const resMessage = JSON.parse(result).choices[0].message;
-		const content = resMessage.content;
+		let resMessage = JSON.parse(result).choices[0].message;
+
+		resMessage.created_at = new Date();
 		messages.push(resMessage);
+
+		// Save TasteBud's response to Firebase
+		setDoc(
+			doc(
+				DATABASE,
+				"users",
+				userId,
+				"chats",
+				chatID,
+				"messages",
+				getTimestamp()
+			),
+			resMessage
+		);
 
 		res.json({
 			chat_id: chatID,
-			response: content,
+			response: resMessage.content,
 			messages: messages,
 		});
 	} catch (error) {

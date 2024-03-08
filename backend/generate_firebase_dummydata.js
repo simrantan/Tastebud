@@ -21,9 +21,7 @@ export async function generateDummyData() {
 			gluten: "illness",
 			beef: "choice",
 		},
-		individual_chats: [CHAT_ID],
 		group_chats: [],
-		recipe_book: [RECIPE_ID],
 	});
 
 	// Create a reference to the "recipes" subcollection directly from the root of the database
@@ -69,6 +67,6 @@ export async function generateDummyData() {
 	});
 }
 
-function getTimestamp() {
+export function getTimestamp() {
 	return String(new Date().getTime());
 }
