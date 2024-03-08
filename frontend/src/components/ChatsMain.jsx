@@ -5,8 +5,9 @@ import RecipeCarousel from "./carousel";
 import ConversationStarters from "./conversationStarters";
 
 const hardcodedUserId = "sample_chat";
-const API_CHAT_ENDPOINT = "http://localhost:3001/chat";
-const AI_SIMULATION_ENDPOINT = `${API_CHAT_ENDPOINT}/${hardcodedUserId}`;
+const API_CHAT_ENDPOINT =
+	"http://localhost:3001/chat/00000000_sample_user/00000000_sample_chat/message";
+const AI_SIMULATION_ENDPOINT = API_CHAT_ENDPOINT;
 
 export default function ChatsMain() {
 	const [userInput, setUserInput] = useState("");
@@ -65,21 +66,46 @@ export default function ChatsMain() {
 	);
 
 	const handleBackendResponse = async (data) => {
-		setIsRecipeList(data.formattedResponse.content.isRecipeList);
+		if (data.formattedResponse) {
+			setIsRecipeList(data.formattedResponse.content.isRecipeList);
 
-		if (data.formattedResponse.content.isRecipeList) {
-			const updatedRecipePanelData = await fetchRecipePanelData();
-			setRecipePanelData(updatedRecipePanelData);
+			if (data.formattedResponse.content.isRecipeList) {
+				try {
+					const updatedRecipePanelData = await fetchRecipePanelData();
+					setRecipePanelData(updatedRecipePanelData);
+				} catch (error) {
+					console.error("Error fetching recipe panel data:", error);
+				}
+			} else {
+				// Handle non-recipe messages from AI if needed
+			}
 		} else {
-			// Handle non-recipe messages from AI if needed
+			console.error("Unexpected response format:", data);
 		}
 	};
 
 	const fetchRecipePanelData = async () => {
-		const response = await fetch(`${API_CHAT_ENDPOINT}/recipe-panel`);
-		const data = await response.json();
+		try {
+			const response = await fetch(`${API_CHAT_ENDPOINT}/recipe-panel`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					// Include any necessary data for the backend
+				}),
+			});
 
-		return data;
+			if (!response.ok) {
+				throw new Error(`Failed to fetch. Status: ${response.status}`);
+			}
+
+			const data = await response.json();
+			return data;
+		} catch (error) {
+			console.error("Error fetching recipe panel data:", error);
+			throw error; // Propagate the error up the call stack if needed
+		}
 	};
 
 	const handleRecipeSelection = useCallback(
@@ -127,25 +153,6 @@ export default function ChatsMain() {
 		},
 		[chatHistory, fetchAIResponse]
 	);
-
-	useEffect(() => {
-		const simulateBackendResponse = async () => {
-			try {
-				const responseData = await fetch(AI_SIMULATION_ENDPOINT).then(
-					(response) => response.json()
-				);
-
-				console.log("Simulated Backend Response:", responseData);
-
-				handleBackendResponse(responseData);
-			} catch (error) {
-				console.error("Error simulating backend response:", error);
-			}
-		};
-
-		simulateBackendResponse();
-		scrollToBottom();
-	}, [handleBackendResponse]);
 
 	const handleSendMessage = () => {
 		if (userInput.trim() === "") return;
