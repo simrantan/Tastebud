@@ -4,10 +4,9 @@ import RecipePanel from "./recipeSidebar";
 import RecipeCarousel from "./carousel";
 import ConversationStarters from "./conversationStarters";
 
-const hardcodedUserId = "sample_chat";
-const API_CHAT_ENDPOINT =
-	"http://localhost:3001/chat/00000000_sample_user/00000000_sample_chat/message";
-const AI_SIMULATION_ENDPOINT = API_CHAT_ENDPOINT;
+const hardcodedUserId = "00000000_sample_user";
+const API_CHAT_ENDPOINT = "http://localhost:3001/chat";
+const AI_SIMULATION_ENDPOINT = `${API_CHAT_ENDPOINT}/${hardcodedUserId}/sample_chat/message`;
 
 export default function ChatsMain() {
 	const [userInput, setUserInput] = useState("");
