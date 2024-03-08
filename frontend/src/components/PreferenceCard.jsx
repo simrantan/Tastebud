@@ -11,32 +11,70 @@ import {
 import "./PreferenceCard.css";
 
 const PreferenceCard = () => {
+	//state
 	const [allergens, setAllergens] = useState({});
-	const [likes, setLikes] = useState(new Set());
-	const [dislikes, setDislikes] = useState(new Set());
+	const [likes, setLikes] = useState([]);
+	const [dislikes, setDislikes] = useState([]);
 	const [newAllergen, setNewAllergen] = useState("");
 	const [newLike, setNewLike] = useState("");
 	const [newDislike, setNewDislike] = useState("");
+	const userId = "00000000_sample_user";
 
 	useEffect(() => {
-		if (Object.keys(allergens).length > 0) {
-			console.log("Sending allergens data to the backend:", allergens);
-			// Make your backend API call here for allergens
+		const fetchPreferences = async () => {
+			try {
+				const response = await fetch(`http://localhost:3001/user/${userId}`);
+				if (!response.ok) {
+					throw new Error(`HTTP error! Status: ${response.status}`);
+				}
+
+				const data = await response.json();
+				// Update state with fetched preferences
+				setAllergens(data.allergies || {});
+				setLikes(data.likes || []);
+				setDislikes(data.dislikes || []);
+				console.log("set user data");
+			} catch (error) {
+				console.error("Error fetching preferences:", error.message);
+			}
+		};
+
+		// Fetch user preferences on the first run
+		fetchPreferences();
+	}, []); // Empty dependency array ensures it runs only once
+
+	const savePreferences = async (prefType, preferences) => {
+		try {
+			const response = await fetch(
+				`http://localhost:3001/user/${userId}/preferences`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({ prefType, preferences }),
+				}
+			);
+
+			if (!response.ok) {
+				throw new Error(`HTTP error! Status: ${response.status}`);
+			}
+
+			const data = await response.json();
+		} catch (error) {
+			console.error("Error saving preferences:", error.message);
 		}
-		if (likes.size > 0) {
-			console.log("Sending likes data to the backend:", likes);
-			// Make your backend API call here for likes
-		}
-		if (dislikes.size > 0) {
-			console.log("Sending dislikes data to the backend:", dislikes);
-			// Make your backend API call here for dislikes
-		}
-	}, [allergens, likes, dislikes]);
+	};
 
 	const handleAddAllergen = (e) => {
 		e.preventDefault();
 		if (newAllergen.trim() !== "") {
-			setAllergens({ ...allergens, [newAllergen]: 1 });
+			setAllergens((prevAllergens) => {
+				const updatedAllergens = { ...prevAllergens, [newAllergen]: 1 };
+				// Now, you can call savePreferences as a callback
+				savePreferences("allergies", updatedAllergens);
+				return updatedAllergens;
+			});
 			setNewAllergen("");
 		}
 	};
@@ -44,49 +82,66 @@ const PreferenceCard = () => {
 	const handleRemoveAllergen = (allergen) => {
 		const updatedAllergens = { ...allergens };
 		delete updatedAllergens[allergen];
-		setAllergens(updatedAllergens);
+		// Use the functional update form of setAllergens
+		setAllergens((prevAllergens) => {
+			// This callback will be executed after setAllergens is completed
+			savePreferences("allergies", updatedAllergens);
+			return updatedAllergens;
+		});
 	};
 
 	const handleCategoryChange = (allergen, category) => {
-		setAllergens({ ...allergens, [allergen]: category });
+		setAllergens((prevAllergens) => {
+			const updatedAllergens = { ...prevAllergens, [allergen]: category };
+			// Call savePreferences as a callback
+			savePreferences("allergies", updatedAllergens);
+			return updatedAllergens;
+		});
 	};
-
 	const handleAddLike = (e) => {
 		e.preventDefault();
 		if (newLike.trim() !== "") {
-			setLikes(new Set([...likes, newLike]));
+			setLikes((prevLikes) => {
+				const updatedLikes = [...prevLikes, newLike];
+				// Call savePreferences as a callback
+				savePreferences("likes", updatedLikes);
+				return updatedLikes;
+			});
 			setNewLike("");
+			console.log(likes);
 		}
 	};
 
 	const handleRemoveLike = (like) => {
-		const updatedLikes = new Set(likes);
-		updatedLikes.delete(like);
-		setLikes(updatedLikes);
+		setLikes((prevLikes) => {
+			const updatedLikes = prevLikes.filter((item) => item !== like);
+			// Call savePreferences as a callback
+			savePreferences("likes", updatedLikes);
+			return updatedLikes;
+		});
 	};
 
 	const handleAddDislike = (e) => {
 		e.preventDefault();
 		if (newDislike.trim() !== "") {
-			setDislikes(new Set([...dislikes, newDislike]));
+			setDislikes((prevDislikes) => {
+				const updatedDislikes = [...prevDislikes, newDislike];
+				// Call savePreferences as a callback
+				savePreferences("dislikes", updatedDislikes);
+				return updatedDislikes;
+			});
 			setNewDislike("");
 		}
 	};
 
 	const handleRemoveDislike = (dislike) => {
-		const updatedDislikes = new Set(dislikes);
-		updatedDislikes.delete(dislike);
-		setDislikes(updatedDislikes);
+		setDislikes((prevDislikes) => {
+			const updatedDislikes = prevDislikes.filter((item) => item !== dislike);
+			// Call savePreferences as a callback
+			savePreferences("dislikes", updatedDislikes);
+			return updatedDislikes;
+		});
 	};
-
-	const renderTooltip = (item) => (
-		<Tooltip id={`tooltip-${item}`} className="tooltip-pref">
-			💀 This will kill me, keep it away <br />
-			🤢 This makes me physically ill <br />
-			🚫 Tastes bad <br />
-			🥴 Personal choice
-		</Tooltip>
-	);
 
 	return (
 		<div className="preference-card-container">
@@ -109,13 +164,7 @@ const PreferenceCard = () => {
 						<span className="item-text">{allergen}</span>
 						<span className="ml-2">
 							{" "}
-							{category === 1
-								? "💀"
-								: category === 2
-								? "🤢"
-								: category === 3
-								? "🚫"
-								: "🥴"}
+							{category === 1 ? "💀" : category === 2 ? "🤢" : "💀"}
 						</span>
 						<span>
 							<OverlayTrigger
@@ -124,8 +173,6 @@ const PreferenceCard = () => {
 									<Tooltip place="top" effect="solid">
 										<div>💀 This will kill me</div>
 										<div>🤢 This makes me ill</div>
-										<div>🚫 Tastes bad</div>
-										<div>🐮 Personal choice</div>
 									</Tooltip>
 								}
 							>
@@ -152,18 +199,6 @@ const PreferenceCard = () => {
 									onClick={() => handleCategoryChange(allergen, 2)}
 								>
 									🤢
-								</Dropdown.Item>
-								<Dropdown.Divider />
-								<Dropdown.Item
-									onClick={() => handleCategoryChange(allergen, 3)}
-								>
-									🚫
-								</Dropdown.Item>
-								<Dropdown.Divider />
-								<Dropdown.Item
-									onClick={() => handleCategoryChange(allergen, 4)}
-								>
-									🐮
 								</Dropdown.Item>
 							</Dropdown.Menu>
 						</Dropdown>
