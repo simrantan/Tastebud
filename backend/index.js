@@ -47,9 +47,22 @@ app.get("/user/:userId", async (req, res) => {
 	try {
 		const docRef = doc(DATABASE, "users", userId);
 		const docSnap = await getDoc(docRef);
+		const recipesSnapshot = await getDocs(collection(docRef, "recipes"));
+		const chatsSnapshot = await getDocs(collection(docRef, "chats"));
 
 		if (docSnap.exists()) {
-			res.json(docSnap.data());
+			let user = docSnap.data();
+			user.recipes = [];
+			user.chats = [];
+
+			recipesSnapshot.forEach((doc) => {
+				user.recipes.push({ ...doc.data(), id: doc.id });
+			});
+			chatsSnapshot.forEach((doc) => {
+				user.chats.push({ ...doc.data(), id: doc.id });
+			});
+
+			res.json(user);
 		} else {
 			console.log("no user exists in Firebase with that ID");
 		}
