@@ -3,6 +3,7 @@ import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import * as firebaseui from "firebaseui";
 import "firebaseui/dist/firebaseui.css";
+import { useUser } from "../contexts/UserContext";
 
 const firebaseConfig = {
 	// Your Firebase config here
@@ -23,8 +24,11 @@ if (!firebase.apps.length) {
 }
 
 export default function LoginPage({ props }) {
+	const { updateUser } = useUser();
+
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [displayName, setDisplayName] = useState("");
 
 	useEffect(() => {
 		// Check if AuthUI instance already exists
@@ -42,55 +46,51 @@ export default function LoginPage({ props }) {
 		}
 	}, []);
 
-	firebase.auth().onAuthStateChanged(function (user) {
-		let currentUid;
-		// onAuthStateChanged listener triggers every time the user ID token changes.
-		// This could happen when a new user signs in or signs out.
-		// It could also happen when the current user ID token expires and is refreshed.
-		if (user && user.uid !== currentUid) {
-			// Update the UI when a new user signs in.
-			// Otherwise ignore if this is a token refresh.
-			// Update the current user UID.
-			currentUid = user.uid;
-			console.log("User is signed in: ", user.displayName, user.uid);
-		} else {
-			// Sign out operation. Reset the current user UID.
-			currentUid = null;
-			console.log("no user signed in");
-		}
-	});
-
-	const handleLogin = async (e) => {
-		e.preventDefault();
-		console.log("Logging in with email and password");
-		try {
-			await firebase
-				.auth()
-				.signInWithEmailAndPassword(email, password)
-				.then((userCredential) => {
-					// Signed in
-					const user = userCredential.user;
-					console.log("User logged in:", user);
-				})
-				.catch((error) => {
-					const errorCode = error.code;
-					const errorMessage = error.message;
-					console.log(errorCode, errorMessage);
-				});
-		} catch (error) {
-			console.error("Error signing in:", error);
-		}
-	};
-
 	const handleSignup = async (e) => {
 		e.preventDefault();
-		console.log("Signing up with email and password");
+		// By default, Firebase will create a new user with the email and password provided
 		try {
-			await firebase.auth().createUserWithEmailAndPassword(email, password);
+			console.log("Signing up with email and password");
+			await firebase
+				.auth()
+				.createUserWithEmailAndPassword(email, password)
+				.then(postLogin);
 		} catch (error) {
-			console.error("Error signing up:", error);
+			// If the user already exists, try logging in instead
+			if (error.code === "auth/email-already-in-use") {
+				console.log("Logging in with email and password");
+				try {
+					await firebase
+						.auth()
+						.signInWithEmailAndPassword(email, password)
+						.then(postLogin)
+						.catch((error) => {
+							const errorCode = error.code;
+							const errorMessage = error.message;
+							console.log(errorCode, errorMessage);
+						});
+				} catch (error) {
+					console.error("Error signing in:", error);
+				}
+			} else {
+				// Handle other errors
+				console.error("Error signing up:", error.message);
+			}
 		}
 	};
+
+	function postLogin(userCredential) {
+		console.log("User logged in:", userCredential.user);
+		const userData = {
+			email: userCredential.user.email,
+			uid: userCredential.user.uid,
+			displayName: userCredential.user.displayName,
+		};
+		// Update user context
+		updateUser(userData);
+		// Redirect to home page after successful login
+		window.location.href = "/";
+	}
 
 	const handleLogout = async (e) => {
 		e.preventDefault();
@@ -132,16 +132,25 @@ export default function LoginPage({ props }) {
 					/>
 				</div>
 
-				<button type="submit" className="btn btn-primary" onClick={handleLogin}>
-					Login
-				</button>
+				<div className="mb-3">
+					<label htmlFor="displayName" className="form-label">
+						Display Name
+					</label>
+					<input
+						type="text"
+						className="form-control"
+						id="displayName"
+						value={displayName}
+						onChange={(e) => setDisplayName(e.target.value)}
+					/>
+				</div>
 
 				<button
 					type="submit"
 					className="btn btn-primary"
 					onClick={handleSignup}
 				>
-					Sign Up
+					Go!
 				</button>
 
 				<button className="btn btn-primary" onClick={handleLogout}>
