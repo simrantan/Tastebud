@@ -1,35 +1,37 @@
 // RecipePanel.js
 import React, { useState, useEffect } from "react";
-import ReactMarkdown from "react-markdown"; // Import react-markdown
-
 import { Button, Card } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
+import ReactMarkdown from "react-markdown";
 
 const RecipePanel = ({ recipe }) => {
 	const [addedToRecipeBook, setAddedToRecipeBook] = useState(false);
+	console.log("recipe in pane", JSON.stringify(recipe, null, 2));
 
 	const userId = 1;
 
 	if (!recipe) {
-		return null;
+		return (
+			<div className="recipe-panel">
+				<ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+				<h3>Recipe</h3>
+				<p>No recipe selected</p>
+			</div>
+		);
 	}
 
 	const handleToggleRecipe = async () => {
-		// Toggle the addedToRecipeBook state
 		setAddedToRecipeBook(!addedToRecipeBook);
 
 		if (!addedToRecipeBook) {
-			// If the recipe is not in the recipe book, add it
 			await handleAddRecipe(recipe);
 		} else {
-			// If the recipe is already in the recipe book, remove it
 			await handleRemoveRecipe(recipe.id);
 		}
 	};
 
 	const handleAddRecipe = async (recipe) => {
 		try {
-			// Notify the server to add the recipe from the user's recipe book
 			const response = await fetch(
 				`http://localhost:3001/recipe_book/${userId}/${recipe.id}`,
 				{
@@ -48,18 +50,15 @@ const RecipePanel = ({ recipe }) => {
 				throw new Error(`HTTP error! Status: ${response.status}`);
 			}
 
-			// Handle the response if needed
 			const data = await response.json();
-			// Show a notification
 			toast.success(`${recipe.name} has been added to your Recipe Book!`);
 		} catch (error) {
-			console.error("Error removing recipe:", error.message);
+			console.error("Error adding recipe:", error.message);
 		}
 	};
 
 	const handleRemoveRecipe = async (recipe) => {
 		try {
-			// Notify the server to add the recipe from the user's recipe book
 			const response = await fetch(
 				`http://localhost:3001/recipe_book/${userId}/${recipe.id}`,
 				{
@@ -78,9 +77,7 @@ const RecipePanel = ({ recipe }) => {
 				throw new Error(`HTTP error! Status: ${response.status}`);
 			}
 
-			// Handle the response if needed
 			const data = await response.json();
-			// Show a notification
 			toast.success(`${recipe.name} has been removed from your Recipe Book!`);
 		} catch (error) {
 			console.error("Error removing recipe:", error.message);
@@ -90,26 +87,32 @@ const RecipePanel = ({ recipe }) => {
 	return (
 		<div className="recipe-panel">
 			<ToastContainer position="top-right" autoClose={3000} hideProgressBar />
-
-			{/* Add your styling and formatting for the recipe display */}
-			<h3>Recipe</h3>
+			<h3>{recipe.title}</h3>
 			<p>{recipe.name}</p>
 			<Card.Img variant="top" src={recipe.picture_url} />
 
 			<div
 				className="scrollable-container"
 				style={{
-					maxHeight: "300px", // Adjust the maximum height as needed
+					maxHeight: "300px",
 					overflowY: "auto",
-					border: "1px solid #ccc", // Optional: Add a border for visual clarity
-					padding: "10px", // Optional: Add padding for spacing
+					border: "1px solid #ccc",
+					padding: "10px",
 				}}
 			>
 				<h4>Ingredients</h4>
-				<ReactMarkdown>{recipe.ingredients}</ReactMarkdown>
+				<ul>
+					{recipe.ingredients.map((ingredient, index) => (
+						<li key={index}>{ingredient}</li>
+					))}
+				</ul>
 
 				<h4>Directions</h4>
-				<ReactMarkdown>{recipe.directions}</ReactMarkdown>
+				<ol>
+					{recipe.directions.map((direction, index) => (
+						<li key={index}>{direction}</li>
+					))}
+				</ol>
 			</div>
 
 			<Button

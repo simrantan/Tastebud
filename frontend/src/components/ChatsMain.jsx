@@ -4,8 +4,6 @@ import RecipePanel from "./recipeSidebar";
 import RecipeCarousel from "./carousel";
 import ConversationStarters from "./conversationStarters";
 
-const hardcodedUserId = "00000000_sample_user";
-const API_CHAT_ENDPOINT = "http://localhost:3001/chat";
 const AI_SIMULATION_ENDPOINT =
 	"http://localhost:3001/chat/00000000_sample_user/00000000_sample_chat/message";
 
@@ -45,13 +43,6 @@ export default function ChatsMain() {
 				});
 
 				const responseData = await response.json();
-				console.log(
-					JSON.stringify(
-						responseData.messages[responseData.messages.length - 1].content,
-						null,
-						2
-					)
-				);
 
 				if (responseData.messages && responseData.messages.length > 0) {
 					const lastMessage =
@@ -70,6 +61,7 @@ export default function ChatsMain() {
 					if (isRecipeList) {
 						// Set recipePanelData to the list of recipes
 						setRecipePanelData({ recipes: contentObject.recipes });
+						console.log("recipePanel", recipePanelData);
 					}
 
 					// Add the AI message to chatHistory
@@ -114,6 +106,10 @@ export default function ChatsMain() {
 						chatHistory: updatedChatHistory,
 						userMessage: newUserMessage,
 					});
+
+					// Update selectedRecipe state
+					setSelectedRecipe(recipePanelData.recipes[index]);
+					console.log("selected", recipePanelData.recipes[index]);
 				}
 			} catch (error) {
 				console.error("Error selecting recipe:", error);
@@ -161,7 +157,11 @@ export default function ChatsMain() {
 	return (
 		<Container fluid className="py-5" style={{ backgroundColor: "#eee" }}>
 			<Row className="justify-content-center">
-				<Col md="10" lg="8" xl="6">
+				{/* RecipePanel with a placeholder recipe */}
+				<Col md="4" lg="3" xl="2">
+					<RecipePanel recipe={selectedRecipe} />
+				</Col>
+				<Col md="8" lg="9" xl="10">
 					<Card
 						id="chat2"
 						style={{
@@ -237,11 +237,6 @@ export default function ChatsMain() {
 						</Card.Footer>
 					</Card>
 				</Col>
-				{receivedIsRecipeList && selectedRecipe && (
-					<Col md="10" lg="8" xl="6">
-						<RecipePanel selectedRecipe={selectedRecipe} />
-					</Col>
-				)}
 			</Row>
 		</Container>
 	);
