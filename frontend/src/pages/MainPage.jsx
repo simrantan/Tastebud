@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import PreferenceCard from "../components/PreferenceCard.jsx";
 import "./MainPage.css"; // Import the CSS file
 import iconImage from "../assets/recipe-book.png"; // Adjust the path based on the file structure
+import ChatsSidebar from "../components/ChatsSidebar.jsx";
 
 export default function MainPage() {
 	const navigate = useNavigate();
@@ -23,6 +24,7 @@ export default function MainPage() {
 				<span>Recipe Book</span>
 			</div>
 
+			<ChatsSidebar />
 			<PreferenceCard />
 		</div>
 	);
