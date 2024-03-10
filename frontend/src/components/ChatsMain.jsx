@@ -45,23 +45,31 @@ export default function ChatsMain() {
 				});
 
 				const responseData = await response.json();
-				console.log(JSON.stringify(responseData, null, 2));
+				console.log(
+					JSON.stringify(
+						responseData.messages[responseData.messages.length - 1].content,
+						null,
+						2
+					)
+				);
 
-				if (responseData.Messages && responseData.Messages.length > 0) {
+				if (responseData.messages && responseData.messages.length > 0) {
 					const lastMessage =
-						responseData.Messages[responseData.Messages.length - 1];
-					const parsedContent = JSON.parse(lastMessage.Content);
-					console.log("parsed", parsedContent);
+						responseData.messages[responseData.messages.length - 1];
 
-					const isRecipeList = parsedContent.isRecipeList;
-					const receivedChatTitle = parsedContent.chatTitle;
-					const receivedContent = parsedContent.Message;
+					const contentString = lastMessage.content; // Assuming content is a string
+					const contentObject = JSON.parse(contentString);
+					console.log("content", contentObject);
+					const isRecipeList = contentObject.isRecipeList;
+					const receivedChatTitle = contentObject.chatTitle;
+					const receivedContent = contentObject.message;
+					console.log("last", lastMessage);
 
 					setReceivedIsRecipeList(isRecipeList);
 
 					if (isRecipeList) {
 						// Set recipePanelData to the list of recipes
-						setRecipePanelData({ recipes: parsedContent.Recipes });
+						setRecipePanelData({ recipes: contentObject.recipes });
 					}
 
 					// Add the AI message to chatHistory
@@ -69,10 +77,12 @@ export default function ChatsMain() {
 						role: "assistant",
 						content: receivedContent,
 					};
+					console.log("ai", newAIMessage);
 
-					const updatedChatHistory = [...chatHistory, newAIMessage];
-
-					setChatHistory(updatedChatHistory);
+					setChatHistory((prevChatHistory) => [
+						...prevChatHistory,
+						newAIMessage,
+					]);
 
 					scrollToBottom();
 				}
