@@ -14,6 +14,10 @@ export const UserProvider = ({ children }) => {
 		console.log("User data updated: ", data);
 	};
 
+	function isLoggedIn() {
+		return !(!userData || userData === null || userData === undefined);
+	}
+
 	firebase.auth().onAuthStateChanged(function (user) {
 		// onAuthStateChanged listener triggers every time the user ID token changes.
 		// This could happen when a new user signs in or signs out.
@@ -23,7 +27,6 @@ export const UserProvider = ({ children }) => {
 			// Otherwise ignore if this is a token refresh.
 			// Update the current user UID.
 			currentUid = user.uid;
-			console.log("User is signed in: ", user.displayName, user.uid);
 			setUserData({
 				email: user.email,
 				uid: user.uid,
@@ -33,7 +36,7 @@ export const UserProvider = ({ children }) => {
 	});
 
 	return (
-		<UserContext.Provider value={{ userData, updateUser }}>
+		<UserContext.Provider value={{ userData, updateUser, isLoggedIn }}>
 			{children}
 		</UserContext.Provider>
 	);
