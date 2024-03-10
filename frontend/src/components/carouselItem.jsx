@@ -13,8 +13,8 @@ const RecipeItem = ({ recipe, onRecipeClick, isSelected }) => {
 				cursor: "pointer",
 				border: isSelected ? "2px solid #007bff" : "1px solid #ccc",
 				overflow: "hidden",
-				height: "10vh", // /10 of the screen height
-				width: "20vw", // 3/10 of the screen width
+				height: "8vh", // /10 of the screen height
+				width: "25vw", // 3/10 of the screen width
 			}}
 			onClick={handleRecipeClick}
 			className={isSelected ? "selected-recipe" : ""}
