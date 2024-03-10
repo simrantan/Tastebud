@@ -9,16 +9,18 @@ const RecipeItem = ({ recipe, onRecipeClick, isSelected }) => {
 	return (
 		<Card
 			style={{
-				borderRadius: "15px",
+				borderRadius: "5px",
 				cursor: "pointer",
-				border: isSelected ? "2px solid #007bff" : "1px solid #ccc", // Highlight the selected recipe
+				border: isSelected ? "2px solid #007bff" : "1px solid #ccc",
 				overflow: "hidden",
+				height: "10vh", // /10 of the screen height
+				width: "20vw", // 3/10 of the screen width
 			}}
 			onClick={handleRecipeClick}
+			className={isSelected ? "selected-recipe" : ""}
 		>
-			<Image src={recipe.image} alt={recipe.name} fluid />
 			<Card.Body>
-				<Card.Text className="text-center">{recipe.name}</Card.Text>
+				<Card.Title className="text-center">{recipe.title}</Card.Title>
 			</Card.Body>
 		</Card>
 	);

@@ -174,6 +174,31 @@ export default function ChatsMain() {
 							<h5 className="mb-0">Chat</h5>
 						</Card.Header>
 						<Card.Body style={{ maxHeight: "400px", overflowY: "auto" }}>
+							{showConversationStarters && chatHistory.length <= 1 && (
+								<ConversationStarters
+									onStartConversation={handleStartConversation}
+								/>
+							)}
+							{chatHistory.map((message, index) => (
+								<div
+									key={index}
+									className={`d-flex flex-row justify-content-${
+										message.role === "user" ? "end" : "start"
+									} mb-4`}
+								>
+									<div>
+										<p
+											className={`small p-2 ms-3 mb-1 rounded-3 ${
+												message.role === "user"
+													? "text-white bg-primary"
+													: "bg-light"
+											}`}
+										>
+											{message.content}
+										</p>
+									</div>
+								</div>
+							))}
 							{receivedIsRecipeList && recipePanelData.recipes.length > 0 && (
 								<RecipeCarousel
 									recipes={recipePanelData.recipes}
@@ -184,35 +209,6 @@ export default function ChatsMain() {
 									}}
 									selectedRecipe={selectedRecipe}
 								/>
-							)}
-							{!receivedIsRecipeList && (
-								<>
-									{showConversationStarters && chatHistory.length <= 1 && (
-										<ConversationStarters
-											onStartConversation={handleStartConversation}
-										/>
-									)}
-									{chatHistory.map((message, index) => (
-										<div
-											key={index}
-											className={`d-flex flex-row justify-content-${
-												message.role === "user" ? "end" : "start"
-											} mb-4`}
-										>
-											<div>
-												<p
-													className={`small p-2 ms-3 mb-1 rounded-3 ${
-														message.role === "user"
-															? "text-white bg-primary"
-															: "bg-light"
-													}`}
-												>
-													{message.content}
-												</p>
-											</div>
-										</div>
-									))}
-								</>
 							)}
 							<div ref={messagesEndRef} />
 						</Card.Body>
@@ -242,7 +238,9 @@ export default function ChatsMain() {
 					</Card>
 				</Col>
 				{receivedIsRecipeList && selectedRecipe && (
-					<RecipePanel selectedRecipe={selectedRecipe} />
+					<Col md="10" lg="8" xl="6">
+						<RecipePanel selectedRecipe={selectedRecipe} />
+					</Col>
 				)}
 			</Row>
 		</Container>
