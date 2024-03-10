@@ -40,6 +40,25 @@ app.use(
 app.use(express.json());
 
 /* ########################### User ########################## */
+/** Create a new user */
+app.post("/user", async (req, res) => {
+	// Test with: curl -X POST -H "Content-Type: application/json" -d '{"userId": "test"}' http://localhost:3001/user
+	const userId = req.body.userId;
+	const email = req.body.email;
+
+	try {
+		const userRef = collection(DATABASE, "users");
+		await setDoc(doc(userRef, userId), {
+			id: userId,
+			email: email,
+		});
+		res.status(200).json({ success: true });
+	} catch (error) {
+		console.error(error);
+		res.status(500).send("Internal Server Error");
+	}
+});
+
 /** Get information for a single user */
 app.get("/user/:userId", async (req, res) => {
 	const userId = req.params.userId;

@@ -6,6 +6,7 @@ import RecipeBook from "./pages/RecipeBook";
 import LoginPage from "./pages/Login";
 import { UserProvider } from "./contexts/UserContext";
 import NavBar from "./components/NavBar";
+import UserProfile from "./pages/UserProfile";
 
 function App() {
 	return (
@@ -16,6 +17,7 @@ function App() {
 					<Routes>
 						<Route path="/" element={<MainPage />} />
 						<Route path="/recipe-book" element={<RecipeBook />} />
+						<Route path="/user-profile" element={<UserProfile />} />
 						<Route path="/login" element={<LoginPage />} />
 					</Routes>
 				</UserProvider>

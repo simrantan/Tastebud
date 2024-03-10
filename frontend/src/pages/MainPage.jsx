@@ -12,7 +12,7 @@ export default function MainPage() {
 
 	return (
 		<div className="container">
-			<h2>Welcome, {userData.displayName}!</h2>
+			<h2>Welcome, {userData.displayName || "Chef"}!</h2>
 
 			<PreferenceCard />
 		</div>

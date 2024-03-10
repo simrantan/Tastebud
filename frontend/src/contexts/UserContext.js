@@ -1,42 +1,44 @@
 // UserContext.js
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
-
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
+	const [email, setEmail] = useState();
+	const [displayName, setDisplayName] = useState();
+	const [uid, setUid] = useState();
 	const [userData, setUserData] = useState(null);
-	let currentUid = userData ? userData.uid : null;
+
+	useEffect(() => {
+		console.log("userData", userData);
+	}, [userData]);
 
 	const updateUser = (data) => {
-		setUserData(data);
-		console.log("User data updated: ", data);
+		// Pull data from Firebase and store it in the context
+		setDisplayName(data.displayName);
+		setEmail(data.email);
+		setUid(data.uid);
+		const backendData = fetch(`http://localhost:3001/user/${uid}`);
+		console.log("backendData", backendData);
+		setUserData(backendData);
 	};
 
 	function isLoggedIn() {
-		return !(!userData || userData === null || userData === undefined);
+		return !(!uid || uid === "" || uid === null || uid === undefined);
 	}
 
-	firebase.auth().onAuthStateChanged(function (user) {
-		// onAuthStateChanged listener triggers every time the user ID token changes.
-		// This could happen when a new user signs in or signs out.
-		// It could also happen when the current user ID token expires and is refreshed.
-		if (user && user.uid !== currentUid) {
-			// Update the UI when a new user signs in.
-			// Otherwise ignore if this is a token refresh.
-			// Update the current user UID.
-			currentUid = user.uid;
-			setUserData({
-				email: user.email,
-				uid: user.uid,
-				displayName: user.displayName,
-			});
-		}
-	});
-
 	return (
-		<UserContext.Provider value={{ userData, updateUser, isLoggedIn }}>
+		<UserContext.Provider
+			value={{
+				userData,
+				updateUser,
+				setUid,
+				setDisplayName,
+				setEmail,
+				isLoggedIn,
+			}}
+		>
 			{children}
 		</UserContext.Provider>
 	);

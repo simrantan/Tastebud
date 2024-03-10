@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
-import * as firebaseui from "firebaseui";
-import "firebaseui/dist/firebaseui.css";
 import { useUser } from "../contexts/UserContext";
+import { useNavigate } from "react-router-dom";
 
 const firebaseConfig = {
 	// Your Firebase config here
@@ -25,36 +24,35 @@ if (!firebase.apps.length) {
 
 export default function LoginPage({ props }) {
 	const { updateUser } = useUser();
+	let navigate = useNavigate();
 
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [displayName, setDisplayName] = useState("");
-
-	useEffect(() => {
-		// Check if AuthUI instance already exists
-		if (!firebaseui.auth.AuthUI.getInstance()) {
-			const uiConfig = {
-				signInFlow: "popup",
-				signInSuccessUrl: "/",
-				signInOptions: [firebase.auth.EmailAuthProvider.PROVIDER_ID],
-			};
-
-			const ui = new firebaseui.auth.AuthUI(firebase.auth());
-			if (ui.isPendingRedirect()) {
-				ui.start("#firebaseui-auth-container", uiConfig);
-			}
-		}
-	}, []);
+	const [email, setLocalEmail] = useState("");
+	const [password, setLocalPassword] = useState("");
 
 	const handleSignup = async (e) => {
 		e.preventDefault();
 		// By default, Firebase will create a new user with the email and password provided
 		try {
 			console.log("Signing up with email and password");
-			await firebase
+			// Create user in Firebase
+			const userCredential = await firebase
 				.auth()
-				.createUserWithEmailAndPassword(email, password)
-				.then(postLogin);
+				.createUserWithEmailAndPassword(email, password);
+
+			// Create user in the database
+			await fetch(`http://localhost:3001/user/`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					userId: userCredential.user.uid,
+					email: userCredential.user.email,
+				}),
+			});
+
+			// Log the user in
+			postLogin(userCredential);
 		} catch (error) {
 			// If the user already exists, try logging in instead
 			if (error.code === "auth/email-already-in-use") {
@@ -82,14 +80,14 @@ export default function LoginPage({ props }) {
 	function postLogin(userCredential) {
 		console.log("User logged in:", userCredential.user);
 		const userData = {
+			displayName: userCredential.user.displayName,
 			email: userCredential.user.email,
 			uid: userCredential.user.uid,
-			displayName: userCredential.user.displayName,
 		};
 		// Update user context
 		updateUser(userData);
 		// Redirect to home page after successful login
-		window.location.href = "/";
+		navigate("/");
 	}
 
 	const handleLogout = async (e) => {
@@ -115,7 +113,7 @@ export default function LoginPage({ props }) {
 						className="form-control"
 						id="email"
 						value={email}
-						onChange={(e) => setEmail(e.target.value)}
+						onChange={(e) => setLocalEmail(e.target.value)}
 					/>
 				</div>
 
@@ -128,20 +126,7 @@ export default function LoginPage({ props }) {
 						className="form-control"
 						id="password"
 						value={password}
-						onChange={(e) => setPassword(e.target.value)}
-					/>
-				</div>
-
-				<div className="mb-3">
-					<label htmlFor="displayName" className="form-label">
-						Display Name
-					</label>
-					<input
-						type="text"
-						className="form-control"
-						id="displayName"
-						value={displayName}
-						onChange={(e) => setDisplayName(e.target.value)}
+						onChange={(e) => setLocalPassword(e.target.value)}
 					/>
 				</div>
 
@@ -153,11 +138,10 @@ export default function LoginPage({ props }) {
 					Go!
 				</button>
 
-				<button className="btn btn-primary" onClick={handleLogout}>
+				{/* <button className="btn btn-primary" onClick={handleLogout}>
 					Log Out
-				</button>
+				</button> */}
 			</form>
-			<div id="firebaseui-auth-container"></div>
 		</div>
 	);
 }
