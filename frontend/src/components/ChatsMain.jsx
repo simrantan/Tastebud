@@ -76,9 +76,6 @@ export default function ChatsMain() {
 				}
 
 				setChatHistory(allMessages);
-
-				console.log("chatdata", JSON.stringify(chatData));
-				console.log("chat", chatHistory);
 			} catch (error) {
 				console.error("Error fetching chat data:", error);
 			}
@@ -125,7 +122,7 @@ export default function ChatsMain() {
 							// Include other necessary data for the backend
 							preferences: preferences,
 							chatID: curChatId !== undefined ? curChatId : null,
-							messages: chatHistory
+							messages: chatHistory,
 						}),
 					});
 
@@ -133,6 +130,7 @@ export default function ChatsMain() {
 
 					const newID = responseData.chat_id;
 					setCurChatId(newID);
+					console.log("newid", newID);
 
 					if (responseData.messages && responseData.messages.length > 0) {
 						const lastMessage =
