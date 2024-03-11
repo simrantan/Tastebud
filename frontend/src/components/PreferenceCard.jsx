@@ -34,7 +34,7 @@ const PreferenceCard = () => {
 				setAllergens(data.allergies || {});
 				setLikes(data.likes || []);
 				setDislikes(data.dislikes || []);
-				console.log("set user data");
+				// console.log("set user data");
 			} catch (error) {
 				console.error("Error fetching preferences:", error.message);
 			}

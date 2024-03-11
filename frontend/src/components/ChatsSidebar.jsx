@@ -21,7 +21,7 @@ export default function ChatsSidebar({ props }) {
 			})
 			.then((user) => {
 				setChats(user.chats);
-				console.log(user.chats[0]);
+				// console.log(user.chats[0]);
 			})
 			.catch((error) => {
 				console.error("Error fetching chats:", error.message);
