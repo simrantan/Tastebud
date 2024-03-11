@@ -45,22 +45,30 @@ export default function ChatsSidebar({
 				id="myDrawer"
 				className={`drawer ${
 					chatSidebarIsOpen ? "open" : ""
-				} d-flex flex-column`}
+				} d-flex flex-column justify-content-between`}
 			>
-				<div className="d-flex justify-content-ends p-3 align-items-top">
-					<h2 className="text-light">My Chats</h2>
-					<button className="btn" onClick={toggleDrawer}>
-						x
-					</button>
+				<div>
+					<div className="d-flex justify-content-between p-3 align-items-top">
+						<h2 className="text-light">My Chats</h2>
+						<button
+							className="btn btn-outline-light btn-lg"
+							style={{ border: "none", marginTop: "-10px" }}
+							onClick={toggleDrawer}
+						>
+							x
+						</button>
+					</div>
+
+					<div>
+						{/* Create an entry for each conversation */}
+						{chats.map((chat) => (
+							<SidebarEntry chat={chat} key={chat.id} />
+						))}
+					</div>
 				</div>
 
-				{/* Create an entry for each conversation */}
-				{chats.map((chat) => (
-					<SidebarEntry chat={chat} key={chat.id} />
-				))}
-
 				<Link to="/newConversation">
-					<Button variant="light" className="text-dark">
+					<Button variant="light" className="text-dark mb-3">
 						Create New Chat
 					</Button>
 				</Link>
