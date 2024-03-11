@@ -3,7 +3,6 @@ import "./ChatsSidebar.css";
 import { Link } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 
-// TODO: Replace this with the user's UID, pulled from Context
 const API_URL = "http://localhost:3001/user";
 
 export default function ChatsSidebar({
