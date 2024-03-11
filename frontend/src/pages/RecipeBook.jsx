@@ -70,16 +70,13 @@ export default function RecipeBook() {
 		try {
 			// Notify the server to remove the recipe from the user's recipe book
 			const response = await fetch(
-				`http://localhost:3001/recipe_book/${userId}/${recipeId}`,
+				`http://localhost:3001/recipe_book/${userId}/remove/${recipeId}`,
 				{
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
 					},
-					body: JSON.stringify({
-						action: "remove",
-						recipeInfo: {}, // You can send additional recipe information if needed
-					}),
+					body: JSON.stringify({}),
 				}
 			);
 
