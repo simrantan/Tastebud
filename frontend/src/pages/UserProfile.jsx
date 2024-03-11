@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useUser } from "../contexts/UserContext";
 
 export default function UserProfile({ props }) {
-	const { userData, setDisplayName, isLoggedIn } = useUser();
+	const { userData, setDisplayName, isLoggedIn, logOut } = useUser();
 	console.log(isLoggedIn());
 
 	const [localDisplayName, setLocalDisplayName] = useState(
@@ -40,7 +40,9 @@ export default function UserProfile({ props }) {
 				</div>
 			</form>
 
-			<button className="btn btn-secondary">Log Out</button>
+			<button className="btn btn-secondary" onClick={logOut}>
+				Log Out
+			</button>
 		</div>
 	);
 }

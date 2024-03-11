@@ -49,6 +49,22 @@ export const UserProvider = ({ children }) => {
 		);
 	}
 
+	function logOut() {
+		firebase
+			.auth()
+			.signOut()
+			.then(() => {
+				setUserData(null);
+				setEmail(null);
+				setDisplayName(null);
+				setUid(null);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+		localStorage.removeItem("userData");
+	}
+
 	return (
 		<UserContext.Provider
 			value={{
@@ -58,6 +74,7 @@ export const UserProvider = ({ children }) => {
 				setDisplayName,
 				setEmail,
 				isLoggedIn,
+				logOut,
 			}}
 		>
 			{children}

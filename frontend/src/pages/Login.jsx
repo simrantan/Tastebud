@@ -90,16 +90,6 @@ export default function LoginPage({ props }) {
 		navigate("/");
 	}
 
-	const handleLogout = async (e) => {
-		e.preventDefault();
-		console.log("Logging out");
-		try {
-			await firebase.auth().signOut();
-		} catch (error) {
-			console.error("Error signing out:", error);
-		}
-	};
-
 	return (
 		<div className="container">
 			<h1>Login / Create Account</h1>
@@ -137,10 +127,6 @@ export default function LoginPage({ props }) {
 				>
 					Go!
 				</button>
-
-				{/* <button className="btn btn-primary" onClick={handleLogout}>
-					Log Out
-				</button> */}
 			</form>
 		</div>
 	);
