@@ -12,7 +12,7 @@ export default function UserProfile({ props }) {
 		<div className="container">
 			<h1>Your Profile</h1>
 
-			<form style={{ width: "25%" }}>
+			{/* <form style={{ width: "25%" }}>
 				<div className="mb-3">
 					<label htmlFor="displayName" className="form-label">
 						Display Name
@@ -37,7 +37,7 @@ export default function UserProfile({ props }) {
 						</button>
 					</div>
 				</div>
-			</form>
+			</form> */}
 
 			<button className="btn btn-secondary" onClick={logOut}>
 				Log Out
