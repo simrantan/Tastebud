@@ -21,10 +21,31 @@ export default function ChatsMain() {
 
 	const messagesEndRef = useRef(null);
 	const { chatId } = useParams();
+	const userID = "00000000_sample_user";
 
 	useEffect(() => {
 		// Update state when the roomId parameter changes
 		setCurChatId(chatId);
+		//set chat history with url
+		async ({}) => {
+			try {
+				const response = await fetch(AI_SIMULATION_ENDPOINT, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						userID: userID,
+						chatID: curChatId,
+					}),
+				});
+				const chatData = await response.json();
+				setChatHistory(chatData);
+			} catch (error) {
+				console.error("Error fetching AI response:", error);
+			}
+		};
+
 		if (chatHistory.length === 1) {
 			// Send a default message from the assistant
 			const defaultAssistantMessage = {
@@ -34,7 +55,10 @@ export default function ChatsMain() {
 			};
 
 			// Update chat history with the default message
-			setChatHistory([defaultAssistantMessage]);
+			setChatHistory((prevChatHistory) => [
+				...prevChatHistory,
+				defaultAssistantMessage,
+			]);
 
 			// Scroll to the bottom after updating the chat history
 			scrollToBottom();
