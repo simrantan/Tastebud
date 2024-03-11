@@ -251,7 +251,6 @@ export default function ChatsMain() {
 	return (
 		<Container fluid className="py-5" style={{ backgroundColor: "#eee" }}>
 			<Row className="justify-content-center">
-				{/* RecipePanel with a placeholder recipe */}
 				<Col md="4" lg="3" xl="2">
 					<RecipePanel recipe={selectedRecipe} />
 				</Col>
