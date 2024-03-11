@@ -1,0 +1,5 @@
+.recipe-carousel-container {
+	white-space: nowrap;
+	overflow-x: auto;
+	margin-bottom: 15px; /* Add margin to create space at the bottom */
+}

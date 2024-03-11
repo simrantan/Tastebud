@@ -4,6 +4,7 @@ import RecipePanel from "./recipeSidebar";
 import RecipeCarousel from "./carousel";
 import ConversationStarters from "./conversationStarters";
 import { useParams } from "react-router-dom";
+import "./ChatStyle.css";
 import { useUser } from "../contexts/UserContext";
 
 export default function ChatsMain() {
@@ -151,7 +152,6 @@ export default function ChatsMain() {
 
 					const responseData = await response2.json();
 
-
 					if (curChatId == undefined) {
 						setChatHistory(responseData.messages.slice(0, 2));
 					}
@@ -274,30 +274,38 @@ export default function ChatsMain() {
 	};
 
 	return (
-		<Container fluid className="py-5" style={{ backgroundColor: "#eee" }}>
-			<Row className="justify-content-center">
-				{/* RecipePanel with a placeholder recipe */}
-				<Col md="4" lg="3" xl="2">
+		<Container
+			className="p-4"
+			style={{
+				backgroundColor: "#FFF9F3",
+				marginLeft: "200px",
+				maxWidth: "calc(100% - 650px)",
+				height: "80vh",
+			}}
+		>
+			<Row className="justify-content-center" style={{ height: "100%" }}>
+				<Col md="4" style={{ height: "100%" }}>
 					<RecipePanel recipe={selectedRecipe} />
 				</Col>
-				<Col md="8" lg="9" xl="10">
+
+				<Col md="8" style={{ height: "100%" }}>
 					<Card
 						id="chat2"
 						style={{
 							borderRadius: "15px",
 							border: "1px solid #ccc",
 							overflow: "hidden",
+							height: "100%",
+							backgroundColor: "#FFF9F3",
 						}}
 					>
-						<Card.Header className="d-flex justify-content-between align-items-center p-3">
-							<h5 className="mb-0">Chat</h5>
-						</Card.Header>
-						<Card.Body style={{ maxHeight: "400px", overflowY: "auto" }}>
+						<Card.Body style={{ overflowY: "auto" }}>
 							{showConversationStarters && (
 								<ConversationStarters
 									onStartConversation={handleStartConversation}
 								/>
 							)}
+
 							{chatHistory
 
 								.filter(
@@ -315,9 +323,7 @@ export default function ChatsMain() {
 										<div>
 											<p
 												className={`small p-2 ms-3 mb-1 rounded-3 ${
-													message.role === "user"
-														? "text-white bg-primary"
-														: "bg-light"
+													message.role === "user" ? "user-message" : "bg-light"
 												}`}
 											>
 												{message.content}
@@ -325,6 +331,7 @@ export default function ChatsMain() {
 										</div>
 									</div>
 								))}
+
 							{receivedIsRecipeList && recipePanelData.recipes.length > 0 && (
 								<RecipeCarousel
 									recipes={recipePanelData.recipes}
@@ -338,6 +345,7 @@ export default function ChatsMain() {
 							)}
 							<div ref={messagesEndRef} />
 						</Card.Body>
+
 						<Card.Footer className="text-muted d-flex justify-content-start align-items-center p-3">
 							<Form.Control
 								type="text"
@@ -353,13 +361,6 @@ export default function ChatsMain() {
 									}
 								}}
 							/>
-							<a
-								className="ms-1 text-muted"
-								href="#!"
-								onClick={handleSendMessage}
-							>
-								<i className="fas fa-paper-plane"></i>
-							</a>
 						</Card.Footer>
 					</Card>
 				</Col>

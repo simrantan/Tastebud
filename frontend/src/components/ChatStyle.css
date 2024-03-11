@@ -1,0 +1,11 @@
+
+.user-message {
+    color: #ffffff; /* White text color */
+    background-color: #573c56; /* Purple background color */
+}
+
+
+.bot-message {
+    color: #ffffff; /* White text color for chat bot messages */
+    background-color: #464646; /* Darker grey background color for chat bot messages */
+}

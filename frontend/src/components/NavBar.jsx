@@ -1,6 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import recipeBook from "../assets/recipe-book.png";
+import userProfile from "../assets/user.png";
+import chatBubble from "../assets/chat.png";
 
 export default function NavBar({ setChatSidebarIsOpen }) {
 	return (
@@ -19,10 +21,12 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 						display: "flex",
 						justifyContent: "center",
 						alignItems: "center",
+						backgroundColor: "#d87e79",
+						border: "none",
 					}}
 				>
 					<img
-						src={recipeBook}
+						src={chatBubble}
 						alt={`Previous Chats Icon`}
 						style={{ height: "54px", padding: "0", margin: "0" }}
 					/>
@@ -32,12 +36,12 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 			</div>
 
 			<div className="d-flex justify-content-end ">
-				<NavButton label="Chat" path="/" icon={recipeBook} />
+				{/* <NavButton label="Chat" path="/" icon={chatBubble} /> */}
 				<NavButton label="Recipe Book" path="/recipe-book" icon={recipeBook} />
 				<NavButton
 					label="User Profile"
 					path="/user-profile"
-					icon={recipeBook}
+					icon={userProfile}
 				/>
 			</div>
 		</nav>
@@ -60,6 +64,8 @@ function NavButton({ label, path, icon }) {
 					display: "flex",
 					justifyContent: "center",
 					alignItems: "center",
+					backgroundColor: "#d87e79",
+					border: "none",
 				}}
 			>
 				<img

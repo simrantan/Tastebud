@@ -5,14 +5,12 @@ import { ToastContainer, toast } from "react-toastify";
 import ReactMarkdown from "react-markdown";
 import { useUser } from "../contexts/UserContext";
 
-
 const RecipePanel = ({ recipe }) => {
 	const [addedToRecipeBook, setAddedToRecipeBook] = useState(false);
 	console.log("recipe in pane", JSON.stringify(recipe, null, 2));
 
 	const { userData } = useUser();
-	const userId = userData.id
-
+	const userId = userData.id;
 
 	if (!recipe) {
 		return (
@@ -35,7 +33,6 @@ const RecipePanel = ({ recipe }) => {
 	};
 
 	const handleAddRecipe = async (recipe) => {
-
 		try {
 			const response = await fetch(
 				`http://localhost:3001/recipe_book/${userId}/add`,
@@ -85,19 +82,25 @@ const RecipePanel = ({ recipe }) => {
 	};
 
 	return (
-		<div className="recipe-panel">
-			<ToastContainer position="top-right" autoClose={3000} hideProgressBar />
-			<h3>{recipe.title}</h3>
-			<p>{recipe.name}</p>
-			<Card.Img variant="top" src={recipe.picture_url} />
+		<div
+			className="recipe-panel d-flex flex-column justify-content-between"
+			style={{ height: "100%", backgroundColor: "#FFF9F3" }}
+		>
+			<div>
+				<ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+				<h3>{recipe.title}</h3>
+			</div>
+			{/* <p>{recipe.name}</p> */}
+			{/* <Card.Img variant="top" src={recipe.picture_url} /> */}
 
 			<div
 				className="scrollable-container"
 				style={{
-					maxHeight: "300px",
 					overflowY: "auto",
 					border: "1px solid #ccc",
 					padding: "10px",
+					marginBottom: "10px",
+					backgroundColor: "#FFF9F3",
 				}}
 			>
 				<h4>Ingredients</h4>
