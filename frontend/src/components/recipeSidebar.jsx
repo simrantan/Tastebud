@@ -3,12 +3,16 @@ import React, { useState, useEffect } from "react";
 import { Button, Card } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
 import ReactMarkdown from "react-markdown";
+import { useUser } from "../contexts/UserContext";
+
 
 const RecipePanel = ({ recipe }) => {
 	const [addedToRecipeBook, setAddedToRecipeBook] = useState(false);
 	console.log("recipe in pane", JSON.stringify(recipe, null, 2));
 
-	const userId = 1;
+	const { userData } = useUser();
+	const userId = userData.id
+
 
 	if (!recipe) {
 		return (
@@ -31,18 +35,16 @@ const RecipePanel = ({ recipe }) => {
 	};
 
 	const handleAddRecipe = async (recipe) => {
+
 		try {
 			const response = await fetch(
-				`http://localhost:3001/recipe_book/${userId}/${recipe.id}`,
+				`http://localhost:3001/recipe_book/${userId}/add`,
 				{
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
 					},
-					body: JSON.stringify({
-						action: "add",
-						recipeInfo: recipe,
-					}),
+					body: JSON.stringify(recipe),
 				}
 			);
 
@@ -59,17 +61,15 @@ const RecipePanel = ({ recipe }) => {
 
 	const handleRemoveRecipe = async (recipe) => {
 		try {
+			// Notify the server to remove the recipe from the user's recipe book
 			const response = await fetch(
-				`http://localhost:3001/recipe_book/${userId}/${recipe.id}`,
+				`http://localhost:3001/recipe_book/${userId}/remove/${recipe.id}`,
 				{
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
 					},
-					body: JSON.stringify({
-						action: "remove",
-						recipeInfo: {},
-					}),
+					body: JSON.stringify({}),
 				}
 			);
 

@@ -2,15 +2,18 @@ import React, { useState, useEffect } from "react";
 import { Card, Button, Modal } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../contexts/UserContext";
 import ReactMarkdown from "react-markdown"; // Import react-markdown
 
 import "react-toastify/dist/ReactToastify.css";
 import "./RecipeBook.css"; // Import the CSS file
 
 export default function RecipeBook() {
-	const userId = "00000000_sample_user";
-	const navigate = useNavigate();
 
+	const navigate = useNavigate();
+	const { userData } = useUser();
+
+	const userId = userData.id
 	const [recipeBook, setRecipeBook] = useState([]);
 
 	const [showModal, setShowModal] = useState(false);
@@ -70,16 +73,13 @@ export default function RecipeBook() {
 		try {
 			// Notify the server to remove the recipe from the user's recipe book
 			const response = await fetch(
-				`http://localhost:3001/recipe_book/${userId}/${recipeId}`,
+				`http://localhost:3001/recipe_book/${userId}/remove/${recipeId}`,
 				{
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
 					},
-					body: JSON.stringify({
-						action: "remove",
-						recipeInfo: {}, // You can send additional recipe information if needed
-					}),
+					body: JSON.stringify({}),
 				}
 			);
 
