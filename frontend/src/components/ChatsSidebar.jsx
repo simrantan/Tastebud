@@ -6,8 +6,10 @@ import { Link } from "react-router-dom";
 const TESTING_UID = "00000000_sample_user";
 const API_URL = "http://localhost:3001/user";
 
-export default function ChatsSidebar({ props }) {
-	const [isOpen, setIsOpen] = useState(true);
+export default function ChatsSidebar({
+	chatSidebarIsOpen,
+	setChatSidebarIsOpen,
+}) {
 	const [chats, setChats] = useState([]);
 
 	// Fetch the user's chats from the backend
@@ -29,15 +31,17 @@ export default function ChatsSidebar({ props }) {
 			});
 	}, []);
 
-	const toggleDrawer = () => {
-		setIsOpen(!isOpen);
-	};
+	function toggleDrawer() {
+		setChatSidebarIsOpen(!chatSidebarIsOpen);
+	}
 
 	return (
 		<>
 			<div
 				id="myDrawer"
-				className={`drawer ${isOpen ? "open" : ""} d-flex flex-column`}
+				className={`drawer ${
+					chatSidebarIsOpen ? "open" : ""
+				} d-flex flex-column`}
 				style={{ backgroundColor: "#573C56" }}
 			>
 				<div className="d-flex justify-content-ends p-3 align-items-top">
@@ -62,10 +66,6 @@ export default function ChatsSidebar({ props }) {
 				{chats.map((chat) => (
 					<SidebarEntry chat={chat} key={chat.id} />
 				))}
-			</div>
-
-			<div id="mainContent" className={`${isOpen ? "open-drawer" : ""}`}>
-				<button onClick={toggleDrawer}>Toggle Drawer</button>
 			</div>
 		</>
 	);

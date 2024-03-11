@@ -1,5 +1,5 @@
 // App.js
-import React from "react";
+import React, { useState } from "react";
 import {
 	Navigate,
 	BrowserRouter as Router,
@@ -14,17 +14,23 @@ import NavBar from "./components/NavBar";
 import UserProfile from "./pages/UserProfile";
 
 export default function App() {
+	const [chatSidebarIsOpen, setChatSidebarIsOpen] = useState(false);
+
 	return (
 		<Router>
 			<div className="App">
 				<UserProvider>
-					<NavBar />
+					<NavBar setChatSidebarIsOpen={setChatSidebarIsOpen} />
+
 					<Routes>
 						<Route
 							path="/"
 							element={
 								<ProtectedRoute>
-									<MainPage />
+									<MainPage
+										chatSidebarIsOpen={chatSidebarIsOpen}
+										setChatSidebarIsOpen={setChatSidebarIsOpen}
+									/>
 								</ProtectedRoute>
 							}
 						/>
