@@ -111,11 +111,11 @@ const RecipePanel = ({ recipe }) => {
 				</ul>
 
 				<h4>Directions</h4>
-				<ol>
+				<div>
 					{recipe.directions.map((direction, index) => (
-						<li key={index}>{direction}</li>
+						<p key={index}>{direction}</p>
 					))}
-				</ol>
+				</div>
 			</div>
 
 			<Button
