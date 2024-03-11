@@ -54,56 +54,75 @@ export default function ChatsMain() {
 	const fetchAIResponse = useCallback(
 		async ({ userMessage }) => {
 			try {
-				const response = await fetch(AI_SIMULATION_ENDPOINT, {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
-						message: userMessage.content, // Send only the content
-						// Include other necessary data for the backend
-					}),
-					chatID: curChatId,
-				});
+				const response = await fetch(
+					`http://localhost:3001/user/00000000_sample_user`
+				);
+				if (!response.ok) {
+					throw new Error(`HTTP error! Status: ${response.status}`);
+				}
+				const data = await response.json();
+				// Update state with fetched preferences
+				const preferences = {
+					allergies: data.allergies,
+					dislikes: data.dislikes,
+					likes: data.likes,
+				};
 
-				const responseData = await response.json();
+				try {
+					const response2 = await fetch(AI_SIMULATION_ENDPOINT, {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({
+							message: userMessage.content, // Send only the content
+							// Include other necessary data for the backend
+							preferences: preferences,
+							chatID: curChatId,
+						}),
+					});
 
-				if (responseData.messages && responseData.messages.length > 0) {
-					const lastMessage =
-						responseData.messages[responseData.messages.length - 1];
+					const responseData = await response2.json();
 
-					const contentString = lastMessage.content; // Assuming content is a string
-					const contentObject = JSON.parse(contentString);
-					console.log("content", contentObject);
-					const isRecipeList = contentObject.isRecipeList;
-					const receivedChatTitle = contentObject.chatTitle;
-					const receivedContent = contentObject.message;
-					console.log("last", lastMessage);
+					if (responseData.messages && responseData.messages.length > 0) {
+						const lastMessage =
+							responseData.messages[responseData.messages.length - 1];
 
-					setReceivedIsRecipeList(isRecipeList);
+						const contentString = lastMessage.content; // Assuming content is a string
+						const contentObject = JSON.parse(contentString);
+						console.log("content", contentObject);
+						const isRecipeList = contentObject.isRecipeList;
+						const receivedChatTitle = contentObject.chatTitle;
+						const receivedContent = contentObject.message;
+						console.log("last", lastMessage);
 
-					if (isRecipeList) {
-						// Set recipePanelData to the list of recipes
-						setRecipePanelData({ recipes: contentObject.recipes });
-						console.log("recipePanel", recipePanelData);
+						setReceivedIsRecipeList(isRecipeList);
+
+						if (isRecipeList) {
+							// Set recipePanelData to the list of recipes
+							setRecipePanelData({ recipes: contentObject.recipes });
+							console.log("recipePanel", recipePanelData);
+						}
+
+						// Add the AI message to chatHistory
+						const newAIMessage = {
+							role: "assistant",
+							content: receivedContent,
+						};
+						console.log("ai", newAIMessage);
+
+						setChatHistory((prevChatHistory) => [
+							...prevChatHistory,
+							newAIMessage,
+						]);
+
+						scrollToBottom();
 					}
-
-					// Add the AI message to chatHistory
-					const newAIMessage = {
-						role: "assistant",
-						content: receivedContent,
-					};
-					console.log("ai", newAIMessage);
-
-					setChatHistory((prevChatHistory) => [
-						...prevChatHistory,
-						newAIMessage,
-					]);
-
-					scrollToBottom();
+				} catch (error) {
+					console.error("Error fetching AI response:", error);
 				}
 			} catch (error) {
-				console.error("Error fetching AI response:", error);
+				console.error("Error", error.message);
 			}
 		},
 		[chatHistory]
@@ -119,7 +138,7 @@ export default function ChatsMain() {
 				if (index !== -1) {
 					const newUserMessage = {
 						role: "user",
-						content: recipeName,
+						content: "I want to hear more about " + recipeName,
 					};
 
 					const updatedChatHistory = [...chatHistory, newUserMessage];
