@@ -48,7 +48,12 @@ export default function ChatsSidebar({
 				className={`drawer ${
 					chatSidebarIsOpen ? "open" : ""
 				} d-flex flex-column justify-content-between`}
-				style={{ height: "100vh", display: "flex", flexDirection: "column" }}
+				style={{
+					height: "100vh",
+					display: "flex",
+					flexDirection: "column",
+					zIndex: 1000,
+				}}
 			>
 				<div
 					className="d-flex justify-content-between p-3 align-items-top"

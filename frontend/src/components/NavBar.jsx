@@ -9,7 +9,9 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 		<nav className="navbar navbar-expand-lg navbar-light bg-light d-flex justify-content-between mb-3">
 			<div
 				className="d-flex flex-column align-items-center text-decoration-none mx-3"
-				style={{ width: "fit-content" }}
+				style={{
+					width: "fit-content",
+				}}
 				onClick={() => setChatSidebarIsOpen(true)}
 			>
 				<div

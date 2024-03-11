@@ -4,7 +4,7 @@
 	left: -400px; /* Start off-screen */
 	width: 400px;
 	height: 100%;
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
 	transition: left 0.3s ease;
 	display: flex;
 	flex-direction: column;
@@ -12,6 +12,7 @@
 
 .drawer.open {
 	left: 0; /* Slide in */
+	box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.6);
 }
 
 #mainContent {
