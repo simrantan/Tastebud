@@ -8,7 +8,11 @@ import { useParams } from "react-router-dom";
 const AI_SIMULATION_ENDPOINT =
 	"http://localhost:3001/chat/00000000_sample_user/00000000_sample_chat/message";
 
+const get_chats = "http://localhost:3001/chat/00000000_sample_user";
+
 export default function ChatsMain() {
+	const { chatId } = useParams();
+
 	const [userInput, setUserInput] = useState("");
 	const [chatHistory, setChatHistory] = useState([{}]);
 	const [recipePanelData, setRecipePanelData] = useState({ recipes: [] });
@@ -17,10 +21,9 @@ export default function ChatsMain() {
 	const [showConversationStarters, setShowConversationStarters] =
 		useState(true);
 
-	const [curChatId, setCurChatId] = useState(null);
+	const [curChatId, setCurChatId] = useState(chatId);
 
 	const messagesEndRef = useRef(null);
-	const { chatId } = useParams();
 	const userID = "00000000_sample_user";
 
 	useEffect(() => {
@@ -30,16 +33,18 @@ export default function ChatsMain() {
 		// Set chat history with URL
 		const fetchData = async () => {
 			try {
-				const response = await fetch(AI_SIMULATION_ENDPOINT, {
-					method: "POST",
+				const response = await fetch(`${get_chats}/${curChatId}`, {
+					method: "GET", // Change method to GET
 					headers: {
 						"Content-Type": "application/json",
 					},
-					body: JSON.stringify({
-						userID: userID,
-						chatID: curChatId,
-					}),
+					// No need to include a body for a GET request
 				});
+
+				if (!response.ok) {
+					throw new Error(`HTTP error! Status: ${response.status}`);
+				}
+
 				const chatData = await response.json();
 
 				// Check if the chat history contains only the initial system message
@@ -49,7 +54,7 @@ export default function ChatsMain() {
 					chatData.messages,
 				]);
 			} catch (error) {
-				console.error("Error fetching AI response:", error);
+				console.error("Error fetching chat data:", error);
 			}
 		};
 
