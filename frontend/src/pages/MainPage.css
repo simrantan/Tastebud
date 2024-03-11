@@ -1,34 +1,37 @@
 .header-button-container {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 2; /* Ensure the button is above the preference card */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;    
-  }
-  .square-button {
-    width: 40px; /* Adjust the width as needed to make it square */
-    height: 40px; /* Adjust the height as needed */
-    background-color: #d87e79; /* Pink color from colors file */
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .square-button img {
-    width: 30px; /* Adjust the width of the icon as needed */
-    height: 30px; /* Adjust the height of the icon as needed */
-  }
-  
-  .header-button-container span {
-    display: block;
-    font-size: 10px; /* Adjust the font size of the text as needed */
-    margin-top: 5px; /* Adjust the margin between the button and text */
-    color: #333; /* Add your desired text color */
-    font-family: 'Inter', sans-serif; /* Use the font-family from your theme */
-  }
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	z-index: 2; /* Ensure the button is above the preference card */
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	background-color: #d87e79;
+}
+.square-button {
+	width: 40px; /* Adjust the width as needed to make it square */
+	height: 40px; /* Adjust the height as needed */
+	background-color: #d87e79; /* Pink color from colors file */
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.square-button img {
+	width: 30px; /* Adjust the width of the icon as needed */
+	height: 30px; /* Adjust the height of the icon as needed */
+	background-color: #d87e79;
+}
+
+.header-button-container span {
+	display: block;
+	font-size: 10px; /* Adjust the font size of the text as needed */
+	margin-top: 5px; /* Adjust the margin between the button and text */
+	color: #333; /* Add your desired text color */
+	font-family: "Inter", sans-serif; /* Use the font-family from your theme */
+	background-color: #d87e79;
+}
