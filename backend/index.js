@@ -360,7 +360,7 @@ app.post("/chat/:userID/message", async (req, res) => {
 		newMessage
 	);
 
-	// jsonPrefs = JSON.parse(preferences);
+	const jsonPrefs = JSON.parse(preferences);
 	if (jsonPrefs.likes.length > 0) {
 		input +=
 			". You don't need to include these, but I like " +
@@ -375,7 +375,7 @@ app.post("/chat/:userID/message", async (req, res) => {
 	}
 	if (jsonPrefs.allergies.length > 0) {
 		input +=
-			". I am allergic to " + Object.keys(jsonPrefs.allergies).join(", ") + ".";
+			". I am allergic to " + Object.keys(jsonPrefs.allergies).join(", ") + " SO DO NOT INCLUDE ANY OF THESE INGREDIENTS IN ANY RECIPES YOU PROVIDE.";
 	}
 
 	if (isNewChat) {
