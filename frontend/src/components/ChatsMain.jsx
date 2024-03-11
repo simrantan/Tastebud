@@ -6,7 +6,7 @@ import ConversationStarters from "./conversationStarters";
 import { useParams } from "react-router-dom";
 
 const AI_SIMULATION_ENDPOINT =
-	"http://localhost:3001/chat/00000000_sample_user/00000000_sample_chat/message";
+	"http://localhost:3001/chat/00000000_sample_user";
 
 const get_chats = "http://localhost:3001/chat/00000000_sample_user";
 
@@ -29,16 +29,23 @@ export default function ChatsMain() {
 	useEffect(() => {
 		// Update state when the roomId parameter changes
 		setCurChatId(chatId);
+	}, [chatId]);
 
+	useEffect(() => {
 		// Set chat history with URL
 		const fetchData = async () => {
 			try {
+				if (curChatId === undefined) {
+					// Start a new conversation with conversation starters and empty chat history
+					setChatHistory([]);
+					setShowConversationStarters(true); // Show conversation starters
+					return; // Skip the rest of the logic for new conversation
+				}
 				const response = await fetch(`${get_chats}/${curChatId}`, {
-					method: "GET", // Change method to GET
+					method: "GET",
 					headers: {
 						"Content-Type": "application/json",
 					},
-					// No need to include a body for a GET request
 				});
 
 				if (!response.ok) {
@@ -47,19 +54,40 @@ export default function ChatsMain() {
 
 				const chatData = await response.json();
 
-				// Check if the chat history contains only the initial system message
+				const allMessages = [];
 
-				setChatHistory((prevChatHistory) => [
-					...prevChatHistory,
-					chatData.messages,
-				]);
+				// Use a loop to iterate through messages
+				for (const message of chatData.chats) {
+					if (message.role === "user") {
+						allMessages.push({
+							role: message.role,
+							content: message.content,
+						});
+					} else if (message.role === "assistant") {
+						const assistantContent = JSON.parse(message.content).message;
+						allMessages.push({
+							role: "assistant",
+							content: assistantContent,
+						});
+					}
+				}
+				if (allMessages.length >= 1) {
+					setShowConversationStarters(false);
+				}
+
+				setChatHistory(allMessages);
+
+				console.log("chatdata", JSON.stringify(chatData));
+				console.log("chat", chatHistory);
 			} catch (error) {
 				console.error("Error fetching chat data:", error);
 			}
 		};
-
+		if (curChatId == null) {
+			handleStartConversation();
+		}
 		fetchData();
-	}, [chatId, curChatId]);
+	}, []);
 
 	const scrollToBottom = () => {
 		if (messagesEndRef.current) {
@@ -103,6 +131,9 @@ export default function ChatsMain() {
 					});
 
 					const responseData = await response2.json();
+
+					const newID = responseData.chat_id;
+					setCurChatId(newID);
 
 					if (responseData.messages && responseData.messages.length > 0) {
 						const lastMessage =

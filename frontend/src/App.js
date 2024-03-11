@@ -35,6 +35,17 @@ export default function App() {
 								</ProtectedRoute>
 							}
 						/>
+						<Route
+							path="/newConversation"
+							element={
+								<ProtectedRoute>
+									<MainPage
+										chatSidebarIsOpen={chatSidebarIsOpen}
+										setChatSidebarIsOpen={setChatSidebarIsOpen}
+									/>
+								</ProtectedRoute>
+							}
+						/>
 
 						<Route
 							path="/recipe-book"
