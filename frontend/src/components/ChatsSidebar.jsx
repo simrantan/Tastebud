@@ -50,8 +50,6 @@ export default function ChatsSidebar({
 				} d-flex flex-column justify-content-between`}
 				style={{
 					height: "100vh",
-					display: "flex",
-					flexDirection: "column",
 					zIndex: 1000,
 				}}
 			>
@@ -72,7 +70,11 @@ export default function ChatsSidebar({
 				<div style={{ flex: 1, overflowY: "auto" }}>
 					{/* Create an entry for each conversation */}
 					{chats.map((chat) => (
-						<SidebarEntry chat={chat} key={chat.id} toggleDrawer />
+						<SidebarEntry
+							chat={chat}
+							key={chat.id}
+							toggleDrawer={toggleDrawer}
+						/>
 					))}
 				</div>
 
@@ -88,7 +90,7 @@ export default function ChatsSidebar({
 	);
 }
 
-function SidebarEntry({ chat }) {
+function SidebarEntry({ chat, toggleDrawer }) {
 	return (
 		<Link
 			to={`/${chat.id}`}
@@ -105,6 +107,7 @@ function SidebarEntry({ chat }) {
 				boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
 				textDecoration: "none",
 			}}
+			onClick={toggleDrawer} // Close sidebar when clicked
 		>
 			<div style={{ flex: 1 }}>
 				<h4 style={{ margin: 0, fontSize: "1.2rem" }}>{chat.name}</h4>

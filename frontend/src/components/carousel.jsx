@@ -1,18 +1,17 @@
-import React from "react";
-import Carousel from "react-multi-carousel";
+import React, { useState, useEffect } from "react";
 import "react-multi-carousel/lib/styles.css";
-import { Button, Card } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import "./carousel.css"; // Import your custom CSS file
 
 const RecipeCarousel = ({ recipes, onRecipeClick }) => {
-	const responsive = {
-		superLargeDesktop: { breakpoint: { max: 4000, min: 3000 }, items: 5 },
-		desktop: { breakpoint: { max: 3000, min: 1024 }, items: 4 },
-		tablet: { breakpoint: { max: 1024, min: 464 }, items: 2 },
-		mobile: { breakpoint: { max: 464, min: 0 }, items: 1 },
-	};
+	const [hasBeenSelected, setHasBeenSelected] = useState(false);
+
+	useEffect(() => {
+		setHasBeenSelected(false);
+	}, [recipes]);
 
 	const handleRecipeClick = (index) => {
+		setHasBeenSelected(true);
 		onRecipeClick(index); // Send the recipe index and name to the parent component
 	};
 
@@ -35,8 +34,7 @@ const RecipeCarousel = ({ recipes, onRecipeClick }) => {
 					border: isSelected ? "2px solid #007bff" : "1px solid #ccc",
 					overflow: "hidden",
 					margin: "10px auto",
-					height: "14vh",
-					minWidth: "150px",
+					height: "5rem",
 				}}
 				onClick={handleRecipeClick}
 				className={isSelected ? "selected-recipe" : ""}
@@ -46,8 +44,12 @@ const RecipeCarousel = ({ recipes, onRecipeClick }) => {
 		);
 	};
 
+	if (hasBeenSelected) {
+		return <></>;
+	}
+
 	return (
-		<Carousel responsive={responsive}>
+		<div className="d-flex justify-content-center" style={{}}>
 			{recipes.map((recipe, index) => (
 				<RecipeItem
 					key={index}
@@ -56,7 +58,7 @@ const RecipeCarousel = ({ recipes, onRecipeClick }) => {
 					onRecipeClick={() => handleRecipeClick(index)}
 				/>
 			))}
-		</Carousel>
+		</div>
 	);
 };
 

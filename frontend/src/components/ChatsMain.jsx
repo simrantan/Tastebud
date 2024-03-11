@@ -121,10 +121,6 @@ export default function ChatsMain() {
 		setUserInput(e.target.value);
 	};
 
-	useEffect(() => {
-		console.log("isQuerying", isQuerying);
-	}, [isQuerying]);
-
 	const fetchAIResponse = useCallback(
 		async ({ userMessage }) => {
 			try {
@@ -289,7 +285,7 @@ export default function ChatsMain() {
 				backgroundColor: "#FFF9F3",
 				marginLeft: "200px",
 				maxWidth: "calc(100% - 650px)",
-				height: "80vh",
+				height: "86vh",
 			}}
 		>
 			<Row className="justify-content-center" style={{ height: "100%" }}>

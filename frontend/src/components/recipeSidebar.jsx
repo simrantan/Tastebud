@@ -86,41 +86,38 @@ const RecipePanel = ({ recipe }) => {
 			className="recipe-panel d-flex flex-column justify-content-between"
 			style={{ height: "100%", backgroundColor: "#FFF9F3" }}
 		>
-			<div>
-				<ToastContainer position="top-right" autoClose={3000} hideProgressBar />
-				<h3>{recipe.title}</h3>
-			</div>
-			{/* <p>{recipe.name}</p> */}
-			{/* <Card.Img variant="top" src={recipe.picture_url} /> */}
+			<h3>{recipe.title}</h3>
 
 			<div
-				className="scrollable-container"
 				style={{
 					overflowY: "auto",
-					border: "1px solid #ccc",
+					maxHeight: "calc(100% - 20px)",
 					padding: "10px",
-					marginBottom: "10px",
 					backgroundColor: "#FFF9F3",
 				}}
 			>
-				<h4>Ingredients</h4>
-				<ul>
-					{recipe.ingredients.map((ingredient, index) => (
-						<li key={index}>{ingredient}</li>
-					))}
-				</ul>
-
-				<h4>Directions</h4>
+				<div style={{}}>
+					<h4>Ingredients</h4>
+					<ul>
+						{recipe.ingredients.map((ingredient, index) => (
+							<li key={index}>{ingredient}</li>
+						))}
+					</ul>
+				</div>
 				<div>
-					{recipe.directions.map((direction, index) => (
-						<p key={index}>{direction}</p>
-					))}
+					<h4>Directions</h4>
+					<div>
+						{recipe.directions.map((direction, index) => (
+							<p key={index}>{direction}</p>
+						))}
+					</div>
 				</div>
 			</div>
 
 			<Button
 				onClick={handleToggleRecipe}
 				variant={addedToRecipeBook ? "danger" : "primary"}
+				style={{ flex: "none", marginTop: "14px" }}
 			>
 				{addedToRecipeBook ? "Remove from Recipe Book" : "Add to Recipe Book"}
 			</Button>
