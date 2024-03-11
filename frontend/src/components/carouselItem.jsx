@@ -1,6 +1,6 @@
 import React from "react";
-import { Card } from "react-bootstrap";
-import theme from "../theme/themes"; // Import your theme file
+import { Card, Image } from "react-bootstrap";
+import "./carouselItem.css"; // Import your custom CSS file
 
 const RecipeItem = ({ recipe, onRecipeClick, isSelected }) => {
 	const handleRecipeClick = () => {
@@ -10,14 +10,12 @@ const RecipeItem = ({ recipe, onRecipeClick, isSelected }) => {
 	return (
 		<Card
 			style={{
-				borderRadius: theme.borderRadius, // Use border radius from your theme
+				borderRadius: "5px",
 				cursor: "pointer",
-				border: isSelected
-					? `2px solid ${theme.colors.accentBlue}`
-					: "1px solid #ccc", // Use the blue accent color from your theme
-				overflow: "hidden",
-				fontFamily: theme.typography.body.fontFamily, // Use the Inter font family from your theme
-				color: `#${theme.colors.background}`, // Use the shade of white from your theme
+				border: isSelected ? "2px solid #007bff" : "1px solid #ccc",
+
+				height: "10vh", // Set the fixed height as needed
+				width: "15vw",
 			}}
 			onClick={handleRecipeClick}
 			className={isSelected ? "selected-recipe" : ""}
