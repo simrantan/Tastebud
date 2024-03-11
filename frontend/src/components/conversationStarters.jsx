@@ -20,16 +20,19 @@ const ConversationStarters = ({ onStartConversation }) => {
 				top left corner… And you can always add more dietary preferences to your
 				profile!
 			</p>
-			{conversationOptions.map((option, index) => (
-				<Button
-					key={index}
-					variant="primary"
-					className="mr-2 mb-2"
-					onClick={() => onStartConversation(option)}
-				>
-					{option}
-				</Button>
-			))}
+
+			<div className="d-flex justify-content-around">
+				{conversationOptions.map((option, index) => (
+					<Button
+						key={index}
+						variant="outline-primary"
+						className=" mb-2"
+						onClick={() => onStartConversation(option)}
+					>
+						{option}
+					</Button>
+				))}
+			</div>
 		</div>
 	);
 };

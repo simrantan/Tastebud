@@ -23,11 +23,7 @@ export default function App() {
 			<div className="App">
 				<UserProvider>
 					<NavBar setChatSidebarIsOpen={setChatSidebarIsOpen} />
-					<div
-						style={{
-							marginLeft: "400px",
-						}}
-					>
+					<div>
 						<ChatsSidebar
 							chatSidebarIsOpen={chatSidebarIsOpen}
 							setChatSidebarIsOpen={setChatSidebarIsOpen}
