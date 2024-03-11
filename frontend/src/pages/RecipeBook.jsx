@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 import ReactMarkdown from "react-markdown";
 
+import recipeImage from "../assets/cuisines/other.jpeg";
+
 import "react-toastify/dist/ReactToastify.css";
 import "./RecipeBook.css";
 
