@@ -40,7 +40,10 @@ export default function ChatsMain() {
 					}),
 				});
 				const chatData = await response.json();
-				setChatHistory(chatData.messages);
+				setChatHistory((prevChatHistory) => [
+					...prevChatHistory,
+					chatData.messages,
+				]);
 			} catch (error) {
 				console.error("Error fetching AI response:", error);
 			}
