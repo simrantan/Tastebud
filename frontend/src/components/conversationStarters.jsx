@@ -5,9 +5,9 @@ import { Button } from "react-bootstrap";
 
 const ConversationStarters = ({ onStartConversation }) => {
 	const conversationOptions = [
-		"Tell me a joke",
+		"Recipes for Beginners",
 		"Recommend a recipe",
-		"What's the weather like?",
+		"What are trendy recipes?",
 	];
 
 	return (

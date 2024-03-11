@@ -25,6 +25,20 @@ export default function ChatsMain() {
 	useEffect(() => {
 		// Update state when the roomId parameter changes
 		setCurChatId(chatId);
+		if (chatHistory.length === 1) {
+			// Send a default message from the assistant
+			const defaultAssistantMessage = {
+				role: "assistant",
+				content:
+					"Hi Chef! I’m your personal Chef Assistant TasteBud. What are you thinking of making? I’ll take your preferences and dietary restrictions into account 😁. When you find a recipe you like, you can save it to your recipe book! View your recipe book by clicking the button in the top left corner… And you can always add more dietary preferences to your profile!",
+			};
+
+			// Update chat history with the default message
+			setChatHistory([defaultAssistantMessage]);
+
+			// Scroll to the bottom after updating the chat history
+			scrollToBottom();
+		}
 	}, [chatId]);
 
 	const scrollToBottom = () => {
