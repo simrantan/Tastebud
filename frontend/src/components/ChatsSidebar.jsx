@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from "react";
 import "./ChatsSidebar.css";
 import { Link } from "react-router-dom";
+import { useUser } from "../contexts/UserContext";
 
 // TODO: Replace this with the user's UID, pulled from Context
-const TESTING_UID = "00000000_sample_user";
 const API_URL = "http://localhost:3001/user";
 
 export default function ChatsSidebar({
 	chatSidebarIsOpen,
 	setChatSidebarIsOpen,
 }) {
+	const { userData } = useUser();
 	const [chats, setChats] = useState([]);
 
 	// Fetch the user's chats from the backend
 	useEffect(() => {
-		fetch(`${API_URL}/${TESTING_UID}`)
+		fetch(`${API_URL}/${userData.id}`)
 			.then((response) => {
 				if (!response.ok) {
 					throw new Error(`HTTP error! Status: ${response.status}`);
