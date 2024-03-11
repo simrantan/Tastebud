@@ -4,13 +4,13 @@ import RecipePanel from "./recipeSidebar";
 import RecipeCarousel from "./carousel";
 import ConversationStarters from "./conversationStarters";
 import { useParams } from "react-router-dom";
+import { useUser } from "../contexts/UserContext";
 
-const AI_SIMULATION_ENDPOINT =
-	"http://localhost:3001/chat/00000000_sample_user/message";
 
-const get_chats = "http://localhost:3001/chat/00000000_sample_user";
 
 export default function ChatsMain() {
+	const { userData } = useUser();
+
 	const { chatId } = useParams();
 
 	const [userInput, setUserInput] = useState("");
@@ -24,7 +24,10 @@ export default function ChatsMain() {
 	const [curChatId, setCurChatId] = useState(chatId);
 
 	const messagesEndRef = useRef(null);
-	const userID = "00000000_sample_user";
+	const userId = userData.id;
+	const AI_SIMULATION_ENDPOINT = `http://localhost:3001/chat/${userId}/message`;
+	const get_chats = `http://localhost:3001/chat/${userId}`;
+
 
 	useEffect(() => {
 		// Update state when the roomId parameter changes
@@ -97,9 +100,7 @@ export default function ChatsMain() {
 	const fetchAIResponse = useCallback(
 		async ({ userMessage }) => {
 			try {
-				const response = await fetch(
-					`http://localhost:3001/user/00000000_sample_user`
-				);
+		        const response = await fetch(`http://localhost:3001/user/${userId}`);
 				if (!response.ok) {
 					throw new Error(`HTTP error! Status: ${response.status}`);
 				}
