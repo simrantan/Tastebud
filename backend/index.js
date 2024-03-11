@@ -235,18 +235,13 @@ app.post("/chat/:userID/message", async (req, res) => {
 		messages = req.body.messages;
 	}
 
-	const newMessage = {
-		role: "user",
-		content: input,
-	};
-
 	// Save the user's original message to Firebase
 	setDoc(
 		doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()),
-		newMessage
+		input
 	);
 
-	// jsonPrefs = JSON.parse(preferences);
+	const jsonPrefs = JSON.parse(preferences);
 	if (jsonPrefs.likes.length > 0) {
 		input += ". You don't need to include these, but I like " + jsonPrefs.likes.join(", ") + ".";
 	}
@@ -254,12 +249,18 @@ app.post("/chat/:userID/message", async (req, res) => {
 		input += ". I dislike " + jsonPrefs.dislikes.join(", ") + ", so try to exclude them.";
 	}
 	if (jsonPrefs.allergies.length > 0) {
+		console.log(jsonPrefs.allergies)
 		input += ". I am allergic to " + Object.keys(jsonPrefs.allergies).join(", ") + ".";
 	}
 
 	if (isNewChat) {
 		input += ". Generate a title for this chat in the 'chat_title' field in your response."
 	}
+
+	const newMessage = {
+		role: "user",
+		content: input,
+	};
 	// Add user's message to array of all messages to send to the API
 	messages.push(newMessage);
 
@@ -298,14 +299,14 @@ app.post("/chat/:userID/message", async (req, res) => {
 		}
 
 		res.json({
-			// chat_id: chatID,
-			// messages: messages,
-			chatTitle: parsedResMessage.chatTitle,
-			isRecipeList: parsedResMessage.isRecipeList,
-			isRecipe: parsedResMessage.isRecipe,
-			message: parsedResMessage.message,
-			recipeTitles: parsedResMessage.recipeTitles,
-			recipe: parsedResMessage.recipe,
+			chat_id: chatID,
+			messages: messages,
+			// chatTitle: parsedResMessage.chatTitle,
+			// isRecipeList: parsedResMessage.isRecipeList,
+			// isRecipe: parsedResMessage.isRecipe,
+			// message: parsedResMessage.message,
+			// recipeTitles: parsedResMessage.recipeTitles,
+			// recipe: parsedResMessage.recipe,
 		});
 	} catch (error) {
 		res.status(500).json({ error: error.message });
