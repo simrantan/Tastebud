@@ -246,26 +246,29 @@ export default function ChatsMain() {
 									onStartConversation={handleStartConversation}
 								/>
 							)}
-							{chatHistory.map((message, index) => (
-								<div
-									key={index}
-									className={`d-flex flex-row justify-content-${
-										message.role === "user" ? "end" : "start"
-									} mb-4`}
-								>
-									<div>
-										<p
-											className={`small p-2 ms-3 mb-1 rounded-3 ${
-												message.role === "user"
-													? "text-white bg-primary"
-													: "bg-light"
-											}`}
-										>
-											{message.content}
-										</p>
+							{chatHistory
+
+								.filter((message) => message.role !== "system")
+								.map((message, index) => (
+									<div
+										key={index}
+										className={`d-flex flex-row justify-content-${
+											message.role === "user" ? "end" : "start"
+										} mb-4`}
+									>
+										<div>
+											<p
+												className={`small p-2 ms-3 mb-1 rounded-3 ${
+													message.role === "user"
+														? "text-white bg-primary"
+														: "bg-light"
+												}`}
+											>
+												{message.content}
+											</p>
+										</div>
 									</div>
-								</div>
-							))}
+								))}
 							{receivedIsRecipeList && recipePanelData.recipes.length > 0 && (
 								<RecipeCarousel
 									recipes={recipePanelData.recipes}
