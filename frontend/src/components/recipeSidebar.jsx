@@ -49,8 +49,7 @@ const RecipePanel = ({ recipe }) => {
 				throw new Error(`HTTP error! Status: ${response.status}`);
 			}
 
-			const data = await response.json();
-			toast.success(`${recipe.name} has been added to your Recipe Book!`);
+			toast.success(`${recipe.title} has been added to your Recipe Book!`);
 		} catch (error) {
 			console.error("Error adding recipe:", error.message);
 		}
@@ -74,7 +73,6 @@ const RecipePanel = ({ recipe }) => {
 				throw new Error(`HTTP error! Status: ${response.status}`);
 			}
 
-			const data = await response.json();
 			toast.success(`${recipe.name} has been removed from your Recipe Book!`);
 		} catch (error) {
 			console.error("Error removing recipe:", error.message);
@@ -82,46 +80,50 @@ const RecipePanel = ({ recipe }) => {
 	};
 
 	return (
-		<div
-			className="recipe-panel d-flex flex-column justify-content-between"
-			style={{ height: "100%", backgroundColor: "#FFF9F3" }}
-		>
-			<h3>{recipe.title}</h3>
+		<>
+			<ToastContainer position="top-right" autoClose={3000} hideProgressBar />
 
 			<div
-				style={{
-					overflowY: "auto",
-					maxHeight: "calc(100% - 20px)",
-					padding: "10px",
-					backgroundColor: "#FFF9F3",
-				}}
+				className="recipe-panel d-flex flex-column justify-content-between"
+				style={{ height: "100%", backgroundColor: "#FFF9F3" }}
 			>
-				<div style={{}}>
-					<h4>Ingredients</h4>
-					<ul>
-						{recipe.ingredients.map((ingredient, index) => (
-							<li key={index}>{ingredient}</li>
-						))}
-					</ul>
-				</div>
-				<div>
-					<h4>Directions</h4>
+				<h3>{recipe.title}</h3>
+
+				<div
+					style={{
+						overflowY: "auto",
+						maxHeight: "calc(100% - 20px)",
+						padding: "10px",
+						backgroundColor: "#FFF9F3",
+					}}
+				>
+					<div style={{}}>
+						<h4>Ingredients</h4>
+						<ul>
+							{recipe.ingredients.map((ingredient, index) => (
+								<li key={index}>{ingredient}</li>
+							))}
+						</ul>
+					</div>
 					<div>
-						{recipe.directions.map((direction, index) => (
-							<p key={index}>{direction}</p>
-						))}
+						<h4>Directions</h4>
+						<div>
+							{recipe.directions.map((direction, index) => (
+								<p key={index}>{direction}</p>
+							))}
+						</div>
 					</div>
 				</div>
-			</div>
 
-			<Button
-				onClick={handleToggleRecipe}
-				variant={addedToRecipeBook ? "danger" : "primary"}
-				style={{ flex: "none", marginTop: "14px" }}
-			>
-				{addedToRecipeBook ? "Remove from Recipe Book" : "Add to Recipe Book"}
-			</Button>
-		</div>
+				<Button
+					onClick={handleToggleRecipe}
+					variant={addedToRecipeBook ? "danger" : "primary"}
+					style={{ flex: "none", marginTop: "14px" }}
+				>
+					{addedToRecipeBook ? "Remove from Recipe Book" : "Add to Recipe Book"}
+				</Button>
+			</div>
+		</>
 	);
 };
 
