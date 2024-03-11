@@ -24,8 +24,11 @@ export default function ChatsSidebar({
 					return response.json();
 				})
 				.then((user) => {
-					setChats(user.chats);
-					// console.log(user.chats[0]);
+					// Order chats by their created_by field
+					const tmp = user.chats.sort((a, b) =>
+						a.created_by > b.created_by ? 1 : -1
+					);
+					setChats(tmp);
 				})
 				.catch((error) => {
 					console.error("Error fetching chats:", error.message);
@@ -46,32 +49,36 @@ export default function ChatsSidebar({
 				className={`drawer ${
 					chatSidebarIsOpen ? "open" : ""
 				} d-flex flex-column justify-content-between`}
+				style={{ height: "100vh", display: "flex", flexDirection: "column" }}
 			>
-				<div>
-					<div className="d-flex justify-content-between p-3 align-items-top">
-						<h2 className="text-light">My Chats</h2>
-						<button
-							className="btn btn-outline-light btn-lg"
-							style={{ border: "none", marginTop: "-10px" }}
-							onClick={toggleDrawer}
-						>
-							x
-						</button>
-					</div>
-
-					<div>
-						{/* Create an entry for each conversation */}
-						{chats.map((chat) => (
-							<SidebarEntry chat={chat} key={chat.id} />
-						))}
-					</div>
+				<div
+					className="d-flex justify-content-between p-3 align-items-top"
+					style={{ width: "100%" }}
+				>
+					<h2 className="text-light">My Chats</h2>
+					<button
+						className="btn btn-outline-light btn-lg"
+						style={{ border: "none", marginTop: "-10px" }}
+						onClick={toggleDrawer}
+					>
+						x
+					</button>
 				</div>
 
-				<Link to="/newConversation">
-					<Button variant="light" className="text-dark mb-3">
-						Create New Chat
-					</Button>
-				</Link>
+				<div style={{ flex: 1, overflowY: "auto" }}>
+					{/* Create an entry for each conversation */}
+					{chats.map((chat) => (
+						<SidebarEntry chat={chat} key={chat.id} />
+					))}
+				</div>
+
+				<div style={{ flex: "none" }}>
+					<Link to="/newConversation">
+						<Button variant="light" className="text-dark m-3">
+							Create New Chat
+						</Button>
+					</Link>
+				</div>
 			</div>
 		</>
 	);
