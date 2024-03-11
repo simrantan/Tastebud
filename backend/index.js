@@ -360,11 +360,6 @@ app.post("/chat/:userID/message", async (req, res) => {
 		messages = req.body.messages;
 	}
 
-	const newMessage = {
-		role: "user",
-		content: input,
-	};
-
 	// Save the user's original message to Firebase
 	setDoc(
 		doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()),
@@ -393,6 +388,12 @@ app.post("/chat/:userID/message", async (req, res) => {
 		input +=
 			". Generate a title for this chat in the 'chat_title' field in your response.";
 	}
+
+
+	const newMessage = {
+		role: "user",
+		content: input,
+	};
 	// Add user's message to array of all messages to send to the API
 	messages.push(newMessage);
 
@@ -439,14 +440,14 @@ app.post("/chat/:userID/message", async (req, res) => {
 		}
 
 		res.json({
-			// chat_id: chatID,
-			// messages: messages,
-			chatTitle: parsedResMessage.chatTitle,
-			isRecipeList: parsedResMessage.isRecipeList,
-			isRecipe: parsedResMessage.isRecipe,
-			message: parsedResMessage.message,
-			recipeTitles: parsedResMessage.recipeTitles,
-			recipe: parsedResMessage.recipe,
+			chat_id: chatID,
+			messages: messages,
+			//chatTitle: parsedResMessage.chatTitle,
+			// isRecipeList: parsedResMessage.isRecipeList,
+			// isRecipe: parsedResMessage.isRecipe,
+			// message: parsedResMessage.message,
+			// recipeTitles: parsedResMessage.recipeTitles,
+			// recipe: parsedResMessage.recipe,
 		});
 	} catch (error) {
 		res.status(500).json({ error: error.message });
