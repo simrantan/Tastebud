@@ -4,6 +4,8 @@ import RecipePanel from "./recipeSidebar";
 import RecipeCarousel from "./carousel";
 import ConversationStarters from "./conversationStarters";
 import { useParams } from "react-router-dom";
+import "./ChatStyle.css"; 
+
 
 const AI_SIMULATION_ENDPOINT =
 	"http://localhost:3001/chat/00000000_sample_user/message";
@@ -302,9 +304,7 @@ export default function ChatsMain() {
 										<div>
 											<p
 												className={`small p-2 ms-3 mb-1 rounded-3 ${
-													message.role === "user"
-														? "text-white bg-primary"
-														: "bg-light"
+													message.role === "user" ? "user-message" : "bg-light"
 												}`}
 											>
 												{message.content}
