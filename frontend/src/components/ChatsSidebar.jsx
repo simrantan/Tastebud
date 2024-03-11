@@ -32,7 +32,8 @@ export default function ChatsSidebar({
 					throw error;
 				});
 		}
-	}, [userData]);
+		// Run when userData is updated and when the sidebar is opened/closed
+	}, [userData, chatSidebarIsOpen]);
 
 	function toggleDrawer() {
 		setChatSidebarIsOpen(!chatSidebarIsOpen);
