@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { useUser } from "../contexts/UserContext";
 
 export default function UserProfile({ props }) {
-	const { userData, setDisplayName, isLoggedIn, logOut } = useUser();
-	console.log(isLoggedIn());
+	const { userData, setDisplayName, logOut } = useUser();
 
 	const [localDisplayName, setLocalDisplayName] = useState(
 		userData ? userData.displayName : ""

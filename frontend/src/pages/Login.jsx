@@ -85,9 +85,10 @@ export default function LoginPage({ props }) {
 			uid: userCredential.user.uid,
 		};
 		// Update user context
-		updateUser(userData);
-		// Redirect to home page after successful login
-		navigate("/");
+		updateUser(userData).then(() => {
+			// Redirect to home page after successful login
+			navigate("/");
+		});
 	}
 
 	return (

@@ -15,17 +15,17 @@ export const UserProvider = ({ children }) => {
 
 	// Any time the userData changes, update it in local storage
 	useEffect(() => {
-		console.log("userData", userData);
+		// console.log("userData", userData);
 		localStorage.setItem("userData", JSON.stringify(userData));
 	}, [userData]);
 
-	const updateUser = (data) => {
+	const updateUser = async (data) => {
 		setDisplayName(data.displayName);
 		setEmail(data.email);
 		setUid(data.uid);
 
 		// Pull data from Firebase and store it in the context
-		fetch(`http://localhost:3001/user/${data.uid}`)
+		return fetch(`http://localhost:3001/user/${data.uid}`)
 			.then((response) => {
 				if (!response.ok) {
 					throw new Error("Network response was not ok");
@@ -41,12 +41,7 @@ export const UserProvider = ({ children }) => {
 	};
 
 	function isLoggedIn() {
-		return !(
-			!userId ||
-			userId === "" ||
-			userId === null ||
-			userId === undefined
-		);
+		return localStorage.getItem("userData") !== null;
 	}
 
 	function logOut() {
