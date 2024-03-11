@@ -4,14 +4,14 @@ import recipeBook from "../assets/recipe-book.png";
 
 export default function NavBar({ setChatSidebarIsOpen }) {
 	return (
-		<nav className="navbar navbar-expand-lg navbar-light bg-light d-flex justify-content-between mb-3">
+		<nav className="navbar navbar-expand-lg navbar-white bg-white d-flex justify-content-between mb-3">
 			<div
 				className="d-flex flex-column align-items-center text-decoration-none mx-3"
 				style={{ width: "fit-content" }}
 				onClick={() => setChatSidebarIsOpen(true)}
 			>
 				<div
-					className="btn btn-primary"
+					className="btn btn-custom" // Change btn-primary to btn-custom
 					style={{
 						aspectRatio: "1",
 						padding: "0",
@@ -19,6 +19,8 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 						display: "flex",
 						justifyContent: "center",
 						alignItems: "center",
+						backgroundColor: "#d87e79", // Set the background color
+						outline: "none", // Remove the outline
 					}}
 				>
 					<img
@@ -28,7 +30,7 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 					/>
 				</div>
 
-				<span className="d-block small">Previous Chats</span>
+				<span className="d-block small" style={{ color: "#d87e79" }}>Previous Chats</span>
 			</div>
 
 			<div className="d-flex justify-content-end ">
@@ -52,7 +54,7 @@ function NavButton({ label, path, icon }) {
 			style={{ width: "fit-content" }}
 		>
 			<div
-				className="btn btn-primary"
+				className="btn btn-custom" // Change btn-primary to btn-custom
 				style={{
 					aspectRatio: "1",
 					padding: "0",
@@ -60,6 +62,8 @@ function NavButton({ label, path, icon }) {
 					display: "flex",
 					justifyContent: "center",
 					alignItems: "center",
+					backgroundColor: "#d87e79", // Set the background color
+					outline: "none", // Remove the outline
 				}}
 			>
 				<img
@@ -69,7 +73,7 @@ function NavButton({ label, path, icon }) {
 				/>
 			</div>
 
-			<span className="d-block small">{label}</span>
+			<span className="d-block small" style={{ color: "#d87e79" }}>{label}</span>
 		</Link>
 	);
 }
