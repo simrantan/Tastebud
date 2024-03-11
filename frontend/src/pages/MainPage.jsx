@@ -2,6 +2,8 @@
 import React, { useEffect } from "react";
 import PreferenceCard from "../components/PreferenceCard.jsx";
 import { useUser } from "../contexts/UserContext";
+import ChatsSidebar from "../components/ChatsSidebar.jsx";
+
 
 export default function MainPage() {
 	const { userData } = useUser();
@@ -10,6 +12,7 @@ export default function MainPage() {
 		<div className="container">
 			<h2>Welcome, {userData.displayName || "Chef"}!</h2>
 
+			<ChatsSidebar />
 			<PreferenceCard />
 		</div>
 	);
