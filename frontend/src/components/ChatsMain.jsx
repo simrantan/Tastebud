@@ -27,7 +27,7 @@ export default function ChatsMain() {
 		// Update state when the roomId parameter changes
 		setCurChatId(chatId);
 		//set chat history with url
-		async ({}) => {
+		const fetchData = async () => {
 			try {
 				const response = await fetch(AI_SIMULATION_ENDPOINT, {
 					method: "POST",
@@ -40,12 +40,12 @@ export default function ChatsMain() {
 					}),
 				});
 				const chatData = await response.json();
-				setChatHistory(chatData);
+				setChatHistory(chatData.messages);
 			} catch (error) {
 				console.error("Error fetching AI response:", error);
 			}
 		};
-
+		fetchData();
 		if (chatHistory.length === 1) {
 			// Send a default message from the assistant
 			const defaultAssistantMessage = {

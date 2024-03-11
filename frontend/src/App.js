@@ -11,8 +11,7 @@ function App() {
 		<Router>
 			<div className="App">
 				<Routes>
-					<Route path="/" element={<MainPage />} />
-					<Route path="/chats" element={<ChatsMain />} />
+					<Route path="/:chatId" element={<MainPage />} />
 					<Route path="/recipe-book" element={<RecipeBook />} />
 				</Routes>
 			</div>
