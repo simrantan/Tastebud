@@ -151,6 +151,10 @@ export default function ChatsMain() {
 
 					const responseData = await response2.json();
 
+
+					if (curChatId == undefined) {
+						setChatHistory(responseData.messages.slice(0, 2));
+					}
 					const newID = responseData.chat_id;
 					setCurChatId(newID);
 					console.log("newid", newID);
@@ -272,6 +276,7 @@ export default function ChatsMain() {
 	return (
 		<Container fluid className="py-5" style={{ backgroundColor: "#eee" }}>
 			<Row className="justify-content-center">
+				{/* RecipePanel with a placeholder recipe */}
 				<Col md="4" lg="3" xl="2">
 					<RecipePanel recipe={selectedRecipe} />
 				</Col>
