@@ -3,7 +3,6 @@ import "./ChatsSidebar.css";
 import { Link } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 
-
 const API_URL = "http://localhost:3001/user";
 
 export default function ChatsSidebar({
@@ -75,21 +74,25 @@ export default function ChatsSidebar({
 function SidebarEntry({ chat }) {
 	return (
 		<Link
-		to={`/`}
-		className="container my-1 p-1 text-decoration-none position-relative"
-		style={{
-		  backgroundColor: "#ddd",
-		  height: "90px",
-		  width: "94%",
-		  borderRadius: "10px",
-		  color: "black",
-		  position: "relative",
-		  display: "flex",
-		  alignItems: "center",
-		}}
-	  >
-		<h4 style={{ paddingLeft: "10px" }}>{chat.name}</h4>
-		<img className="arrow" src={require('../assets/arrow.svg').default} alt="Arrow" />
-	  </Link>
+			to={`/`}
+			className="container my-1 p-1 text-decoration-none position-relative"
+			style={{
+				backgroundColor: "#ddd",
+				height: "90px",
+				width: "94%",
+				borderRadius: "10px",
+				color: "black",
+				position: "relative",
+				display: "flex",
+				alignItems: "center",
+			}}
+		>
+			<h4 style={{ paddingLeft: "10px" }}>{chat.name}</h4>
+			<img
+				className="arrow"
+				src={require("../assets/arrow.svg").default}
+				alt="Arrow"
+			/>
+		</Link>
 	);
-  }
+}

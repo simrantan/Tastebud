@@ -16,7 +16,9 @@ export const UserProvider = ({ children }) => {
 	// Any time the userData changes, update it in local storage
 	useEffect(() => {
 		// console.log("userData", userData);
-		localStorage.setItem("userData", JSON.stringify(userData));
+		if (userData) {
+			localStorage.setItem("userData", JSON.stringify(userData));
+		}
 	}, [userData]);
 
 	const updateUser = async (data) => {
@@ -50,9 +52,6 @@ export const UserProvider = ({ children }) => {
 			.auth()
 			.signOut()
 			.then(() => {
-				setUserData(null);
-				setEmail(null);
-				setDisplayName(null);
 				setUid(null);
 			})
 			.catch((error) => {

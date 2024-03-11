@@ -8,6 +8,7 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 			<div
 				className="d-flex flex-column align-items-center text-decoration-none mx-3"
 				style={{ width: "fit-content" }}
+				// TODO: shouldn't do this if no user logged in
 				onClick={() => setChatSidebarIsOpen(true)}
 			>
 				<div
@@ -30,7 +31,9 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 					/>
 				</div>
 
-				<span className="d-block small" style={{ color: "#d87e79" }}>Previous Chats</span>
+				<span className="d-block small" style={{ color: "#d87e79" }}>
+					Previous Chats
+				</span>
 			</div>
 
 			<div className="d-flex justify-content-end ">
@@ -73,7 +76,9 @@ function NavButton({ label, path, icon }) {
 				/>
 			</div>
 
-			<span className="d-block small" style={{ color: "#d87e79" }}>{label}</span>
+			<span className="d-block small" style={{ color: "#d87e79" }}>
+				{label}
+			</span>
 		</Link>
 	);
 }
