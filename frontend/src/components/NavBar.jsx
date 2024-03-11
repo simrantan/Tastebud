@@ -22,6 +22,7 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 						justifyContent: "center",
 						alignItems: "center",
 						backgroundColor: "#d87e79",
+						border: "none",
 					}}
 				>
 					<img
@@ -64,6 +65,7 @@ function NavButton({ label, path, icon }) {
 					justifyContent: "center",
 					alignItems: "center",
 					backgroundColor: "#d87e79",
+					border: "none",
 				}}
 			>
 				<img
