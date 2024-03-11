@@ -139,11 +139,11 @@ export default function ChatsMain() {
 
 						const contentString = lastMessage.content; // Assuming content is a string
 						const contentObject = JSON.parse(contentString);
-						console.log("content", contentObject);
 						const isRecipeList = contentObject.isRecipeList;
 						const receivedChatTitle = contentObject.chatTitle;
 						const receivedContent = contentObject.message;
-						console.log("last", lastMessage);
+
+						console.log("responsedata", responseData.messages);
 
 						setReceivedIsRecipeList(isRecipeList);
 
