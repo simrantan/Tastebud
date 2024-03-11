@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from "react";
 import "./ChatsSidebar.css";
 import { Link } from "react-router-dom";
-import theme from "../theme/themes"; 
+import { useUser } from "../contexts/UserContext";
 
 
-// TODO: Replace this with the user's UID, pulled from Context
-const TESTING_UID = "00000000_sample_user";
 const API_URL = "http://localhost:3001/user";
 
-export default function ChatsSidebar({ props }) {
-	const [isOpen, setIsOpen] = useState(true);
+export default function ChatsSidebar({
+	chatSidebarIsOpen,
+	setChatSidebarIsOpen,
+}) {
+	const { userData } = useUser();
 	const [chats, setChats] = useState([]);
 
 	// Fetch the user's chats from the backend
 	useEffect(() => {
-		fetch(`${API_URL}/${TESTING_UID}`)
+		fetch(`${API_URL}/${userData.id}`)
 			.then((response) => {
 				if (!response.ok) {
 					throw new Error(`HTTP error! Status: ${response.status}`);
@@ -23,24 +24,26 @@ export default function ChatsSidebar({ props }) {
 			})
 			.then((user) => {
 				setChats(user.chats);
-				console.log(user.chats[0]);
+				// console.log(user.chats[0]);
 			})
 			.catch((error) => {
 				console.error("Error fetching chats:", error.message);
 				throw error;
 			});
-	}, []);
+	}, [userData.id]);
 
-	const toggleDrawer = () => {
-		setIsOpen(!isOpen);
-	};
+	function toggleDrawer() {
+		setChatSidebarIsOpen(!chatSidebarIsOpen);
+	}
 
 	return (
 		<>
 			<div
 				id="myDrawer"
-				className={`drawer ${isOpen ? "open" : ""} d-flex flex-column`}
-				style={{ backgroundColor: "#573c56" }}
+				className={`drawer ${
+					chatSidebarIsOpen ? "open" : ""
+				} d-flex flex-column`}
+				style={{ backgroundColor: "#573C56" }}
 			>
 				<div className="d-flex justify-content-ends p-3 align-items-top">
 					<h2 className="text-light">My Chats</h2>
@@ -64,10 +67,6 @@ export default function ChatsSidebar({ props }) {
 				{chats.map((chat) => (
 					<SidebarEntry chat={chat} key={chat.id} />
 				))}
-			</div>
-
-			<div id="mainContent" className={`${isOpen ? "open-drawer" : ""}`}>
-				<button onClick={toggleDrawer}>Toggle Drawer</button>
 			</div>
 		</>
 	);

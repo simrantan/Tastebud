@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
 	Form,
-	Col,
 	Button,
 	FormControl,
 	Dropdown,
@@ -9,16 +8,17 @@ import {
 	Tooltip,
 } from "react-bootstrap";
 import "./PreferenceCard.css";
+import { useUser } from "../contexts/UserContext";
 
 const PreferenceCard = () => {
-	//state
+	const { userData } = useUser();
 	const [allergens, setAllergens] = useState({});
 	const [likes, setLikes] = useState([]);
 	const [dislikes, setDislikes] = useState([]);
 	const [newAllergen, setNewAllergen] = useState("");
 	const [newLike, setNewLike] = useState("");
 	const [newDislike, setNewDislike] = useState("");
-	const userId = "00000000_sample_user";
+	const userId = userData.id;
 
 	useEffect(() => {
 		const fetchPreferences = async () => {
@@ -33,15 +33,13 @@ const PreferenceCard = () => {
 				setAllergens(data.allergies || {});
 				setLikes(data.likes || []);
 				setDislikes(data.dislikes || []);
-				console.log("set user data");
 			} catch (error) {
 				console.error("Error fetching preferences:", error.message);
 			}
 		};
 
-		// Fetch user preferences on the first run
 		fetchPreferences();
-	}, []); // Empty dependency array ensures it runs only once
+	}, [userId]);
 
 	const savePreferences = async (prefType, preferences) => {
 		try {

@@ -127,44 +127,43 @@ export default function RecipeBook() {
 	return (
 		<div>
 			<ToastContainer position="top-right" autoClose={3000} hideProgressBar />
-			<div className="homepage-button">
-				<Button variant="primary" onClick={handleHomepageButton}>
-					Go to MainPage
-				</Button>
-			</div>
-			<h2>Recipe Book</h2>
-			<input
-				type="text"
-				placeholder="Search recipes..."
-				value={searchQuery}
-				onChange={handleSearchChange}
-			/>
-			{Object.keys(groupedRecipes).map((cuisine, index) => (
-				<div key={`${cuisine}-${index}`} className="cuisine-container">
-					<h3>{cuisine}</h3>
-					<div className="recipe-container">
-						{groupedRecipes[cuisine].map((recipe) => (
-							<Card key={recipe.id} className="recipe-card">
-								<Card.Img variant="top" src={recipe.picture_url} />
-								<Card.Body>
-									<Card.Title>{recipe.name}</Card.Title>
-									<div className="button-container">
-										<Button onClick={() => handleRecipeClick(recipe)}>
-											View Recipe
-										</Button>
-										<Button
-											variant="danger"
-											onClick={() => handleRemoveFromRecipeBook(recipe.id)}
-										>
-											Remove
-										</Button>
-									</div>
-								</Card.Body>
-							</Card>
-						))}
+
+			<div className="container">
+				<h2>Recipe Book</h2>
+				<input
+					type="text"
+					placeholder="Search recipes..."
+					value={searchQuery}
+					onChange={handleSearchChange}
+				/>
+				{Object.keys(groupedRecipes).map((cuisine, index) => (
+					<div key={`${cuisine}-${index}`} className="cuisine-container">
+						<h3>{cuisine}</h3>
+						<div className="recipe-container">
+							{groupedRecipes[cuisine].map((recipe) => (
+								<Card key={recipe.id} className="recipe-card">
+									<Card.Img variant="top" src={recipe.picture_url} />
+									<Card.Body>
+										<Card.Title>{recipe.name}</Card.Title>
+										<div className="button-container">
+											<Button onClick={() => handleRecipeClick(recipe)}>
+												View Recipe
+											</Button>
+											<Button
+												variant="danger"
+												onClick={() => handleRemoveFromRecipeBook(recipe.id)}
+											>
+												Remove
+											</Button>
+										</div>
+									</Card.Body>
+								</Card>
+							))}
+						</div>
 					</div>
-				</div>
-			))}
+				))}
+			</div>
+
 			<Modal show={showModal} onHide={handleCloseModal}>
 				<Modal.Header closeButton>
 					<Modal.Title>{selectedRecipe?.name}</Modal.Title>
