@@ -5,6 +5,9 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 import ReactMarkdown from "react-markdown";
 
+import recipeImage from "../assets/cuisines/other.jpeg";
+
+
 import "react-toastify/dist/ReactToastify.css";
 import "./RecipeBook.css";
 
@@ -86,21 +89,8 @@ export default function RecipeBook() {
 
   const generateImagePath = (cuisine) => {
     // Assuming the cuisines folder is in the public directory
-    let imagePath = `/cuisines/${cuisine}.jpeg`;
-  
-    // Check if the file exists, if not, use the default image
-    fetch(imagePath, { method: 'HEAD' })
-      .then(response => {
-        if (!response.ok) {
-          // File not found, use default image
-          imagePath = `/cuisines/other.jpeg`;
-        }
-      })
-      .catch(error => {
-        // Fetch error, use default image
-        imagePath = `/cuisines/other.jpeg`;
-      });
-  
+    const imagePath = '/cuisines/other.jpeg';
+    
     return imagePath;
   };
   
@@ -155,7 +145,7 @@ export default function RecipeBook() {
                 <Card key={recipe.id} className="recipe-card">
                   <Card.Img
                     variant="top"
-                    src={generateImagePath(recipe.cuisine)}
+                    src={recipeImage}
                   />
                   <Card.Body>
                     <Card.Title>{recipe.title}</Card.Title>
