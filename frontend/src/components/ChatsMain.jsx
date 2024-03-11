@@ -26,7 +26,8 @@ export default function ChatsMain() {
 	useEffect(() => {
 		// Update state when the roomId parameter changes
 		setCurChatId(chatId);
-		//set chat history with url
+
+		// Set chat history with URL
 		const fetchData = async () => {
 			try {
 				const response = await fetch(AI_SIMULATION_ENDPOINT, {
@@ -40,6 +41,9 @@ export default function ChatsMain() {
 					}),
 				});
 				const chatData = await response.json();
+
+				// Check if the chat history contains only the initial system message
+
 				setChatHistory((prevChatHistory) => [
 					...prevChatHistory,
 					chatData.messages,
@@ -48,25 +52,9 @@ export default function ChatsMain() {
 				console.error("Error fetching AI response:", error);
 			}
 		};
+
 		fetchData();
-		if (chatHistory.length === 1) {
-			// Send a default message from the assistant
-			const defaultAssistantMessage = {
-				role: "assistant",
-				content:
-					"Hi Chef! I’m your personal Chef Assistant TasteBud. What are you thinking of making? I’ll take your preferences and dietary restrictions into account 😁. When you find a recipe you like, you can save it to your recipe book! View your recipe book by clicking the button in the top left corner… And you can always add more dietary preferences to your profile!",
-			};
-
-			// Update chat history with the default message
-			setChatHistory((prevChatHistory) => [
-				...prevChatHistory,
-				defaultAssistantMessage,
-			]);
-
-			// Scroll to the bottom after updating the chat history
-			scrollToBottom();
-		}
-	}, [chatId]);
+	}, [chatId, curChatId]);
 
 	const scrollToBottom = () => {
 		if (messagesEndRef.current) {
@@ -244,14 +232,18 @@ export default function ChatsMain() {
 							<h5 className="mb-0">Chat</h5>
 						</Card.Header>
 						<Card.Body style={{ maxHeight: "400px", overflowY: "auto" }}>
-							{showConversationStarters && chatHistory.length <= 1 && (
+							{showConversationStarters && (
 								<ConversationStarters
 									onStartConversation={handleStartConversation}
 								/>
 							)}
 							{chatHistory
 
-								.filter((message) => message.role !== "system")
+								.filter(
+									(message) =>
+										message && message.role && message.role !== "system"
+								)
+
 								.map((message, index) => (
 									<div
 										key={index}
