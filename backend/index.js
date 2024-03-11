@@ -29,7 +29,7 @@ const headers = new Headers({
 	Authorization: `Bearer ${apiKey}`,
 });
 const model = "mistralai/Mixtral-8x7B-Instruct-v0.1";
-const maxTokens = 1000; // Keeping this low for now to not use up $$$
+const maxTokens = 2000; // Keeping this low for now to not use up $$$
 
 // Use CORS middleware
 app.use(
@@ -307,6 +307,141 @@ app.post("/chat/:userID/message", async (req, res) => {
 	}
 });
 
+/* ###################################################### Chat Methods ##################################################### */
+/** Get response message from TasteBud after receiving user message */
+app.post("/chat/:userID/message", async (req, res) => {
+	// Test with: curl -X POST -H "Content-Type: application/json" -d '{"message": "I want to make a cake", "chatID": null}' http://localhost:3001/chat/00000000_sample_user/message
+
+	const userId = req.params.userID;
+	const isNewChat = req.body.chatID === null;
+	const preferences = req.body.preferences;
+	var input = req.body.message;
+	var chatID = req.body.chatID;
+	var chatRef = null;
+	var messages = null;
+
+	if (isNewChat) {
+		// Create new chat in firebase
+		const chatsRef = collection(DATABASE, `users/${userId}/chats`);
+		chatRef = await addDoc(chatsRef, {
+			name: "New Chat",
+			is_group: false,
+			host_id: userId,
+			created_at: getTimestamp(),
+		});
+		chatID = chatRef.id;
+		// Start new message history in Firebase, with the system message
+		await setDoc(
+			doc(
+				DATABASE,
+				"users",
+				userId,
+				"chats",
+				chatID,
+				"messages",
+				getTimestamp()
+			),
+			systemMessage
+		);
+		messages = [systemMessage];
+	} else {
+		chatRef = doc(DATABASE, "users", userId, "chats", chatID);
+		messages = req.body.messages;
+	}
+
+	const newMessage = {
+		role: "user",
+		content: input,
+	};
+
+	// Save the user's original message to Firebase
+	setDoc(
+		doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()),
+		newMessage
+	);
+
+	// jsonPrefs = JSON.parse(preferences);
+	if (jsonPrefs.likes.length > 0) {
+		input +=
+			". You don't need to include these, but I like " +
+			jsonPrefs.likes.join(", ") +
+			".";
+	}
+	if (jsonPrefs.dislikes.length > 0) {
+		input +=
+			". I dislike " +
+			jsonPrefs.dislikes.join(", ") +
+			", so try to exclude them.";
+	}
+	if (jsonPrefs.allergies.length > 0) {
+		input +=
+			". I am allergic to " + Object.keys(jsonPrefs.allergies).join(", ") + ".";
+	}
+
+	if (isNewChat) {
+		input +=
+			". Generate a title for this chat in the 'chat_title' field in your response.";
+	}
+	// Add user's message to array of all messages to send to the API
+	messages.push(newMessage);
+
+	const data = {
+		model: model,
+		max_tokens: maxTokens,
+		messages: messages,
+	};
+
+	const options = {
+		method: "POST",
+		headers: headers,
+		body: JSON.stringify(data),
+	};
+
+	try {
+		const response = await fetch(url, options);
+		const result = await response.text();
+		let resMessage = JSON.parse(result).choices[0].message;
+		messages.push(resMessage);
+		console.log(resMessage);
+
+		const parsedResMessage = JSON.parse(resMessage.content);
+
+		// Save TasteBud's response to Firebase
+		setDoc(
+			doc(
+				DATABASE,
+				"users",
+				userId,
+				"chats",
+				chatID,
+				"messages",
+				getTimestamp()
+			),
+			resMessage
+		);
+
+		if (isNewChat) {
+			// Update the chat title
+			updateDoc(chatRef, {
+				name: JSON.parse(resMessage.content).chatTitle,
+			});
+		}
+
+		res.json({
+			// chat_id: chatID,
+			// messages: messages,
+			chatTitle: parsedResMessage.chatTitle,
+			isRecipeList: parsedResMessage.isRecipeList,
+			isRecipe: parsedResMessage.isRecipe,
+			message: parsedResMessage.message,
+			recipeTitles: parsedResMessage.recipeTitles,
+			recipe: parsedResMessage.recipe,
+		});
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
+});
+
 /* ########################### Chat ########################## */
 /** Get all the information for a single chat */
 app.get("/chat/:userID/:chatID", async (req, res) => {
@@ -361,105 +496,6 @@ app.get("/firebase/dummy_data", (req, res) => {
 	console.log("Creating dummy data...");
 	generateDummyData();
 	res.json({ message: "Dummy data created!" });
-});
-
-/* ###################################################### Chat Methods ##################################################### */
-/** Get response message from TasteBud after receiving user message */
-app.post("/chat/:userID/:chatID/message", async (req, res) => {
-	// Test with: curl -X POST -H "Content-Type: application/json" -d '{"message": "I want to make a cake"}' http://localhost:3001/chat/00000000_sample_user/00000000_sample_chat/message
-	const userId = req.params.userID;
-	const chatID = req.params.chatID;
-	var input = req.body.message;
-	var messages = null;
-	const chatRef = doc(DATABASE, "users", userId, "chats", chatID);
-
-	// Get existing message history from request body, else create new chat with system message
-	if (req.body.messages) {
-		messages = req.body.messages;
-	} else {
-		// Create new chat in firebase
-		await setDoc(chatRef, {
-			name: "New Chat",
-			is_group: false,
-			host_id: userId,
-			created_at: getTimestamp(),
-		});
-		messages = [systemMessage];
-		// Save the system message to chat history in Firebase
-		await setDoc(
-			doc(
-				DATABASE,
-				"users",
-				userId,
-				"chats",
-				chatID,
-				"messages",
-				getTimestamp()
-			),
-			systemMessage
-		);
-		input +=
-			". Generate a title for this chat in the 'chat_title' field in your response.";
-	}
-
-	const newMessage = {
-		role: "user",
-		content: input,
-	};
-
-	// Save the user's message to Firebase
-	setDoc(
-		doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()),
-		newMessage
-	);
-
-	// Add user's message to array of all messages to send to the API
-	messages.push(newMessage);
-
-	const data = {
-		model: model,
-		max_tokens: maxTokens,
-		messages: messages,
-	};
-
-	const options = {
-		method: "POST",
-		headers: headers,
-		body: JSON.stringify(data),
-	};
-
-	try {
-		const response = await fetch(url, options);
-		const result = await response.text();
-		let resMessage = JSON.parse(result).choices[0].message;
-		messages.push(resMessage);
-
-		// Save TasteBud's response to Firebase
-		setDoc(
-			doc(
-				DATABASE,
-				"users",
-				userId,
-				"chats",
-				chatID,
-				"messages",
-				getTimestamp()
-			),
-			resMessage
-		);
-
-		// Update the chat title
-		await updateDoc(chatRef, {
-			name: JSON.parse(resMessage.content).chatTitle,
-		});
-
-		res.json({
-			chat_id: chatID,
-			messages: messages,
-		});
-	} catch (error) {
-		res.status(500).json({ error: error.message });
-	}
 });
 
 app.get("/", (req, res) => {
