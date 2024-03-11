@@ -12,7 +12,7 @@ export default function ChatsMain() {
 	const { userData } = useUser();
 
 	const { chatId } = useParams();
-
+	console.log("chattt" + chatId)
 	const [userInput, setUserInput] = useState("");
 	const [chatHistory, setChatHistory] = useState([{}]);
 	const [recipePanelData, setRecipePanelData] = useState({ recipes: [] });
@@ -29,64 +29,72 @@ export default function ChatsMain() {
 	const get_chats = `http://localhost:3001/chat/${userId}`;
 
 
-	useEffect(() => {
-		// Update state when the roomId parameter changes
-		console.log("updated chat:" + chatId)
-		setCurChatId(chatId);
-	}, [chatId]);
 
-	useEffect(() => {
-		// Set chat history with URL
-		const fetchData = async () => {
-			try {
-				if (curChatId === undefined) {
-					// Start a new conversation with conversation starters and empty chat history
-					setChatHistory([]);
-					setShowConversationStarters(true); // Show conversation starters
-					return; // Skip the rest of the logic for new conversation
-				}
-				const response = await fetch(`${get_chats}/${curChatId}`, {
-					method: "GET",
-					headers: {
-						"Content-Type": "application/json",
-					},
-				});
 
-				if (!response.ok) {
-					throw new Error(`HTTP error! Status: ${response.status}`);
-				}
+  useEffect(() => {
+    // Set chat history with URL
+    const fetchData = async () => {
+      try {
+        if (chatId === undefined) {
+          // Start a new conversation with conversation starters and empty chat history
+          setChatHistory([]);
+          setShowConversationStarters(true); // Show conversation starters
+          return; // Skip the rest of the logic for a new conversation
+        }
 
-				const chatData = await response.json();
+        const response = await fetch(`${get_chats}/${chatId}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-				const allMessages = [];
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
 
-				// Use a loop to iterate through messages
-				for (const message of chatData.chats) {
-					if (message.role === "user") {
-						allMessages.push({
-							role: message.role,
-							content: message.content,
-						});
-					} else if (message.role === "assistant") {
-						const assistantContent = JSON.parse(message.content).message;
-						allMessages.push({
-							role: "assistant",
-							content: assistantContent,
-						});
-					}
-				}
-				if (allMessages.length >= 1) {
-					setShowConversationStarters(false);
-				}
+        const chatData = await response.json();
 
-				setChatHistory(allMessages);
-			} catch (error) {
-				console.error("Error fetching chat data:", error);
-			}
-		};
+        const allMessages = [];
 
-		fetchData();
-	}, [chatId]);
+        // Use a loop to iterate through messages
+        for (const message of chatData.chats) {
+          if (message.role === "user") {
+            allMessages.push({
+              role: message.role,
+              content: message.content,
+            });
+          } else if (message.role === "assistant") {
+            const assistantContent = JSON.parse(message.content).message;
+            allMessages.push({
+              role: "assistant",
+              content: assistantContent,
+            });
+          }
+        }
+
+        if (allMessages.length >= 1) {
+          setShowConversationStarters(false);
+        }
+
+        setChatHistory(allMessages);
+      } catch (error) {
+        console.error("Error fetching chat data:", error);
+      }
+    };
+
+    setCurChatId((prevChatId) => {
+      const newChatId =  chatId/* your logic to determine the new chatId */;
+      
+      console.log("curChatId: " + prevChatId);
+      console.log("newChatId: " + newChatId);
+
+      // Perform any additional logic or side effects here
+      fetchData();
+      
+      return newChatId;
+    });
+  }, [chatId]);
 
 	const scrollToBottom = () => {
 		if (messagesEndRef.current) {
