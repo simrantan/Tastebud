@@ -1,17 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Card, Button, Modal } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
-import ReactMarkdown from "react-markdown";
-
-import recipeImage from "../assets/cuisines/other.jpeg";
 
 import "react-toastify/dist/ReactToastify.css";
 import "./RecipeBook.css";
 
 export default function RecipeBook() {
-	const navigate = useNavigate();
 	const { userData } = useUser();
 
 	const userId = userData.id;
@@ -44,10 +39,6 @@ export default function RecipeBook() {
 
 	const handleCloseModal = () => {
 		setShowModal(false);
-	};
-
-	const handleHomepageButton = () => {
-		navigate("/");
 	};
 
 	const handleRemoveFromRecipeBookModal = (recipeId) => {
@@ -84,25 +75,6 @@ export default function RecipeBook() {
 		} catch (error) {
 			console.error("Error removing recipe:", error.message);
 		}
-	};
-
-	const generateImagePath = (cuisine) => {
-		let imagePath = `../../../cuisines/${cuisine}.jpeg`;
-
-		// Check if the file exists, if not, use the default image
-		fetch(imagePath, { method: "HEAD" })
-			.then((response) => {
-				if (!response.ok) {
-					// File not found, use default image
-					imagePath = `../../../cuisines/other.jpeg`;
-				}
-			})
-			.catch((error) => {
-				// Fetch error, use default image
-				imagePath = `../../../cuisines/other.jpeg`;
-			});
-
-		return imagePath;
 	};
 
 	const filteredRecipes = recipeBook.filter(
@@ -171,8 +143,14 @@ export default function RecipeBook() {
 								>
 									<Card.Img
 										variant="top"
-										src={generateImagePath(recipe.cuisine)}
+										src={`${process.env.PUBLIC_URL}/cuisines/${cuisine
+											.split(",")[0]
+											.toLocaleLowerCase()}.jpeg`}
+										onError={(e) => {
+											e.target.src = `${process.env.PUBLIC_URL}/cuisines/other.jpeg`;
+										}}
 									/>
+
 									<Card.Body>
 										<Card.Title>{recipe.title}</Card.Title>
 										<div className="button-container">
@@ -212,11 +190,11 @@ export default function RecipeBook() {
 								))}
 							</ul>
 							<h4>Directions:</h4>
-							<ul>
+							<div>
 								{selectedRecipe.directions.map((direction, index) => (
-									<li key={index}>{direction}</li>
+									<p key={index}>{direction}</p>
 								))}
-							</ul>
+							</div>
 						</>
 					)}
 				</Modal.Body>
