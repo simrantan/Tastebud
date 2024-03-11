@@ -9,11 +9,10 @@ import "react-toastify/dist/ReactToastify.css";
 import "./RecipeBook.css"; // Import the CSS file
 
 export default function RecipeBook() {
-
 	const navigate = useNavigate();
 	const { userData } = useUser();
 
-	const userId = userData.id
+	const userId = userData.id;
 	const [recipeBook, setRecipeBook] = useState([]);
 
 	const [showModal, setShowModal] = useState(false);
@@ -95,8 +94,11 @@ export default function RecipeBook() {
 		}
 	};
 
-	const filteredRecipes = recipeBook.filter((recipe) =>
-		recipe.name.toLowerCase().includes(searchQuery.toLowerCase())
+	const filteredRecipes = recipeBook.filter(
+		(recipe) =>
+			recipe &&
+			recipe.name &&
+			recipe.name.toLowerCase().includes(searchQuery.toLowerCase())
 	);
 
 	const groupRecipesByCuisine = () => {
