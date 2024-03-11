@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
 	Form,
-	Col,
 	Button,
 	FormControl,
 	Dropdown,
@@ -9,8 +8,10 @@ import {
 	Tooltip,
 } from "react-bootstrap";
 import "./PreferenceCard.css";
+import { useUser } from "../contexts/UserContext";
 
 const PreferenceCard = () => {
+	const { userData } = useUser();
 	//state
 	const [allergens, setAllergens] = useState({});
 	const [likes, setLikes] = useState([]);
@@ -18,7 +19,7 @@ const PreferenceCard = () => {
 	const [newAllergen, setNewAllergen] = useState("");
 	const [newLike, setNewLike] = useState("");
 	const [newDislike, setNewDislike] = useState("");
-	const userId = "00000000_sample_user";
+	const userId = userData.id;
 
 	useEffect(() => {
 		const fetchPreferences = async () => {
