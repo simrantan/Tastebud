@@ -59,8 +59,8 @@ export default function LoginPage({ props }) {
 
 					// Update user context
 					updateUser(userData).then(() => {
-						// Redirect to home page after successful login
-						navigate("/");
+						// Redirect after successful login
+						navigate("/newConversation");
 					});
 				})
 				.then((userCredential) => {
@@ -83,8 +83,8 @@ export default function LoginPage({ props }) {
 							};
 							// Update user context
 							updateUser(userData).then(() => {
-								// Redirect to home page after successful login
-								navigate("/");
+								// Redirect to  after successful login
+								navigate("/newConversation");
 							});
 						})
 						.catch((error) => {
