@@ -19,6 +19,7 @@ export default function ChatsMain() {
 	const [selectedRecipe, setSelectedRecipe] = useState(null);
 	const [showConversationStarters, setShowConversationStarters] =
 		useState(true);
+	const [isQuerying, setIsQuerying] = useState(false);
 
 	const [curChatId, setCurChatId] = useState(chatId);
 
@@ -120,6 +121,10 @@ export default function ChatsMain() {
 		setUserInput(e.target.value);
 	};
 
+	useEffect(() => {
+		console.log("isQuerying", isQuerying);
+	}, [isQuerying]);
+
 	const fetchAIResponse = useCallback(
 		async ({ userMessage }) => {
 			try {
@@ -136,6 +141,7 @@ export default function ChatsMain() {
 				};
 
 				try {
+					setIsQuerying(true);
 					const response2 = await fetch(AI_SIMULATION_ENDPOINT, {
 						method: "POST",
 						headers: {
@@ -148,6 +154,9 @@ export default function ChatsMain() {
 							chatID: curChatId !== undefined ? curChatId : null,
 							messages: chatHistory,
 						}),
+					}).then((response) => {
+						setIsQuerying(false);
+						return response;
 					});
 
 					const responseData = await response2.json();
@@ -307,12 +316,10 @@ export default function ChatsMain() {
 							)}
 
 							{chatHistory
-
 								.filter(
 									(message) =>
 										message && message.role && message.role !== "system"
 								)
-
 								.map((message, index) => (
 									<div
 										key={index}
@@ -344,6 +351,16 @@ export default function ChatsMain() {
 								/>
 							)}
 							<div ref={messagesEndRef} />
+
+							{isQuerying && (
+								// Show typing indicator
+								<img
+									className="d-block mx-auto mt-3 mb-3"
+									style={{ maxWidth: "100px" }}
+									src="https://media.tenor.com/NqKNFHSmbssAAAAi/discord-loading-dots-discord-loading.gif"
+									alt="waiting for response"
+								/>
+							)}
 						</Card.Body>
 
 						<Card.Footer className="text-muted d-flex justify-content-start align-items-center p-3">
@@ -352,6 +369,7 @@ export default function ChatsMain() {
 								className="form-control-lg"
 								id="exampleFormControlInput1"
 								placeholder="Type message"
+								disabled={isQuerying}
 								value={userInput}
 								onChange={handleInputChange}
 								onKeyDown={(e) => {
