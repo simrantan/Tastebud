@@ -3,6 +3,7 @@ import { Container, Row, Col, Card, Form, Button } from "react-bootstrap";
 import RecipePanel from "./recipeSidebar";
 import RecipeCarousel from "./carousel";
 import ConversationStarters from "./conversationStarters";
+import { useParams } from "react-router-dom";
 
 const AI_SIMULATION_ENDPOINT =
 	"http://localhost:3001/chat/00000000_sample_user/00000000_sample_chat/message";
@@ -16,7 +17,15 @@ export default function ChatsMain() {
 	const [showConversationStarters, setShowConversationStarters] =
 		useState(true);
 
+	const [curChatId, setCurChatId] = useState(null);
+
 	const messagesEndRef = useRef(null);
+	const { chatId } = useParams();
+
+	useEffect(() => {
+		// Update state when the roomId parameter changes
+		setCurChatId(chatId);
+	}, [chatId]);
 
 	const scrollToBottom = () => {
 		if (messagesEndRef.current) {
@@ -40,6 +49,7 @@ export default function ChatsMain() {
 						message: userMessage.content, // Send only the content
 						// Include other necessary data for the backend
 					}),
+					chatID: curChatId,
 				});
 
 				const responseData = await response.json();
