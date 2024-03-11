@@ -93,7 +93,7 @@ export default function RecipeBook() {
 	};
 
 	const filteredRecipes = recipeBook.filter((recipe) =>
-		recipe.name.toLowerCase().includes(searchQuery.toLowerCase())
+  		recipe && recipe.name && recipe.name.toLowerCase().includes(searchQuery.toLowerCase())
 	);
 
 	const groupRecipesByCuisine = () => {
