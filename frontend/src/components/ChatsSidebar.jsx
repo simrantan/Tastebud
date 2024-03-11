@@ -15,22 +15,24 @@ export default function ChatsSidebar({
 
 	// Fetch the user's chats from the backend
 	useEffect(() => {
-		fetch(`${API_URL}/${userData.id}`)
-			.then((response) => {
-				if (!response.ok) {
-					throw new Error(`HTTP error! Status: ${response.status}`);
-				}
-				return response.json();
-			})
-			.then((user) => {
-				setChats(user.chats);
-				// console.log(user.chats[0]);
-			})
-			.catch((error) => {
-				console.error("Error fetching chats:", error.message);
-				throw error;
-			});
-	}, [userData.id]);
+		if (userData && userData.id) {
+			fetch(`${API_URL}/${userData.id}`)
+				.then((response) => {
+					if (!response.ok) {
+						throw new Error(`HTTP error! Status: ${response.status}`);
+					}
+					return response.json();
+				})
+				.then((user) => {
+					setChats(user.chats);
+					// console.log(user.chats[0]);
+				})
+				.catch((error) => {
+					console.error("Error fetching chats:", error.message);
+					throw error;
+				});
+		}
+	}, [userData]);
 
 	function toggleDrawer() {
 		setChatSidebarIsOpen(!chatSidebarIsOpen);
