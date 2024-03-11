@@ -1,0 +1,18 @@
+/* RecipeItem.css */
+@font-face {
+	font-family: "Inter";
+	src: url("../assets/inter/Inter-Regular.ttf") format("truetype");
+	/* Add additional font formats as needed (e.g., woff, woff2, etc.) */
+}
+
+@font-face {
+	font-family: "Karla";
+	src: url("../assets/karla/Karla-Regular.ttf") format("truetype");
+	/* Add additional font formats as needed (e.g., woff, woff2, etc.) */
+}
+
+.card-title {
+	font-family: "Inter", sans-serif; /* Use Inter font for the title */
+	font-size: 14px;
+	/* You can adjust other font properties (e.g., weight, size, etc.) here */
+}

@@ -5,15 +5,13 @@ import RecipeCarousel from "./carousel";
 import ConversationStarters from "./conversationStarters";
 import { useParams } from "react-router-dom";
 import "./ChatStyle.css";
-
-const AI_SIMULATION_ENDPOINT =
-	"http://localhost:3001/chat/00000000_sample_user/message";
-
-const get_chats = "http://localhost:3001/chat/00000000_sample_user";
+import { useUser } from "../contexts/UserContext";
 
 export default function ChatsMain() {
-	const { chatId } = useParams();
+	const { userData } = useUser();
 
+	const { chatId } = useParams();
+	console.log("chattt" + chatId);
 	const [userInput, setUserInput] = useState("");
 	const [chatHistory, setChatHistory] = useState([{}]);
 	const [recipePanelData, setRecipePanelData] = useState({ recipes: [] });
@@ -25,24 +23,22 @@ export default function ChatsMain() {
 	const [curChatId, setCurChatId] = useState(chatId);
 
 	const messagesEndRef = useRef(null);
-	const userID = "00000000_sample_user";
-
-	useEffect(() => {
-		// Update state when the roomId parameter changes
-		setCurChatId(chatId);
-	}, [chatId]);
+	const userId = userData.id;
+	const AI_SIMULATION_ENDPOINT = `http://localhost:3001/chat/${userId}/message`;
+	const get_chats = `http://localhost:3001/chat/${userId}`;
 
 	useEffect(() => {
 		// Set chat history with URL
 		const fetchData = async () => {
 			try {
-				if (curChatId === undefined) {
+				if (chatId === undefined) {
 					// Start a new conversation with conversation starters and empty chat history
 					setChatHistory([]);
 					setShowConversationStarters(true); // Show conversation starters
-					return; // Skip the rest of the logic for new conversation
+					return; // Skip the rest of the logic for a new conversation
 				}
-				const response = await fetch(`${get_chats}/${curChatId}`, {
+
+				const response = await fetch(`${get_chats}/${chatId}`, {
 					method: "GET",
 					headers: {
 						"Content-Type": "application/json",
@@ -56,6 +52,7 @@ export default function ChatsMain() {
 				const chatData = await response.json();
 
 				const allMessages = [];
+				let lastAssistantMessage = null; // Track the last assistant message
 
 				// Use a loop to iterate through messages
 				for (const message of chatData.chats) {
@@ -66,27 +63,52 @@ export default function ChatsMain() {
 						});
 					} else if (message.role === "assistant") {
 						const assistantContent = JSON.parse(message.content).message;
-						allMessages.push({
+						lastAssistantMessage = {
 							role: "assistant",
 							content: assistantContent,
-						});
+						};
+						allMessages.push(lastAssistantMessage);
 					}
 				}
+
 				if (allMessages.length >= 1) {
 					setShowConversationStarters(false);
 				}
 
 				setChatHistory(allMessages);
 
-				console.log("chatdata", JSON.stringify(chatData));
-				console.log("chat", chatHistory);
+				// Check if the last assistant message contains isRecipeList
+				if (
+					lastAssistantMessage &&
+					JSON.parse(lastAssistantMessage.content).isRecipeList === true
+				) {
+					const contentObject = JSON.parse(lastAssistantMessage.content);
+					const isRecipeList = contentObject.isRecipeList;
+
+					if (isRecipeList) {
+						// Set recipePanelData to the list of recipes
+						setRecipePanelData({ recipes: contentObject.recipes });
+					}
+				}
+
+				setChatHistory(allMessages);
 			} catch (error) {
 				console.error("Error fetching chat data:", error);
 			}
 		};
 
-		fetchData();
-	}, []);
+		setCurChatId((prevChatId) => {
+			const newChatId = chatId; /* your logic to determine the new chatId */
+
+			console.log("curChatId: " + prevChatId);
+			console.log("newChatId: " + newChatId);
+
+			// Perform any additional logic or side effects here
+			fetchData();
+
+			return newChatId;
+		});
+	}, [chatId]);
 
 	const scrollToBottom = () => {
 		if (messagesEndRef.current) {
@@ -101,9 +123,7 @@ export default function ChatsMain() {
 	const fetchAIResponse = useCallback(
 		async ({ userMessage }) => {
 			try {
-				const response = await fetch(
-					`http://localhost:3001/user/00000000_sample_user`
-				);
+				const response = await fetch(`http://localhost:3001/user/${userId}`);
 				if (!response.ok) {
 					throw new Error(`HTTP error! Status: ${response.status}`);
 				}
@@ -132,8 +152,12 @@ export default function ChatsMain() {
 
 					const responseData = await response2.json();
 
+					if (curChatId == undefined) {
+						setChatHistory(responseData.messages.slice(0, 2));
+					}
 					const newID = responseData.chat_id;
 					setCurChatId(newID);
+					console.log("newid", newID);
 
 					if (responseData.messages && responseData.messages.length > 0) {
 						const lastMessage =
@@ -141,11 +165,11 @@ export default function ChatsMain() {
 
 						const contentString = lastMessage.content; // Assuming content is a string
 						const contentObject = JSON.parse(contentString);
-						console.log("content", contentObject);
 						const isRecipeList = contentObject.isRecipeList;
 						const receivedChatTitle = contentObject.chatTitle;
 						const receivedContent = contentObject.message;
-						console.log("last", lastMessage);
+
+						console.log("responsedata", responseData.messages);
 
 						setReceivedIsRecipeList(isRecipeList);
 
@@ -189,7 +213,7 @@ export default function ChatsMain() {
 				if (index !== -1) {
 					const newUserMessage = {
 						role: "user",
-						content: "I want to hear more about " + recipeName,
+						content: "I picked  " + recipeName,
 					};
 
 					const updatedChatHistory = [...chatHistory, newUserMessage];
