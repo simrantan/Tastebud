@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "./RecipeBook.css"; // Import the CSS file
 
 export default function RecipeBook() {
-	const userId = 1;
+	const userId = "00000000_sample_user";
 	const navigate = useNavigate();
 
 	const [recipeBook, setRecipeBook] = useState([]);
@@ -23,14 +23,14 @@ export default function RecipeBook() {
 			.then((response) => response.json())
 			.then((data) => {
 				// Assuming data.recipes is an array of recipes
-				const recipes = data.recipes || []; // Use an empty array if recipes is undefined
+				const recipes = data || []; // Use an empty array if recipes is undefined
 				setRecipeBook(recipes);
 			})
 			.catch((error) => {
 				console.error("Error fetching recipe book:", error);
 				// You may want to handle the error appropriately, e.g., display an error message
 			});
-	}, [userId]); // Add userId as a dependency if it's used in the useEffect
+	}, []); // Add userId as a dependency if it's used in the useEffect
 
 	const handleSearchChange = (e) => {
 		setSearchQuery(e.target.value);
@@ -49,7 +49,13 @@ export default function RecipeBook() {
 		navigate("/");
 	};
 
-	const handleRemoveFromRecipeBook = (recipeId) => {
+	const handleRemoveFromRecipeBookModal = (recipeId) => {
+		handleRemoveFromRecipeBook(recipeId);
+		// Close the modal after removal
+		handleCloseModal();
+	};
+
+	const handleRemoveFromRecipeBook = async (recipeId) => {
 		// Find the selected recipe
 		const removedRecipe = recipeBook.find((recipe) => recipe.id === recipeId);
 
@@ -57,10 +63,36 @@ export default function RecipeBook() {
 		setRecipeBook((prevRecipes) =>
 			prevRecipes.filter((recipe) => recipe.id !== recipeId)
 		);
+
 		// Show a notification
 		toast.success(`${removedRecipe.name} has been removed from Recipe Book!`);
-		// Close the modal after removal
-		handleCloseModal();
+
+		try {
+			// Notify the server to remove the recipe from the user's recipe book
+			const response = await fetch(
+				`http://localhost:3001/recipe_book/${userId}/${recipeId}`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						action: "remove",
+						recipeInfo: {}, // You can send additional recipe information if needed
+					}),
+				}
+			);
+
+			if (!response.ok) {
+				throw new Error(`HTTP error! Status: ${response.status}`);
+			}
+
+			// Handle the response if needed
+			const data = await response.json();
+			console.log(data); // Log the success message from the server
+		} catch (error) {
+			console.error("Error removing recipe:", error.message);
+		}
 	};
 
 	const filteredRecipes = recipeBook.filter((recipe) =>
@@ -95,44 +127,43 @@ export default function RecipeBook() {
 	return (
 		<div>
 			<ToastContainer position="top-right" autoClose={3000} hideProgressBar />
-			<div className="homepage-button">
-				<Button variant="primary" onClick={handleHomepageButton}>
-					Go to MainPage
-				</Button>
-			</div>
-			<h2>Recipe Book</h2>
-			<input
-				type="text"
-				placeholder="Search recipes..."
-				value={searchQuery}
-				onChange={handleSearchChange}
-			/>
-			{Object.keys(groupedRecipes).map((cuisine) => (
-				<div key={cuisine} className="cuisine-container">
-					<h3>{cuisine}</h3>
-					<div className="recipe-container">
-						{groupedRecipes[cuisine].map((recipe) => (
-							<Card key={recipe.id} className="recipe-card">
-								<Card.Img variant="top" src={recipe.picture_url} />
-								<Card.Body>
-									<Card.Title>{recipe.name}</Card.Title>
-									<div className="button-container">
-										<Button onClick={() => handleRecipeClick(recipe)}>
-											View Recipe
-										</Button>
-										<Button
-											variant="danger"
-											onClick={() => handleRemoveFromRecipeBook(recipe.id)}
-										>
-											Remove
-										</Button>
-									</div>
-								</Card.Body>
-							</Card>
-						))}
+
+			<div className="container">
+				<h2>Recipe Book</h2>
+				<input
+					type="text"
+					placeholder="Search recipes..."
+					value={searchQuery}
+					onChange={handleSearchChange}
+				/>
+				{Object.keys(groupedRecipes).map((cuisine, index) => (
+					<div key={`${cuisine}-${index}`} className="cuisine-container">
+						<h3>{cuisine}</h3>
+						<div className="recipe-container">
+							{groupedRecipes[cuisine].map((recipe) => (
+								<Card key={recipe.id} className="recipe-card">
+									<Card.Img variant="top" src={recipe.picture_url} />
+									<Card.Body>
+										<Card.Title>{recipe.name}</Card.Title>
+										<div className="button-container">
+											<Button onClick={() => handleRecipeClick(recipe)}>
+												View Recipe
+											</Button>
+											<Button
+												variant="danger"
+												onClick={() => handleRemoveFromRecipeBook(recipe.id)}
+											>
+												Remove
+											</Button>
+										</div>
+									</Card.Body>
+								</Card>
+							))}
+						</div>
 					</div>
-				</div>
-			))}
+				))}
+			</div>
+
 			<Modal show={showModal} onHide={handleCloseModal}>
 				<Modal.Header closeButton>
 					<Modal.Title>{selectedRecipe?.name}</Modal.Title>
@@ -141,14 +172,13 @@ export default function RecipeBook() {
 					{selectedRecipe && (
 						<>
 							<ReactMarkdown>{selectedRecipe?.text}</ReactMarkdown>
-							<div dangerouslySetInnerHTML={{ __html: selectedRecipe?.text }} />
 						</>
 					)}
 				</Modal.Body>
 				<Modal.Footer>
 					<Button
 						variant="danger"
-						onClick={() => handleRemoveFromRecipeBook(selectedRecipe.id)}
+						onClick={() => handleRemoveFromRecipeBookModal(selectedRecipe.id)}
 					>
 						Remove from Recipe Book
 					</Button>

@@ -1,0 +1,22 @@
+.drawer {
+	position: fixed;
+	top: 0;
+	left: -400px; /* Start off-screen */
+	width: 400px;
+	height: 100%;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	transition: left 0.3s ease;
+}
+
+.drawer.open {
+	left: 0; /* Slide in */
+}
+
+#mainContent {
+	margin-left: 0;
+	transition: margin-left 0.3s ease;
+}
+
+#mainContent.open-drawer {
+	margin-left: 400px; /* Push main content to the right when drawer is open */
+}
