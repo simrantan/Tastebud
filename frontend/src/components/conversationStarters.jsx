@@ -7,7 +7,7 @@ const ConversationStarters = ({ onStartConversation }) => {
 	const conversationOptions = [
 		"Give me recipes for beginners",
 		"Give me quick recipes",
-		"Give me trendy recicpes",
+		"Give me trendy recipes",
 	];
 
 	const customButtonStyle = {
