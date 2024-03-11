@@ -31,6 +31,7 @@ export default function ChatsMain() {
 
 	useEffect(() => {
 		// Update state when the roomId parameter changes
+		console.log("updated chat:" + chatId)
 		setCurChatId(chatId);
 	}, [chatId]);
 
@@ -85,7 +86,7 @@ export default function ChatsMain() {
 		};
 
 		fetchData();
-	}, []);
+	}, [chatId]);
 
 	const scrollToBottom = () => {
 		if (messagesEndRef.current) {

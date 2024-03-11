@@ -35,10 +35,11 @@ export default function App() {
 
 						<Routes>
 							<Route
-								path="/"
+								path="/:chatId"
 								element={
 									<ProtectedRoute>
-										<MainPage />
+										<MainPage 	chatSidebarIsOpen={chatSidebarIsOpen}
+											setChatSidebarIsOpen={setChatSidebarIsOpen}/>
 									</ProtectedRoute>
 								}
 							/>

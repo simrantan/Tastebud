@@ -75,7 +75,7 @@ export default function ChatsSidebar({
 function SidebarEntry({ chat }) {
 	return (
 		<Link
-		to={`/`}
+		to={`/${chat.id}`}
 		className="container my-1 p-1 text-decoration-none position-relative"
 		style={{
 		  backgroundColor: "#ddd",
