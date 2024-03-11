@@ -124,7 +124,8 @@ export default function ChatsMain() {
 							message: userMessage.content, // Send only the content
 							// Include other necessary data for the backend
 							preferences: preferences,
-							chatID: curChatId,
+							chatID: curChatId !== undefined ? curChatId : null,
+							messages: chatHistory
 						}),
 					});
 
