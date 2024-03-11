@@ -210,7 +210,7 @@ app.post("/chat/:userID/message", async (req, res) => {
 	var chatID = req.body.chatID;
 	var chatRef = null;
 	var messages = null;
-
+	console.log(req.body);
 	if (isNewChat) {
 		// Create new chat in firebase
 		const chatsRef = collection(DATABASE, `users/${userId}/chats`);

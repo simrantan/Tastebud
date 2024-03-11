@@ -32,17 +32,6 @@ export default function App() {
 							chatSidebarIsOpen={chatSidebarIsOpen}
 							setChatSidebarIsOpen={setChatSidebarIsOpen}
 						/>
-						<Route
-							path="/newConversation"
-							element={
-								<ProtectedRoute>
-									<MainPage
-										chatSidebarIsOpen={chatSidebarIsOpen}
-										setChatSidebarIsOpen={setChatSidebarIsOpen}
-									/>
-								</ProtectedRoute>
-							}
-						/>
 
 						<Routes>
 							<Route
@@ -50,6 +39,17 @@ export default function App() {
 								element={
 									<ProtectedRoute>
 										<MainPage />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/newConversation"
+								element={
+									<ProtectedRoute>
+										<MainPage
+											chatSidebarIsOpen={chatSidebarIsOpen}
+											setChatSidebarIsOpen={setChatSidebarIsOpen}
+										/>
 									</ProtectedRoute>
 								}
 							/>

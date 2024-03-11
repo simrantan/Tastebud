@@ -6,7 +6,7 @@ import ConversationStarters from "./conversationStarters";
 import { useParams } from "react-router-dom";
 
 const AI_SIMULATION_ENDPOINT =
-	"http://localhost:3001/chat/00000000_sample_user";
+	"http://localhost:3001/chat/00000000_sample_user/message";
 
 const get_chats = "http://localhost:3001/chat/00000000_sample_user";
 
@@ -83,9 +83,7 @@ export default function ChatsMain() {
 				console.error("Error fetching chat data:", error);
 			}
 		};
-		if (curChatId == null) {
-			handleStartConversation();
-		}
+
 		fetchData();
 	}, []);
 
@@ -245,6 +243,7 @@ export default function ChatsMain() {
 		fetchAIResponse({
 			chatHistory: updatedChatHistory,
 			userMessage: newUserMessage,
+			chatID: curChatId,
 		});
 	};
 
