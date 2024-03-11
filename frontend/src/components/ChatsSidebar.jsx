@@ -30,7 +30,7 @@ export default function ChatsSidebar({
 				console.error("Error fetching chats:", error.message);
 				throw error;
 			});
-	}, []);
+	}, [userData.id]);
 
 	function toggleDrawer() {
 		setChatSidebarIsOpen(!chatSidebarIsOpen);
