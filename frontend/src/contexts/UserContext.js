@@ -2,7 +2,6 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
-import { updateProfile } from "firebase/auth";
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
@@ -46,6 +45,7 @@ export const UserProvider = ({ children }) => {
 	}
 
 	function logOut() {
+		localStorage.removeItem("userData");
 		firebase
 			.auth()
 			.signOut()
@@ -58,7 +58,6 @@ export const UserProvider = ({ children }) => {
 			.catch((error) => {
 				console.log(error);
 			});
-		localStorage.removeItem("userData");
 	}
 
 	return (

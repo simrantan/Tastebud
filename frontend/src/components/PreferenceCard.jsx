@@ -12,7 +12,6 @@ import { useUser } from "../contexts/UserContext";
 
 const PreferenceCard = () => {
 	const { userData } = useUser();
-	//state
 	const [allergens, setAllergens] = useState({});
 	const [likes, setLikes] = useState([]);
 	const [dislikes, setDislikes] = useState([]);
@@ -34,15 +33,13 @@ const PreferenceCard = () => {
 				setAllergens(data.allergies || {});
 				setLikes(data.likes || []);
 				setDislikes(data.dislikes || []);
-				// console.log("set user data");
 			} catch (error) {
 				console.error("Error fetching preferences:", error.message);
 			}
 		};
 
-		// Fetch user preferences on the first run
 		fetchPreferences();
-	}, []); // Empty dependency array ensures it runs only once
+	}, [userId]);
 
 	const savePreferences = async (prefType, preferences) => {
 		try {

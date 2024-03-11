@@ -35,24 +35,38 @@ export default function LoginPage({ props }) {
 		try {
 			console.log("Signing up with email and password");
 			// Create user in Firebase
-			const userCredential = await firebase
+			await firebase
 				.auth()
-				.createUserWithEmailAndPassword(email, password);
+				.createUserWithEmailAndPassword(email, password)
+				.then((userCredential) => {
+					// Create user in the database
+					fetch(`http://localhost:3001/user/`, {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({
+							userId: userCredential.user.uid,
+							email: userCredential.user.email,
+						}),
+					});
 
-			// Create user in the database
-			await fetch(`http://localhost:3001/user/`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					userId: userCredential.user.uid,
-					email: userCredential.user.email,
-				}),
-			});
+					const userData = {
+						displayName: userCredential.user.displayName,
+						email: userCredential.user.email,
+						uid: userCredential.user.uid,
+					};
 
-			// Log the user in
-			postLogin(userCredential);
+					// Update user context
+					updateUser(userData).then(() => {
+						// Redirect to home page after successful login
+						navigate("/");
+					});
+				})
+				.then((userCredential) => {
+					// Log the user in
+					// postLogin(userCredential);
+				});
 		} catch (error) {
 			// If the user already exists, try logging in instead
 			if (error.code === "auth/email-already-in-use") {
@@ -61,7 +75,18 @@ export default function LoginPage({ props }) {
 					await firebase
 						.auth()
 						.signInWithEmailAndPassword(email, password)
-						.then(postLogin)
+						.then((userCredential) => {
+							const userData = {
+								displayName: userCredential.user.displayName,
+								email: userCredential.user.email,
+								uid: userCredential.user.uid,
+							};
+							// Update user context
+							updateUser(userData).then(() => {
+								// Redirect to home page after successful login
+								navigate("/");
+							});
+						})
 						.catch((error) => {
 							const errorCode = error.code;
 							const errorMessage = error.message;
@@ -76,20 +101,6 @@ export default function LoginPage({ props }) {
 			}
 		}
 	};
-
-	function postLogin(userCredential) {
-		console.log("User logged in:", userCredential.user);
-		const userData = {
-			displayName: userCredential.user.displayName,
-			email: userCredential.user.email,
-			uid: userCredential.user.uid,
-		};
-		// Update user context
-		updateUser(userData).then(() => {
-			// Redirect to home page after successful login
-			navigate("/");
-		});
-	}
 
 	return (
 		<div className="container">
