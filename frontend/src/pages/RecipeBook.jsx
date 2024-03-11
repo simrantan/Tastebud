@@ -85,23 +85,25 @@ export default function RecipeBook() {
   };
 
   const generateImagePath = (cuisine) => {
-	let imagePath = `../../../cuisines/${cuisine}.jpeg`;
+    // Assuming the cuisines folder is in the public directory
+    let imagePath = `/cuisines/${cuisine}.jpeg`;
   
-	// Check if the file exists, if not, use the default image
-	fetch(imagePath, { method: 'HEAD' })
-	  .then(response => {
-		if (!response.ok) {
-		  // File not found, use default image
-		  imagePath = `../../../cuisines/other.jpeg`;
-		}
-	  })
-	  .catch(error => {
-		// Fetch error, use default image
-		imagePath = `../../../cuisines/other.jpeg`;
-	  });
+    // Check if the file exists, if not, use the default image
+    fetch(imagePath, { method: 'HEAD' })
+      .then(response => {
+        if (!response.ok) {
+          // File not found, use default image
+          imagePath = `/cuisines/other.jpeg`;
+        }
+      })
+      .catch(error => {
+        // Fetch error, use default image
+        imagePath = `/cuisines/other.jpeg`;
+      });
   
-	return imagePath;
+    return imagePath;
   };
+  
 
   const filteredRecipes = recipeBook.filter(
     (recipe) =>
