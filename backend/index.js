@@ -15,7 +15,7 @@ import {
 	generateDummyData,
 	getTimestamp,
 } from "./generate_firebase_dummydata.js";
-import systemMessage from './system_message.json' assert { type: 'json' };
+import systemMessage from "./system_message.json" assert { type: "json" };
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -205,7 +205,6 @@ app.post("/recipe_book/:userId/:recipeId", async (req, res) => {
 /** Get response message from TasteBud after receiving user message */
 app.post("/chat/:userID/message", async (req, res) => {
 	// Test with: curl -X POST -H "Content-Type: application/json" -d '{"message": "I want to make a cake", "chatID": null}' http://localhost:3001/chat/00000000_sample_user/message
-	
 	const userId = req.params.userID;
 	const isNewChat = req.body.chatID === null;
 	var input = req.body.message;
@@ -225,7 +224,15 @@ app.post("/chat/:userID/message", async (req, res) => {
 		chatID = chatRef.id;
 		// Start new message history in Firebase, with the system message
 		await setDoc(
-			doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()),
+			doc(
+				DATABASE,
+				"users",
+				userId,
+				"chats",
+				chatID,
+				"messages",
+				getTimestamp()
+			),
 			systemMessage
 		);
 		messages = [systemMessage];
@@ -247,9 +254,10 @@ app.post("/chat/:userID/message", async (req, res) => {
 
 	// Add user's message to array of all messages to send to the API
 	messages.push(newMessage);
-	
+
 	if (isNewChat) {
-		input += ". Generate a title for this chat in the 'chat_title' field in your response."
+		input +=
+			". Generate a title for this chat in the 'chat_title' field in your response.";
 	}
 
 	const data = {
@@ -272,15 +280,23 @@ app.post("/chat/:userID/message", async (req, res) => {
 
 		// Save TasteBud's response to Firebase
 		setDoc(
-			doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()),
+			doc(
+				DATABASE,
+				"users",
+				userId,
+				"chats",
+				chatID,
+				"messages",
+				getTimestamp()
+			),
 			resMessage
 		);
 
 		if (isNewChat) {
 			// Update the chat title
 			updateDoc(chatRef, {
-			name: JSON.parse(resMessage.content).chatTitle
-		});
+				name: JSON.parse(resMessage.content).chatTitle,
+			});
 		}
 
 		res.json({

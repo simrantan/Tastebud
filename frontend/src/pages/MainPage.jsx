@@ -1,20 +1,15 @@
 // MainPage.jsx
-import React, { useEffect } from "react";
+import React from "react";
 import PreferenceCard from "../components/PreferenceCard.jsx";
 import { useUser } from "../contexts/UserContext";
-import ChatsSidebar from "../components/ChatsSidebar.jsx";
 
-export default function MainPage({ chatSidebarIsOpen, setChatSidebarIsOpen }) {
+export default function MainPage() {
 	const { userData } = useUser();
 
 	return (
 		<div className="container">
 			<h2>Welcome, {userData.displayName || "Chef"}!</h2>
 
-			<ChatsSidebar
-				chatSidebarIsOpen={chatSidebarIsOpen}
-				setChatSidebarIsOpen={setChatSidebarIsOpen}
-			/>
 			<PreferenceCard />
 		</div>
 	);

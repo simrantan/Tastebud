@@ -12,6 +12,7 @@ import LoginPage from "./pages/Login";
 import { UserProvider, useUser } from "./contexts/UserContext";
 import NavBar from "./components/NavBar";
 import UserProfile from "./pages/UserProfile";
+import ChatsSidebar from "./components/ChatsSidebar";
 
 export default function App() {
 	const [chatSidebarIsOpen, setChatSidebarIsOpen] = useState(false);
@@ -21,40 +22,47 @@ export default function App() {
 			<div className="App">
 				<UserProvider>
 					<NavBar setChatSidebarIsOpen={setChatSidebarIsOpen} />
-
-					<Routes>
-						<Route
-							path="/"
-							element={
-								<ProtectedRoute>
-									<MainPage
-										chatSidebarIsOpen={chatSidebarIsOpen}
-										setChatSidebarIsOpen={setChatSidebarIsOpen}
-									/>
-								</ProtectedRoute>
-							}
+					<div
+						style={{
+							marginLeft: "400px",
+						}}
+					>
+						<ChatsSidebar
+							chatSidebarIsOpen={chatSidebarIsOpen}
+							setChatSidebarIsOpen={setChatSidebarIsOpen}
 						/>
 
-						<Route
-							path="/recipe-book"
-							element={
-								<ProtectedRoute>
-									<RecipeBook />
-								</ProtectedRoute>
-							}
-						/>
+						<Routes>
+							<Route
+								path="/"
+								element={
+									<ProtectedRoute>
+										<MainPage />
+									</ProtectedRoute>
+								}
+							/>
 
-						<Route
-							path="/user-profile"
-							element={
-								<ProtectedRoute>
-									<UserProfile />
-								</ProtectedRoute>
-							}
-						/>
+							<Route
+								path="/recipe-book"
+								element={
+									<ProtectedRoute>
+										<RecipeBook />
+									</ProtectedRoute>
+								}
+							/>
 
-						<Route path="/login" element={<LoginPage />} />
-					</Routes>
+							<Route
+								path="/user-profile"
+								element={
+									<ProtectedRoute>
+										<UserProfile />
+									</ProtectedRoute>
+								}
+							/>
+
+							<Route path="/login" element={<LoginPage />} />
+						</Routes>
+					</div>
 				</UserProvider>
 			</div>
 		</Router>
