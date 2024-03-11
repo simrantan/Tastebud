@@ -84,7 +84,7 @@ const RecipePanel = ({ recipe }) => {
 	return (
 		<div
 			className="recipe-panel d-flex flex-column justify-content-between"
-			style={{ height: "100%" }}
+			style={{ height: "100%", backgroundColor: "#FFF9F3" }}
 		>
 			<div>
 				<ToastContainer position="top-right" autoClose={3000} hideProgressBar />
@@ -100,6 +100,7 @@ const RecipePanel = ({ recipe }) => {
 					border: "1px solid #ccc",
 					padding: "10px",
 					marginBottom: "10px",
+					backgroundColor: "#FFF9F3",
 				}}
 			>
 				<h4>Ingredients</h4>

@@ -4,8 +4,7 @@ import RecipePanel from "./recipeSidebar";
 import RecipeCarousel from "./carousel";
 import ConversationStarters from "./conversationStarters";
 import { useParams } from "react-router-dom";
-import "./ChatStyle.css"; 
-
+import "./ChatStyle.css";
 
 const AI_SIMULATION_ENDPOINT =
 	"http://localhost:3001/chat/00000000_sample_user/message";
@@ -254,11 +253,10 @@ export default function ChatsMain() {
 		<Container
 			className="p-4"
 			style={{
-				backgroundColor: "#eee",
+				backgroundColor: "#FFF9F3",
 				marginLeft: "200px",
 				maxWidth: "calc(100% - 650px)",
 				height: "80vh",
-				border: "1px solid green",
 			}}
 		>
 			<Row className="justify-content-center" style={{ height: "100%" }}>
@@ -274,12 +272,9 @@ export default function ChatsMain() {
 							border: "1px solid #ccc",
 							overflow: "hidden",
 							height: "100%",
+							backgroundColor: "#FFF9F3",
 						}}
 					>
-						<Card.Header className="d-flex justify-content-between align-items-center p-3">
-							<h5 className="mb-0">Chat</h5>
-						</Card.Header>
-
 						<Card.Body style={{ overflowY: "auto" }}>
 							{showConversationStarters && (
 								<ConversationStarters
