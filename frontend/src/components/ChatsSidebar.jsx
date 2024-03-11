@@ -79,7 +79,7 @@ export default function ChatsSidebar({
 				</div>
 
 				<div style={{ flex: "none" }}>
-					<Link to="/newConversation">
+					<Link to="/newConversation" onClick={toggleDrawer}>
 						<Button variant="light" className="text-dark m-3">
 							Create New Chat
 						</Button>
