@@ -29,7 +29,7 @@ const headers = new Headers({
 	Authorization: `Bearer ${apiKey}`,
 });
 const model = "mistralai/Mixtral-8x7B-Instruct-v0.1";
-const maxTokens = 1000; // Keeping this low for now to not use up $$$
+const maxTokens = 2000; // Keeping this low for now to not use up $$$
 
 // Use CORS middleware
 app.use(
@@ -208,6 +208,7 @@ app.post("/chat/:userID/message", async (req, res) => {
 	
 	const userId = req.params.userID;
 	const isNewChat = req.body.chatID === null;
+	const preferences = req.body.preferences;
 	var input = req.body.message;
 	var chatID = req.body.chatID;
 	var chatRef = null;
@@ -245,12 +246,22 @@ app.post("/chat/:userID/message", async (req, res) => {
 		newMessage
 	);
 
-	// Add user's message to array of all messages to send to the API
-	messages.push(newMessage);
-	
+	// jsonPrefs = JSON.parse(preferences);
+	if (jsonPrefs.likes.length > 0) {
+		input += ". You don't need to include these, but I like " + jsonPrefs.likes.join(", ") + ".";
+	}
+	if (jsonPrefs.dislikes.length > 0) {
+		input += ". I dislike " + jsonPrefs.dislikes.join(", ") + ", so try to exclude them.";
+	}
+	if (jsonPrefs.allergies.length > 0) {
+		input += ". I am allergic to " + Object.keys(jsonPrefs.allergies).join(", ") + ".";
+	}
+
 	if (isNewChat) {
 		input += ". Generate a title for this chat in the 'chat_title' field in your response."
 	}
+	// Add user's message to array of all messages to send to the API
+	messages.push(newMessage);
 
 	const data = {
 		model: model,
@@ -269,6 +280,9 @@ app.post("/chat/:userID/message", async (req, res) => {
 		const result = await response.text();
 		let resMessage = JSON.parse(result).choices[0].message;
 		messages.push(resMessage);
+		console.log(resMessage)
+
+		const parsedResMessage = JSON.parse(resMessage.content);
 
 		// Save TasteBud's response to Firebase
 		setDoc(
@@ -284,8 +298,14 @@ app.post("/chat/:userID/message", async (req, res) => {
 		}
 
 		res.json({
-			chat_id: chatID,
-			messages: messages,
+			// chat_id: chatID,
+			// messages: messages,
+			chatTitle: parsedResMessage.chatTitle,
+			isRecipeList: parsedResMessage.isRecipeList,
+			isRecipe: parsedResMessage.isRecipe,
+			message: parsedResMessage.message,
+			recipeTitles: parsedResMessage.recipeTitles,
+			recipe: parsedResMessage.recipe,
 		});
 	} catch (error) {
 		res.status(500).json({ error: error.message });
