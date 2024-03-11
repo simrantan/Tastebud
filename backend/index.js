@@ -207,6 +207,7 @@ app.post("/chat/:userID/message", async (req, res) => {
 	const userId = req.params.userID;
 	const isNewChat = req.body.chatID === null;
 	var input = req.body.message;
+	const preferences = req.body.preferences;
 	var chatID = req.body.chatID;
 	var chatRef = null;
 	var messagesToFront = null;
@@ -255,16 +256,40 @@ app.post("/chat/:userID/message", async (req, res) => {
 		doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()),
 		newMessage
 	);
-
+	console.log("prefss   " + preferences.allergies)
+	const jsonPrefs =preferences
+	if (jsonPrefs.likes && jsonPrefs.likes.length > 0) {
+		input +=
+			". You don't need to include these, but I like " +
+			jsonPrefs.likes.join(", ") +
+			".";
+	}
+	
+	if (jsonPrefs.dislikes && jsonPrefs.dislikes.length > 0) {
+		input +=
+			". I dislike " +
+			jsonPrefs.dislikes.join(", ") +
+			", so try to exclude them.";
+	}
+	
+	if (jsonPrefs.allergies && Object.keys(jsonPrefs.allergies).length > 0) {
+		console.log(jsonPrefs.allergies);
+		input +=
+			". I am allergic to " +
+			Object.keys(jsonPrefs.allergies).join(", ") +
+			" SO DO NOT INCLUDE ANY OF THESE INGREDIENTS IN ANY RECIPES YOU PROVIDE.";
+	}
 	if (isNewChat) {
 		input +=
 			". Generate a title for this chat in the 'chat_title' field in your response.";
 	}
 
+
 	const newMessageToAI = {
 		role: "user",
-		content: input + " REMEMBER THIS!: " + systemMessage.content,
+		content: input + " REMEMBER THIS!: " + systemMessage.content + "remember the allergens, dont include any allergens in recipes",
 	};
+	console.log(newMessageToAI)
 	// Add user's message to array of all messages to send to the API
 
 	messagesToAI.push(newMessageToAI);
@@ -320,139 +345,139 @@ app.post("/chat/:userID/message", async (req, res) => {
 
 /* ###################################################### Chat Methods ##################################################### */
 /** Get response message from TasteBud after receiving user message */
-app.post("/chat/:userID/message", async (req, res) => {
-	// Test with: curl -X POST -H "Content-Type: application/json" -d '{"message": "I want to make a cake", "chatID": null}' http://localhost:3001/chat/00000000_sample_user/message
+// app.post("/chat/:userID/message", async (req, res) => {
+// 	// Test with: curl -X POST -H "Content-Type: application/json" -d '{"message": "I want to make a cake", "chatID": null}' http://localhost:3001/chat/00000000_sample_user/message
 
-	const userId = req.params.userID;
-	const isNewChat = req.body.chatID === null;
-	const preferences = req.body.preferences;
-	var input = req.body.message;
-	var chatID = req.body.chatID;
-	var chatRef = null;
-	var messages = null;
+// 	const userId = req.params.userID;
+// 	const isNewChat = req.body.chatID === null;
+// 	const preferences = req.body.preferences;
+// 	var input = req.body.message;
+// 	var chatID = req.body.chatID;
+// 	var chatRef = null;
+// 	var messages = null;
 
-	if (isNewChat) {
-		// Create new chat in firebase
-		const chatsRef = collection(DATABASE, `users/${userId}/chats`);
-		chatRef = await addDoc(chatsRef, {
-			name: "New Chat",
-			is_group: false,
-			host_id: userId,
-			created_at: getTimestamp(),
-		});
-		chatID = chatRef.id;
-		// Start new message history in Firebase, with the system message
-		await setDoc(
-			doc(
-				DATABASE,
-				"users",
-				userId,
-				"chats",
-				chatID,
-				"messages",
-				getTimestamp()
-			),
-			systemMessage
-		);
-		messages = [systemMessage];
-	} else {
-		chatRef = doc(DATABASE, "users", userId, "chats", chatID);
-		messages = req.body.messages;
-	}
+// 	if (isNewChat) {
+// 		// Create new chat in firebase
+// 		const chatsRef = collection(DATABASE, `users/${userId}/chats`);
+// 		chatRef = await addDoc(chatsRef, {
+// 			name: "New Chat",
+// 			is_group: false,
+// 			host_id: userId,
+// 			created_at: getTimestamp(),
+// 		});
+// 		chatID = chatRef.id;
+// 		// Start new message history in Firebase, with the system message
+// 		await setDoc(
+// 			doc(
+// 				DATABASE,
+// 				"users",
+// 				userId,
+// 				"chats",
+// 				chatID,
+// 				"messages",
+// 				getTimestamp()
+// 			),
+// 			systemMessage
+// 		);
+// 		messages = [systemMessage];
+// 	} else {
+// 		chatRef = doc(DATABASE, "users", userId, "chats", chatID);
+// 		messages = req.body.messages;
+// 	}
 
-	// Save the user's original message to Firebase
-	setDoc(
-		doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()),
-		newMessage
-	);
+// 	// Save the user's original message to Firebase
+// 	setDoc(
+// 		doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()),
+// 		newMessage
+// 	);
 
-	const jsonPrefs = JSON.parse(preferences);
-	if (jsonPrefs.likes.length > 0) {
-		input +=
-			". You don't need to include these, but I like " +
-			jsonPrefs.likes.join(", ") +
-			".";
-	}
-	if (jsonPrefs.dislikes.length > 0) {
-		input +=
-			". I dislike " +
-			jsonPrefs.dislikes.join(", ") +
-			", so try to exclude them.";
-	}
-	if (jsonPrefs.allergies.length > 0) {
-		input +=
-			". I am allergic to " + Object.keys(jsonPrefs.allergies).join(", ") + " SO DO NOT INCLUDE ANY OF THESE INGREDIENTS IN ANY RECIPES YOU PROVIDE.";
-	}
+// 	const jsonPrefs = JSON.parse(preferences);
+// 	if (jsonPrefs.likes.length > 0) {
+// 		input +=
+// 			". You don't need to include these, but I like " +
+// 			jsonPrefs.likes.join(", ") +
+// 			".";
+// 	}
+// 	if (jsonPrefs.dislikes.length > 0) {
+// 		input +=
+// 			". I dislike " +
+// 			jsonPrefs.dislikes.join(", ") +
+// 			", so try to exclude them.";
+// 	}
+// 	if (jsonPrefs.allergies.length > 0) {
+// 		input +=
+// 			". I am allergic to " + Object.keys(jsonPrefs.allergies).join(", ") + " SO DO NOT INCLUDE ANY OF THESE INGREDIENTS IN ANY RECIPES YOU PROVIDE.";
+// 	}
 
-	if (isNewChat) {
-		input +=
-			". Generate a title for this chat in the 'chat_title' field in your response.";
-	}
+// 	if (isNewChat) {
+// 		input +=
+// 			". Generate a title for this chat in the 'chat_title' field in your response.";
+// 	}
 
 
-	const newMessage = {
-		role: "user",
-		content: input,
-	};
-	// Add user's message to array of all messages to send to the API
-	messages.push(newMessage);
+// 	const newMessage = {
+// 		role: "user",
+// 		content: input,
+// 	};
+// 	// Add user's message to array of all messages to send to the API
+// 	messages.push(newMessage);
 
-	const data = {
-		model: model,
-		max_tokens: maxTokens,
-		messages: messages,
-	};
+// 	const data = {
+// 		model: model,
+// 		max_tokens: maxTokens,
+// 		messages: messages,
+// 	};
 
-	const options = {
-		method: "POST",
-		headers: headers,
-		body: JSON.stringify(data),
-	};
+// 	const options = {
+// 		method: "POST",
+// 		headers: headers,
+// 		body: JSON.stringify(data),
+// 	};
 
-	try {
-		const response = await fetch(url, options);
-		const result = await response.text();
-		let resMessage = JSON.parse(result).choices[0].message;
-		messages.push(resMessage);
-		console.log(resMessage);
+// 	try {
+// 		const response = await fetch(url, options);
+// 		const result = await response.text();
+// 		let resMessage = JSON.parse(result).choices[0].message;
+// 		messages.push(resMessage);
+// 		console.log(resMessage);
 
-		const parsedResMessage = JSON.parse(resMessage.content);
+// 		const parsedResMessage = JSON.parse(resMessage.content);
 
-		// Save TasteBud's response to Firebase
-		setDoc(
-			doc(
-				DATABASE,
-				"users",
-				userId,
-				"chats",
-				chatID,
-				"messages",
-				getTimestamp()
-			),
-			resMessage
-		);
+// 		// Save TasteBud's response to Firebase
+// 		setDoc(
+// 			doc(
+// 				DATABASE,
+// 				"users",
+// 				userId,
+// 				"chats",
+// 				chatID,
+// 				"messages",
+// 				getTimestamp()
+// 			),
+// 			resMessage
+// 		);
 
-		if (isNewChat) {
-			// Update the chat title
-			updateDoc(chatRef, {
-				name: JSON.parse(resMessage.content).chatTitle,
-			});
-		}
+// 		if (isNewChat) {
+// 			// Update the chat title
+// 			updateDoc(chatRef, {
+// 				name: JSON.parse(resMessage.content).chatTitle,
+// 			});
+// 		}
 
-		res.json({
-			chat_id: chatID,
-			messages: messages,
-			//chatTitle: parsedResMessage.chatTitle,
-			// isRecipeList: parsedResMessage.isRecipeList,
-			// isRecipe: parsedResMessage.isRecipe,
-			// message: parsedResMessage.message,
-			// recipeTitles: parsedResMessage.recipeTitles,
-			// recipe: parsedResMessage.recipe,
-		});
-	} catch (error) {
-		res.status(500).json({ error: error.message });
-	}
-});
+// 		res.json({
+// 			chat_id: chatID,
+// 			messages: messages,
+// 			//chatTitle: parsedResMessage.chatTitle,
+// 			// isRecipeList: parsedResMessage.isRecipeList,
+// 			// isRecipe: parsedResMessage.isRecipe,
+// 			// message: parsedResMessage.message,
+// 			// recipeTitles: parsedResMessage.recipeTitles,
+// 			// recipe: parsedResMessage.recipe,
+// 		});
+// 	} catch (error) {
+// 		res.status(500).json({ error: error.message });
+// 	}
+// });
 
 /* ########################### Chat ########################## */
 /** Get all the information for a single chat */
