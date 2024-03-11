@@ -235,34 +235,38 @@ app.post("/chat/:userID/message", async (req, res) => {
 		messages = req.body.messages;
 	}
 
-	// Save the user's original message to Firebase
-	setDoc(
-		doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()),
-		input
-	);
-
-	const jsonPrefs = JSON.parse(preferences);
-	if (jsonPrefs.likes.length > 0) {
-		input += ". You don't need to include these, but I like " + jsonPrefs.likes.join(", ") + ".";
-	}
-	if (jsonPrefs.dislikes.length > 0) {
-		input += ". I dislike " + jsonPrefs.dislikes.join(", ") + ", so try to exclude them.";
-	}
-	if (jsonPrefs.allergies.length > 0) {
-		console.log(jsonPrefs.allergies)
-		input += ". I am allergic to " + Object.keys(jsonPrefs.allergies).join(", ") + ".";
-	}
-
-	if (isNewChat) {
-		input += ". Generate a title for this chat in the 'chat_title' field in your response."
-	}
-
 	const newMessage = {
 		role: "user",
 		content: input,
 	};
+
+		// Save the user's original message to Firebase
+		setDoc(
+			doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()),
+			newMessage
+		);
+
+	const newMessageForAI = {
+		role: "user",
+		content: input,
+	}
+
+	if (preferences.likes && preferences.likes.length > 0) {
+		newMessageForAI.content += ". You don't need to include these, but I like " + preferences.likes.join(", ") + ".";
+	}
+	if (preferences.dislikes && preferences.dislikes.length > 0) {
+		newMessageForAI.content += ". I dislike " + preferences.dislikes.join(", ") + ", so try to exclude them.";
+	}
+	if (preferences.allergies && Object.keys(preferences.allergies).length > 0) {
+		newMessageForAI.content += ". I am allergic to " + Object.keys(preferences.allergies).join(", ") + ", so DO NOT INCLUDE THEM IN ANY RECIPES YOU PROVIDE.";
+	}
+
+	if (isNewChat) {
+		newMessageForAI.content += ". Generate a title for this chat in the 'chat_title' field in your response."
+	}
+
 	// Add user's message to array of all messages to send to the API
-	messages.push(newMessage);
+	messages.push(newMessageForAI);
 
 	const data = {
 		model: model,
@@ -281,7 +285,6 @@ app.post("/chat/:userID/message", async (req, res) => {
 		const result = await response.text();
 		let resMessage = JSON.parse(result).choices[0].message;
 		messages.push(resMessage);
-		console.log(resMessage)
 
 		const parsedResMessage = JSON.parse(resMessage.content);
 
