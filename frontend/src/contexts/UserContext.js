@@ -7,7 +7,7 @@ const UserContext = createContext();
 export const UserProvider = ({ children }) => {
 	const [email, setEmail] = useState();
 	const [displayName, setDisplayName] = useState();
-	const [uid, setUid] = useState();
+	const [userId, setUid] = useState();
 	// Initialize in local storage if it exists, otherwise initialize as null
 	const [userData, setUserData] = useState(
 		JSON.parse(localStorage.getItem("userData")) || null
@@ -41,7 +41,12 @@ export const UserProvider = ({ children }) => {
 	};
 
 	function isLoggedIn() {
-		return !(!uid || uid === "" || uid === null || uid === undefined);
+		return !(
+			!userId ||
+			userId === "" ||
+			userId === null ||
+			userId === undefined
+		);
 	}
 
 	return (
