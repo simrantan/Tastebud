@@ -14,17 +14,6 @@
 	left: 0; /* Slide in */
 }
 
-.arrow {
-	position: absolute;
-	top: 50%;
-	right: 10px; /* Adjust the right offset as needed */
-	transform: translateY(-50%);
-	width: 16px; /* Adjust the width of the arrow container */
-	height: 16px; /* Adjust the height of the arrow container */
-	background-image: url("../assets/arrow.svg"); /* Use background-image instead of img element */
-	background-size: cover; /* Ensure the SVG arrow fills its container */
-}
-
 #mainContent {
 	margin-left: 0;
 	transition: margin-left 0.3s ease;

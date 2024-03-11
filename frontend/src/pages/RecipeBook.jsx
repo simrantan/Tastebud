@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Card, Button, Modal } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 import ReactMarkdown from "react-markdown"; // Import react-markdown
 
@@ -9,7 +8,6 @@ import "react-toastify/dist/ReactToastify.css";
 import "./RecipeBook.css"; // Import the CSS file
 
 export default function RecipeBook() {
-	const navigate = useNavigate();
 	const { userData } = useUser();
 
 	const userId = userData.id;
@@ -24,7 +22,6 @@ export default function RecipeBook() {
 		fetch(`http://localhost:3001/recipe_book/${userId}`)
 			.then((response) => response.json())
 			.then((data) => {
-				// Assuming data.recipes is an array of recipes
 				const recipes = data || []; // Use an empty array if recipes is undefined
 				setRecipeBook(recipes);
 			})
@@ -32,7 +29,7 @@ export default function RecipeBook() {
 				console.error("Error fetching recipe book:", error);
 				// You may want to handle the error appropriately, e.g., display an error message
 			});
-	}, []); // Add userId as a dependency if it's used in the useEffect
+	}, [userId]);
 
 	const handleSearchChange = (e) => {
 		setSearchQuery(e.target.value);
@@ -45,10 +42,6 @@ export default function RecipeBook() {
 
 	const handleCloseModal = () => {
 		setShowModal(false);
-	};
-
-	const handleHomepageButton = () => {
-		navigate("/");
 	};
 
 	const handleRemoveFromRecipeBookModal = (recipeId) => {
@@ -94,12 +87,12 @@ export default function RecipeBook() {
 		}
 	};
 
-	const filteredRecipes = recipeBook.filter(
-		(recipe) =>
-			recipe &&
-			recipe.name &&
-			recipe.name.toLowerCase().includes(searchQuery.toLowerCase())
-	);
+	const filteredRecipes = recipeBook.filter((recipe) => {
+		if (recipe) {
+			const name = recipe.title || recipe.name;
+			return name.toLowerCase().includes(searchQuery.toLowerCase());
+		}
+	});
 
 	const groupRecipesByCuisine = () => {
 		const groupedRecipes = {};

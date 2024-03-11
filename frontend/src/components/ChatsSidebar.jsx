@@ -25,10 +25,9 @@ export default function ChatsSidebar({
 				})
 				.then((user) => {
 					// Order chats by their created_by field
-					const tmp = user.chats.sort((a, b) =>
-						a.created_by > b.created_by ? 1 : -1
+					setChats(
+						user.chats.sort((a, b) => (a.created_by > b.created_by ? 1 : -1))
 					);
-					setChats(tmp);
 				})
 				.catch((error) => {
 					console.error("Error fetching chats:", error.message);
@@ -68,7 +67,7 @@ export default function ChatsSidebar({
 				<div style={{ flex: 1, overflowY: "auto" }}>
 					{/* Create an entry for each conversation */}
 					{chats.map((chat) => (
-						<SidebarEntry chat={chat} key={chat.id} />
+						<SidebarEntry chat={chat} key={chat.id} toggleDrawer />
 					))}
 				</div>
 
@@ -88,9 +87,9 @@ function SidebarEntry({ chat }) {
 	return (
 		<Link
 			to={`/${chat.id}`}
-			className="container my-1 p-1 text-decoration-none position-relative"
+			className="container my-1 p-3 text-decoration-none position-relative"
 			style={{
-				backgroundColor: "#ddd",
+				backgroundColor: "#f0f0f0",
 				height: "90px",
 				width: "94%",
 				borderRadius: "10px",
@@ -98,9 +97,14 @@ function SidebarEntry({ chat }) {
 				position: "relative",
 				display: "flex",
 				alignItems: "center",
+				boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+				textDecoration: "none",
 			}}
 		>
-			<h4 style={{ paddingLeft: "10px" }}>{chat.name}</h4>
+			<div style={{ flex: 1 }}>
+				<h4 style={{ margin: 0, fontSize: "1.2rem" }}>{chat.name}</h4>
+			</div>
+
 			<img
 				className="arrow"
 				src={require("../assets/arrow.svg").default}
