@@ -209,10 +209,12 @@ app.post("/chat/:userID/message", async (req, res) => {
 	var input = req.body.message;
 	var chatID = req.body.chatID;
 	var chatRef = null;
-	var messages = null;
-	console.log(req.body);
+	var messagesToFront = null;
+	var messagesToAI = null;
+
 	if (isNewChat) {
 		// Create new chat in firebase
+		console.log("creating new chat")
 		const chatsRef = collection(DATABASE, `users/${userId}/chats`);
 		chatRef = await addDoc(chatsRef, {
 			name: "New Chat",
@@ -234,10 +236,13 @@ app.post("/chat/:userID/message", async (req, res) => {
 			),
 			systemMessage
 		);
-		messages = [systemMessage];
+		messagesToAI = [systemMessage];
+		messagesToFront = [systemMessage];
+
 	} else {
 		chatRef = doc(DATABASE, "users", userId, "chats", chatID);
-		messages = req.body.messages;
+		messagesToFront = req.body.messages;
+		messagesToAI = req.body.messages;
 	}
 
 	const newMessage = {
@@ -251,18 +256,24 @@ app.post("/chat/:userID/message", async (req, res) => {
 		newMessage
 	);
 
-	// Add user's message to array of all messages to send to the API
-	messages.push(newMessage);
-
 	if (isNewChat) {
 		input +=
 			". Generate a title for this chat in the 'chat_title' field in your response.";
 	}
 
+	const newMessageToAI = {
+		role: "user",
+		content: input + " REMEMBER THIS!: " + systemMessage.content,
+	};
+	// Add user's message to array of all messages to send to the API
+
+	messagesToAI.push(newMessageToAI);
+	messagesToFront.push(newMessage)
+
 	const data = {
 		model: model,
 		max_tokens: maxTokens,
-		messages: messages,
+		messages: messagesToAI,
 	};
 
 	const options = {
@@ -275,7 +286,7 @@ app.post("/chat/:userID/message", async (req, res) => {
 		const response = await fetch(url, options);
 		const result = await response.text();
 		let resMessage = JSON.parse(result).choices[0].message;
-		messages.push(resMessage);
+		messagesToFront.push(resMessage);
 
 		// Save TasteBud's response to Firebase
 		setDoc(
@@ -300,7 +311,7 @@ app.post("/chat/:userID/message", async (req, res) => {
 
 		res.json({
 			chat_id: chatID,
-			messages: messages,
+			messages: messagesToFront,
 		});
 	} catch (error) {
 		res.status(500).json({ error: error.message });
