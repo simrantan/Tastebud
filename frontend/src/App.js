@@ -34,8 +34,10 @@ export default function App() {
 								path="/:chatId"
 								element={
 									<ProtectedRoute>
-										<MainPage 	chatSidebarIsOpen={chatSidebarIsOpen}
-											setChatSidebarIsOpen={setChatSidebarIsOpen}/>
+										<MainPage
+											chatSidebarIsOpen={chatSidebarIsOpen}
+											setChatSidebarIsOpen={setChatSidebarIsOpen}
+										/>
 									</ProtectedRoute>
 								}
 							/>
@@ -70,6 +72,7 @@ export default function App() {
 							/>
 
 							<Route path="/login" element={<LoginPage />} />
+							<Route path="/" element={<Navigate to="/login" />} />
 						</Routes>
 					</div>
 				</UserProvider>
