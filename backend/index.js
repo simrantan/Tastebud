@@ -168,36 +168,35 @@ app.get("/user/:userId/recipe/:recipeId", async (req, res) => {
 	}
 });
 
-/** Add or Remove a recipe from a user's recipe book */
-app.post("/recipe_book/:userId/:recipeId", async (req, res) => {
+/** Add a recipe to a user's recipe book */
+app.post("/recipe_book/:userId/add", async (req, res) => {
+	const userId = req.params.userId;
+	const recipeInfo = req.body;
+
+	// Test with: curl -X POST -H "Content-Type: application/json" -d '{"name": "Banana Bread", "chat_id": "CHAT_ID", "text": "Easy to make and delicious", "picture_url": "https://placekitten.com/1000/1000", "cuisine": "American"}'  http://localhost:3001/recipe_book/00000000_sample_user/add
+	try {
+		const recipesRef = collection(DATABASE, `users/${userId}/recipes`);
+		await addDoc(recipesRef, recipeInfo);
+		res.status(200).json({ success: true });
+	} catch (error) {
+		console.error(error);
+		res.status(500).send("Internal Server Error");
+	}
+});
+
+/** Remove a recipe from a user's recipe book */
+app.post("/recipe_book/:userId/remove/:recipeId", async (req, res) => {
 	const userId = req.params.userId;
 	const recipeId = req.params.recipeId;
-	const { action, recipeInfo } = req.body;
 
-	if (action === "add") {
-		// Test with: curl -X POST -H "Content-Type: application/json" -d '{"action": "add", "recipeInfo": {"name": "Banana Bread", "chat_id": "RECIPE_ID", "text": "easy to make and delicious", "picture_url": "https://placekitten.com/1000/1000", "cuisine": "American"}}' http://localhost:3001/recipe_book/00000000_sample_user/111
-		try {
-			const recipeRef = collection(DATABASE, `users/${userId}/recipes`);
-			await setDoc(doc(recipeRef, recipeId), recipeInfo);
-			res.status(200).json({ success: true });
-		} catch (error) {
-			console.error(error);
-			res.status(500).send("Internal Server Error");
-		}
-	} else if (action === "remove") {
-		// Test with: curl -X POST -H "Content-Type: application/json" -d '{"action": "remove", "recipeInfo": {"name": "Banana Bread", "chat_id": "RECIPE_ID", "text": "easy to make and delicious", "picture_url": "https://placekitten.com/1000/1000", "cuisine": "American"}}' http://localhost:3001/recipe_book/00000000_sample_user/111
-		try {
-			const recipeRef = collection(DATABASE, `users/${userId}/recipes`);
-			await deleteDoc(doc(recipeRef, recipeId));
-			res.status(200).json({ success: true });
-		} catch (error) {
-			console.error(error);
-			res.status(500).send("Internal Server Error");
-		}
-	} else {
-		return res
-			.status(400)
-			.json({ error: "Invalid action (not 'add' or 'remove')" });
+	// Test with: curl -X POST -H "Content-Type: application/json" http://localhost:3001/recipe_book/00000000_sample_user/remove/111
+	try {
+		const recipeRef = collection(DATABASE, `users/${userId}/recipes`);
+		await deleteDoc(doc(recipeRef, recipeId));
+		res.status(200).json({ success: true });
+	} catch (error) {
+		console.error(error);
+		res.status(500).send("Internal Server Error");
 	}
 });
 
@@ -205,7 +204,6 @@ app.post("/recipe_book/:userId/:recipeId", async (req, res) => {
 /** Get response message from TasteBud after receiving user message */
 app.post("/chat/:userID/message", async (req, res) => {
 	// Test with: curl -X POST -H "Content-Type: application/json" -d '{"message": "I want to make a cake", "chatID": null}' http://localhost:3001/chat/00000000_sample_user/message
-
 	const userId = req.params.userID;
 	const isNewChat = req.body.chatID === null;
 	var input = req.body.message;

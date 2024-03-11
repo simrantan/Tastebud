@@ -11,7 +11,7 @@
   .square-button {
     width: 40px; /* Adjust the width as needed to make it square */
     height: 40px; /* Adjust the height as needed */
-    background-color: #007bff; /* Add your desired background color */
+    background-color: #d87e79; /* Pink color from colors file */
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -30,4 +30,5 @@
     font-size: 10px; /* Adjust the font size of the text as needed */
     margin-top: 5px; /* Adjust the margin between the button and text */
     color: #333; /* Add your desired text color */
+    font-family: 'Inter', sans-serif; /* Use the font-family from your theme */
   }

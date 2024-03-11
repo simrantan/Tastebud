@@ -3,6 +3,7 @@ import "./ChatsSidebar.css";
 import { Link } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 
+
 const API_URL = "http://localhost:3001/user";
 
 export default function ChatsSidebar({
@@ -45,7 +46,7 @@ export default function ChatsSidebar({
 				style={{ backgroundColor: "#573C56" }}
 			>
 				<div className="d-flex justify-content-ends p-3 align-items-top">
-					<h2 className="text-light">Chats</h2>
+					<h2 className="text-light">My Chats</h2>
 
 					<button
 						className="btn"
@@ -74,18 +75,21 @@ export default function ChatsSidebar({
 function SidebarEntry({ chat }) {
 	return (
 		<Link
-			// TODO: Update the path to the chat page
-			to={`/`}
-			className="container my-2 p-3 text-decoration-none"
-			style={{
-				backgroundColor: "#ddd",
-				height: "100px",
-				width: "90%",
-				borderRadius: "10px",
-				color: "black",
-			}}
-		>
-			<h4>{chat.name}</h4>
-		</Link>
+		to={`/`}
+		className="container my-1 p-1 text-decoration-none position-relative"
+		style={{
+		  backgroundColor: "#ddd",
+		  height: "90px",
+		  width: "94%",
+		  borderRadius: "10px",
+		  color: "black",
+		  position: "relative",
+		  display: "flex",
+		  alignItems: "center",
+		}}
+	  >
+		<h4 style={{ paddingLeft: "10px" }}>{chat.name}</h4>
+		<img className="arrow" src={require('../assets/arrow.svg').default} alt="Arrow" />
+	  </Link>
 	);
-}
+  }
