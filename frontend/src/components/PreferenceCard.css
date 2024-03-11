@@ -3,7 +3,7 @@
 .preference-card-container {
     width: 400px; /* Adjust the max-width as per your design */
     position: fixed;
-    top: 30px;
+    top: 90px;
     right: 30px;
     bottom: 30px;
     background-color: #f8f9fa; /* Add your desired background color */
