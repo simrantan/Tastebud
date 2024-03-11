@@ -8,20 +8,36 @@ export const UserProvider = ({ children }) => {
 	const [email, setEmail] = useState();
 	const [displayName, setDisplayName] = useState();
 	const [uid, setUid] = useState();
-	const [userData, setUserData] = useState(null);
+	// Initialize in local storage if it exists, otherwise initialize as null
+	const [userData, setUserData] = useState(
+		JSON.parse(localStorage.getItem("userData")) || null
+	);
 
+	// Any time the userData changes, update it in local storage
 	useEffect(() => {
 		console.log("userData", userData);
+		localStorage.setItem("userData", JSON.stringify(userData));
 	}, [userData]);
 
 	const updateUser = (data) => {
-		// Pull data from Firebase and store it in the context
 		setDisplayName(data.displayName);
 		setEmail(data.email);
 		setUid(data.uid);
-		const backendData = fetch(`http://localhost:3001/user/${uid}`);
-		console.log("backendData", backendData);
-		setUserData(backendData);
+
+		// Pull data from Firebase and store it in the context
+		fetch(`http://localhost:3001/user/${data.uid}`)
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error("Network response was not ok");
+				}
+				return response.json();
+			})
+			.then((userData) => {
+				setUserData(userData);
+			})
+			.catch((error) => {
+				console.error("There was a problem with the fetch operation:", error);
+			});
 	};
 
 	function isLoggedIn() {

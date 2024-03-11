@@ -26,8 +26,8 @@ export default function LoginPage({ props }) {
 	const { updateUser } = useUser();
 	let navigate = useNavigate();
 
-	const [email, setLocalEmail] = useState("");
-	const [password, setLocalPassword] = useState("");
+	const [email, setLocalEmail] = useState("sopferman@stanford.edu");
+	const [password, setLocalPassword] = useState("password");
 
 	const handleSignup = async (e) => {
 		e.preventDefault();
@@ -103,7 +103,7 @@ export default function LoginPage({ props }) {
 	return (
 		<div className="container">
 			<h1>Login / Create Account</h1>
-			<form>
+			<form style={{ width: "50%" }}>
 				<div className="mb-3">
 					<label htmlFor="email" className="form-label">
 						Email address
