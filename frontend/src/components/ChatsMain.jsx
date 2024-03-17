@@ -11,7 +11,6 @@ export default function ChatsMain() {
 	const { userData } = useUser();
 
 	const { chatId } = useParams();
-	console.log("chattt" + chatId);
 	const [userInput, setUserInput] = useState("");
 	const [chatHistory, setChatHistory] = useState([{}]);
 	const [recipePanelData, setRecipePanelData] = useState({ recipes: [] });
@@ -32,6 +31,7 @@ export default function ChatsMain() {
 		// Set chat history with URL
 		const fetchData = async () => {
 			try {
+				console.log("new chattt  " + chatId);
 				if (chatId === undefined) {
 					// Start a new conversation with conversation starters and empty chat history
 					setChatHistory([]);
@@ -83,23 +83,16 @@ export default function ChatsMain() {
 				console.log(
 					"last asssss message   " + JSON.stringify(lastAssistantMessage)
 				);
-				if (
-					lastAssistantMessage &&
-					lastAssistantMessage.isRecipeList === true
-				) {
-					setReceivedIsRecipeList(lastAssistantMessage.isRecipeList);
+				setReceivedIsRecipeList(lastAssistantMessage.isRecipeList);
 
-					const contentObject = lastAssistantMessage;
-					const isRecipeList = contentObject.isRecipeList;
-					console.log("made it inside");
-
-					if (isRecipeList) {
-						// Set recipePanelData to the list of recipes
-						setRecipePanelData({ recipes: contentObject.recipeTitles });
-					}
-					if (contentObject.isRecipe) {
-						setSelectedRecipe(contentObject.recipe);
-					}
+				if (lastAssistantMessage.isRecipeList) {
+					// Set recipePanelData to the list of recipes
+					setRecipePanelData({ recipes: lastAssistantMessage.recipeTitles });
+				}
+				if (lastAssistantMessage.isRecipe) {
+					setSelectedRecipe(lastAssistantMessage.recipe);
+				} else {
+					setSelectedRecipe(null);
 				}
 
 				setChatHistory(allMessages);
