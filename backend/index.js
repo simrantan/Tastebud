@@ -393,7 +393,7 @@ async function getResponseFromAPI(messages) {
 	const data = {
 		model: model,
 		max_tokens: maxTokens,
-		messages: messagesToAI,
+		messages: messages,
 	};
 
 	const options = {
