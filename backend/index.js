@@ -253,7 +253,7 @@ app.post("/chat/:userID/message", async (req, res) => {
 
 	// Now we append to user's input as appropriate
 	if (isNewChat) {
-		input += ". Generate a title for this chat in the 'chat_title' field in your response."
+		input += ". Generate a title for this chat in the 'chatTitle' field in your response."
 	}
 
 	if (preferences.likes && preferences.likes.length > 0) {
@@ -280,7 +280,7 @@ app.post("/chat/:userID/message", async (req, res) => {
 	var response = await getResponseFromAPI(messagesForAI);
 	
 	// Check if API response is properly formatted
-	var check = await checkAPIResponseFormat(response.content);
+	var check = await checkAPIResponseFormat(response.content, isNewChat);
 
 	if (check === "OK") {
 		// Trim response to everything within curly braces {}
@@ -303,6 +303,7 @@ app.post("/chat/:userID/message", async (req, res) => {
 
 		res.json({
 			chat_id: chatID,
+			chatTitle: jsonResponse.chatTitle,
 			isRecipeList: jsonResponse.isRecipeList,
 			isRecipe: jsonResponse.isRecipe,
 			message: jsonResponse.message,
@@ -320,7 +321,7 @@ app.post("/chat/:userID/message", async (req, res) => {
 		});
 
 		response = await getResponseFromAPI(messagesCopy);
-		check = await checkAPIResponseFormat(response.content);
+		check = await checkAPIResponseFormat(response.content, isNewChat);
 
 		if (check === "OK") {
 			// Trim response to everything within curly braces {}
@@ -343,6 +344,7 @@ app.post("/chat/:userID/message", async (req, res) => {
 
 			res.json({
 				chat_id: chatID,
+				chatTitle: jsonResponse.chatTitle,
 				isRecipeList: jsonResponse.isRecipeList,
 				isRecipe: jsonResponse.isRecipe,
 				message: jsonResponse.message,
@@ -375,7 +377,7 @@ async function getResponseFromAPI(messages) {
 	return JSON.parse(result).choices[0].message;
 }
 
-async function checkAPIResponseFormat(responseContent) {
+async function checkAPIResponseFormat(responseContent, isNewChat) {
 	// Trim response to everything within curly braces {}
 	const match = responseContent.match(/\{[^]*\}/);
 	if (match !== null) {
@@ -391,7 +393,7 @@ async function checkAPIResponseFormat(responseContent) {
 		return "The response you sent is not properly formatted. It should be one singular JSON object. Fix it now!";
 	}
 
-	if (!("chatTitle" in jsonResponse)) {
+	if (isNewChat && !("chatTitle" in jsonResponse)) {
 		return "The field chatTitle was not included in your response. Include it and set it properly!";
 	}
 
