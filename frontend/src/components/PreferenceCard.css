@@ -16,6 +16,10 @@
   .section {
     margin-bottom: 20px; /* Add margin between sections as needed */
   }
+
+  .section-title {
+    font-size: 30px;
+  }
   
   .preference-container {
     display: flex;
