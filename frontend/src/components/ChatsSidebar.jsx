@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import "./ChatsSidebar.css";
 import { Link } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
-import Button from "react-bootstrap/Button"; // Import the Button component
 
 const API_URL = "http://localhost:3001/user";
 

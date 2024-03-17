@@ -173,30 +173,30 @@ app.post("/recipe_book/:userId/add", async (req, res) => {
 	const userId = req.params.userId;
 	const recipeInfo = req.body;
 
-	// Test with: curl -X POST -H "Content-Type: application/json" -d '{"name": "Banana Bread", "chat_id": "CHAT_ID", "text": "Easy to make and delicious", "picture_url": "https://placekitten.com/1000/1000", "cuisine": "American"}'  http://localhost:3001/recipe_book/00000000_sample_user/add
-	try {
-		const recipesRef = collection(DATABASE, `users/${userId}/recipes`);
-		await addDoc(recipesRef, recipeInfo);
-		res.status(200).json({ success: true });
-	} catch (error) {
-		console.error(error);
-		res.status(500).send("Internal Server Error");
-	}
-});
-
-/** Remove a recipe from a user's recipe book */
-app.post("/recipe_book/:userId/remove/:recipeId", async (req, res) => {
-	const userId = req.params.userId;
-	const recipeId = req.params.recipeId;
-
-	// Test with: curl -X POST -H "Content-Type: application/json" http://localhost:3001/recipe_book/00000000_sample_user/remove/111
-	try {
-		const recipeRef = collection(DATABASE, `users/${userId}/recipes`);
-		await deleteDoc(doc(recipeRef, recipeId));
-		res.status(200).json({ success: true });
-	} catch (error) {
-		console.error(error);
-		res.status(500).send("Internal Server Error");
+	if (action === "add") {
+		// Test with: curl -X POST -H "Content-Type: application/json" -d '{"action": "add", "recipeInfo": {"name": "Banana Bread", "chat_id": "RECIPE_ID", "text": "easy to make and delicious", "picture_url": "https://placekitten.com/1000/1000", "cuisine": "American"}}' http://localhost:3001/recipe_book/00000000_sample_user/111
+		try {
+			const recipeRef = collection(DATABASE, `users/${userId}/recipes`);
+			await setDoc(doc(recipeRef, recipeId), recipeInfo);
+			res.status(200).json({ success: true });
+		} catch (error) {
+			console.error(error);
+			res.status(500).send("Internal Server Error");
+		}
+	} else if (action === "remove") {
+		// Test with: curl -X POST -H "Content-Type: application/json" -d '{"action": "remove", "recipeInfo": {"name": "Banana Bread", "chat_id": "RECIPE_ID", "text": "easy to make and delicious", "picture_url": "https://placekitten.com/1000/1000", "cuisine": "American"}}' http://localhost:3001/recipe_book/00000000_sample_user/111
+		try {
+			const recipeRef = collection(DATABASE, `users/${userId}/recipes`);
+			await deleteDoc(doc(recipeRef, recipeId));
+			res.status(200).json({ success: true });
+		} catch (error) {
+			console.error(error);
+			res.status(500).send("Internal Server Error");
+		}
+	} else {
+		return res
+			.status(400)
+			.json({ error: "Invalid action (not 'add' or 'remove')" });
 	}
 });
 
@@ -262,7 +262,7 @@ app.post("/chat/:userID/message", async (req, res) => {
 	// Now we append to user's input as appropriate
 	if (isNewChat) {
 		input +=
-			". Generate a title for this chat in the 'chat_title' field in your response.";
+			". Generate a title for this chat in the 'chatTitle' field in your response.";
 	}
 
 	if (preferences.likes && preferences.likes.length > 0) {
@@ -296,7 +296,7 @@ app.post("/chat/:userID/message", async (req, res) => {
 	var response = await getResponseFromAPI(messagesForAI);
 
 	// Check if API response is properly formatted
-	var check = await checkAPIResponseFormat(response.content);
+	var check = await checkAPIResponseFormat(response.content, isNewChat);
 
 	if (check === "OK") {
 		// Trim response to everything within curly braces {}
@@ -327,6 +327,7 @@ app.post("/chat/:userID/message", async (req, res) => {
 
 		res.json({
 			chat_id: chatID,
+			chatTitle: jsonResponse.chatTitle,
 			isRecipeList: jsonResponse.isRecipeList,
 			isRecipe: jsonResponse.isRecipe,
 			message: jsonResponse.message,
@@ -344,7 +345,7 @@ app.post("/chat/:userID/message", async (req, res) => {
 		});
 
 		response = await getResponseFromAPI(messagesCopy);
-		check = await checkAPIResponseFormat(response.content);
+		check = await checkAPIResponseFormat(response.content, isNewChat);
 
 		if (check === "OK") {
 			// Trim response to everything within curly braces {}
@@ -375,6 +376,7 @@ app.post("/chat/:userID/message", async (req, res) => {
 
 			res.json({
 				chat_id: chatID,
+				chatTitle: jsonResponse.chatTitle,
 				isRecipeList: jsonResponse.isRecipeList,
 				isRecipe: jsonResponse.isRecipe,
 				message: jsonResponse.message,
@@ -407,7 +409,7 @@ async function getResponseFromAPI(messages) {
 	return JSON.parse(result).choices[0].message;
 }
 
-async function checkAPIResponseFormat(responseContent) {
+async function checkAPIResponseFormat(responseContent, isNewChat) {
 	// Trim response to everything within curly braces {}
 	const match = responseContent.match(/\{[^]*\}/);
 	if (match !== null) {
@@ -423,7 +425,7 @@ async function checkAPIResponseFormat(responseContent) {
 		return "The response you sent is not properly formatted. It should be one singular JSON object. Fix it now!";
 	}
 
-	if (!("chatTitle" in jsonResponse)) {
+	if (isNewChat && !("chatTitle" in jsonResponse)) {
 		return "The field chatTitle was not included in your response. Include it and set it properly!";
 	}
 
@@ -448,141 +450,6 @@ async function checkAPIResponseFormat(responseContent) {
 
 	return "OK";
 }
-
-/* ###################################################### Chat Methods ##################################################### */
-/** Get response message from TasteBud after receiving user message */
-// app.post("/chat/:userID/message", async (req, res) => {
-// 	// Test with: curl -X POST -H "Content-Type: application/json" -d '{"message": "I want to make a cake", "chatID": null}' http://localhost:3001/chat/00000000_sample_user/message
-
-// 	const userId = req.params.userID;
-// 	const isNewChat = req.body.chatID === null;
-// 	const preferences = req.body.preferences;
-// 	var input = req.body.message;
-// 	var chatID = req.body.chatID;
-// 	var chatRef = null;
-// 	var messages = null;
-
-// 	if (isNewChat) {
-// 		// Create new chat in firebase
-// 		const chatsRef = collection(DATABASE, `users/${userId}/chats`);
-// 		chatRef = await addDoc(chatsRef, {
-// 			name: "New Chat",
-// 			is_group: false,
-// 			host_id: userId,
-// 			created_at: getTimestamp(),
-// 		});
-// 		chatID = chatRef.id;
-// 		// Start new message history in Firebase, with the system message
-// 		await setDoc(
-// 			doc(
-// 				DATABASE,
-// 				"users",
-// 				userId,
-// 				"chats",
-// 				chatID,
-// 				"messages",
-// 				getTimestamp()
-// 			),
-// 			systemMessage
-// 		);
-// 		messages = [systemMessage];
-// 	} else {
-// 		chatRef = doc(DATABASE, "users", userId, "chats", chatID);
-// 		messages = req.body.messages;
-// 	}
-
-// 	// Save the user's original message to Firebase
-// 	setDoc(
-// 		doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()),
-// 		newMessage
-// 	);
-
-// 	const jsonPrefs = JSON.parse(preferences);
-// 	if (jsonPrefs.likes.length > 0) {
-// 		input +=
-// 			". You don't need to include these, but I like " +
-// 			jsonPrefs.likes.join(", ") +
-// 			".";
-// 	}
-// 	if (jsonPrefs.dislikes.length > 0) {
-// 		input +=
-// 			". I dislike " +
-// 			jsonPrefs.dislikes.join(", ") +
-// 			", so try to exclude them.";
-// 	}
-// 	if (jsonPrefs.allergies.length > 0) {
-// 		input +=
-// 			". I am allergic to " + Object.keys(jsonPrefs.allergies).join(", ") + " SO DO NOT INCLUDE ANY OF THESE INGREDIENTS IN ANY RECIPES YOU PROVIDE.";
-// 	}
-
-// 	if (isNewChat) {
-// 		input +=
-// 			". Generate a title for this chat in the 'chat_title' field in your response.";
-// 	}
-
-// 	const newMessage = {
-// 		role: "user",
-// 		content: input,
-// 	};
-// 	// Add user's message to array of all messages to send to the API
-// 	messages.push(newMessage);
-
-// 	const data = {
-// 		model: model,
-// 		max_tokens: maxTokens,
-// 		messages: messages,
-// 	};
-
-// 	const options = {
-// 		method: "POST",
-// 		headers: headers,
-// 		body: JSON.stringify(data),
-// 	};
-
-// 	try {
-// 		const response = await fetch(url, options);
-// 		const result = await response.text();
-// 		let resMessage = JSON.parse(result).choices[0].message;
-// 		messages.push(resMessage);
-// 		console.log(resMessage);
-
-// 		const parsedResMessage = JSON.parse(resMessage.content);
-
-// 		// Save TasteBud's response to Firebase
-// 		setDoc(
-// 			doc(
-// 				DATABASE,
-// 				"users",
-// 				userId,
-// 				"chats",
-// 				chatID,
-// 				"messages",
-// 				getTimestamp()
-// 			),
-// 			resMessage
-// 		);
-
-// 		if (isNewChat) {
-// 			// Update the chat title
-// 			updateDoc(chatRef, {
-// 				name: JSON.parse(resMessage.content).chatTitle,
-// 			});
-// 		}
-
-// 		res.json({
-// 			chat_id: chatID,
-// 			messages: messages,
-// 			//chatTitle: parsedResMessage.chatTitle,
-// 			// isRecipeList: parsedResMessage.isRecipeList,
-// 			// isRecipe: parsedResMessage.isRecipe,
-// 			// message: parsedResMessage.message,
-// 			// recipeTitles: parsedResMessage.recipeTitles,
-// 			// recipe: parsedResMessage.recipe,
-// 		});
-// 	} catch (error) {
-// 		res.status(500).json({ error: error.message });
-// 	}
-// });
 
 /* ########################### Chat ########################## */
 /** Get all the information for a single chat */
