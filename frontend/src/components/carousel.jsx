@@ -39,7 +39,7 @@ const RecipeCarousel = ({ recipes, onRecipeClick }) => {
 				onClick={handleRecipeClick}
 				className={isSelected ? "selected-recipe" : ""}
 			>
-				{recipe.title}
+				{recipe}
 			</Button>
 		);
 	};

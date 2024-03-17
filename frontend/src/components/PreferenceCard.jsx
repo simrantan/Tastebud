@@ -30,7 +30,6 @@ const PreferenceCard = () => {
 
 				const data = await response.json();
 				// Update state with fetched preferences
-				console.log("dataaaa " + JSON.stringify(data))
 				setAllergens(data.allergies !== undefined ? data.allergies : []);
 				setLikes(data.likes !== undefined ? data.likes : []);
 				setDislikes(data.dislikes !== undefined ? data.dislikes : []);

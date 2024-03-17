@@ -52,6 +52,7 @@ export default function ChatsMain() {
 
 				const chatData = await response.json();
 
+				console.log("chat data   " + JSON.stringify(chatData));
 				const allMessages = [];
 				let lastAssistantMessage = null; // Track the last assistant message
 
@@ -80,16 +81,23 @@ export default function ChatsMain() {
 				setChatHistory(allMessages);
 
 				// Check if the last assistant message contains isRecipeList
+				console.log(
+					"last asssss message   " + JSON.stringify(lastAssistantMessage)
+				);
 				if (
 					lastAssistantMessage &&
-					JSON.parse(lastAssistantMessage.content).isRecipeList === true
+					lastAssistantMessage.isRecipeList === true
 				) {
-					const contentObject = JSON.parse(lastAssistantMessage.content);
+					const contentObject = lastAssistantMessage;
 					const isRecipeList = contentObject.isRecipeList;
 
 					if (isRecipeList) {
 						// Set recipePanelData to the list of recipes
 						setRecipePanelData({ recipes: contentObject.recipeTitles });
+						console.log("recipePanel", contentObject.recipeTitles);
+					}
+					if (contentObject.isRecipe) {
+						setSelectedRecipe(contentObject.recipe);
 					}
 				}
 
@@ -177,7 +185,7 @@ export default function ChatsMain() {
 					if (isRecipeList) {
 						// Set recipePanelData to the list of recipes
 						setRecipePanelData({ recipes: responseData.recipeTitles });
-						console.log("recipePanel", recipePanelData);
+						console.log("recipePanel", responseData.recipeTitles);
 					}
 					if (isRecipe) {
 						setSelectedRecipe(responseData.recipe);
@@ -329,7 +337,7 @@ export default function ChatsMain() {
 									</div>
 								))}
 
-							{receivedIsRecipeList ?? (
+							{receivedIsRecipeList && (
 								<RecipeCarousel
 									recipes={recipePanelData.recipes}
 									onRecipeClick={(index) => {

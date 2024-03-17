@@ -12,6 +12,7 @@ export default function ChatsSidebar({
 }) {
 	const { userData } = useUser();
 	const [chats, setChats] = useState([]);
+	const [newChatCount, setNewChatCount] = useState(0);
 
 	// Fetch the user's chats from the backend
 	useEffect(() => {
@@ -79,7 +80,13 @@ export default function ChatsSidebar({
 				</div>
 
 				<div style={{ flex: "none" }}>
-					<Link to="/newConversation" onClick={toggleDrawer}>
+					<Link
+						to={`/newConversation:${newChatCount}`}
+						onClick={() => {
+							setNewChatCount((prevCount) => prevCount + 1);
+							toggleDrawer();
+						}}
+					>
 						<Button variant="light" className="text-dark m-3">
 							Create New Chat
 						</Button>
