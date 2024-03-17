@@ -1,4 +1,4 @@
-import express from "express";
+import express, { json } from "express";
 import cors from "cors";
 import {
 	doc,
@@ -213,9 +213,10 @@ app.post("/chat/:userID/message", async (req, res) => {
 	var chatID = req.body.chatID;
 	var chatRef = null;
 	var messages = null;
+	var messagesForAI = null;
 
 	if (isNewChat) {
-		// Create new chat in firebase
+		// If new chat, create new chat in Firebase
 		const chatsRef = collection(DATABASE, `users/${userId}/chats`);
 		chatRef = await addDoc(chatsRef, {
 			name: "New Chat",
@@ -224,50 +225,140 @@ app.post("/chat/:userID/message", async (req, res) => {
 			created_at: getTimestamp(),
 		});
 		chatID = chatRef.id;
-		// Start new message history in Firebase, with the system message
+		// Start new message history in Firebase, starting with the system message
 		await setDoc(
 			doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()),
 			systemMessage
 		);
 		messages = [systemMessage];
+		messagesForAI = JSON.parse(JSON.stringify(messages)); // Deep copy
 	} else {
+		// If chat already exists, get the chat reference and messages history from Firebase
 		chatRef = doc(DATABASE, "users", userId, "chats", chatID);
 		messages = req.body.messages;
+		messagesForAI = JSON.parse(JSON.stringify(messages)); // Deep copy
 	}
 
-	const newMessage = {
+	const originalMessage = {
 		role: "user",
-		content: input,
-	};
+		content: input
+	}
 
-		// Save the user's original message to Firebase
-		setDoc(
-			doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()),
-			newMessage
-		);
+	// Save the user's original message to Firebase
+	setDoc(
+		doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()), originalMessage
+	);
 
-	const newMessageForAI = {
-		role: "user",
-		content: input,
+	// Append user's original message to messages history
+	messages.push(originalMessage);
+
+	// Now we append to user's input as appropriate
+	if (isNewChat) {
+		input += ". Generate a title for this chat in the 'chat_title' field in your response."
 	}
 
 	if (preferences.likes && preferences.likes.length > 0) {
-		newMessageForAI.content += ". You don't need to include these, but I like " + preferences.likes.join(", ") + ".";
+		input += ". It's not necessary to include these, but note that I like " + preferences.likes.join(", ") + ".";
 	}
 	if (preferences.dislikes && preferences.dislikes.length > 0) {
-		newMessageForAI.content += ". I dislike " + preferences.dislikes.join(", ") + ", so try to exclude them.";
+		input += ". I dislike " + preferences.dislikes.join(", ") + ", so exclude them.";
 	}
 	if (preferences.allergies && Object.keys(preferences.allergies).length > 0) {
-		newMessageForAI.content += ". I am allergic to " + Object.keys(preferences.allergies).join(", ") + ", so DO NOT INCLUDE THEM IN ANY RECIPES YOU PROVIDE.";
+		input += ". I am allergic to " + Object.keys(preferences.allergies).join(", ") + ", so DO NOT INCLUDE THEM IN ANY RECIPES YOU PROVIDE.";
 	}
 
-	if (isNewChat) {
-		newMessageForAI.content += ". Generate a title for this chat in the 'chat_title' field in your response."
+	input += "\n REMEMBER THIS!!!!!: " + systemMessage.content;
+
+	const engineeredMessage = {
+		role: "user",
+		content: input,
 	}
 
-	// Add user's message to array of all messages to send to the API
-	messages.push(newMessageForAI);
+	// Add reformatted user message to messages that get sent to the API
+	messagesForAI.push(engineeredMessage);
 
+	// Fetch API response
+	var response = await getResponseFromAPI(messagesForAI);
+	
+	// Check if API response is properly formatted
+	var check = await checkAPIResponseFormat(response.content);
+
+	if (check === "OK") {
+		// Trim response to everything within curly braces {}
+		response.content = response.content.match(/\{[^]*\}/)[0];
+
+		// Save API response to Firebase
+		setDoc(
+			doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()),
+			response
+		);
+
+		// Append response to messages history variable
+		messages.push(response);
+
+		const jsonResponse = JSON.parse(response.content);
+
+		if (isNewChat) {
+			updateDoc(chatRef, {name: jsonResponse.chatTitle});
+		}
+
+		res.json({
+			chat_id: chatID,
+			isRecipeList: jsonResponse.isRecipeList,
+			isRecipe: jsonResponse.isRecipe,
+			message: jsonResponse.message,
+			recipeTitles: jsonResponse.recipeTitles,
+			recipe: jsonResponse.recipe,
+			messages: messages,
+		});
+	} else {
+		console.log("Retrying API call...");
+
+		// If API's response is improperly formatted, try once more with correcting messages
+		const messagesCopy = messages.concat(response, {
+			role: "user",
+			content: check + "\n REMEMBER THIS!!!!!: " + systemMessage.content
+		});
+
+		response = await getResponseFromAPI(messagesCopy);
+		check = await checkAPIResponseFormat(response.content);
+
+		if (check === "OK") {
+			// Trim response to everything within curly braces {}
+			response.content = response.content.match(/\{[^]*\}/)[0];
+
+			// Save API response to Firebase
+			setDoc(
+				doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()),
+				response
+			);
+			
+			// Append response to messages history variable
+			messages.push(response);
+
+			const jsonResponse = JSON.parse(response.content);
+
+			if (isNewChat) {
+				updateDoc(chatRef, {name: jsonResponse.chatTitle});
+			}
+
+			res.json({
+				chat_id: chatID,
+				isRecipeList: jsonResponse.isRecipeList,
+				isRecipe: jsonResponse.isRecipe,
+				message: jsonResponse.message,
+				recipeTitles: jsonResponse.recipeTitles,
+				recipe: jsonResponse.recipe,
+				messages: messages,
+			});
+		} else {
+			// Give up
+			res.status(500).send("Error: Could not properly fetch API response");
+		}
+	}
+});
+
+async function getResponseFromAPI(messages) {
 	const data = {
 		model: model,
 		max_tokens: maxTokens,
@@ -280,41 +371,49 @@ app.post("/chat/:userID/message", async (req, res) => {
 		body: JSON.stringify(data),
 	};
 
-	try {
-		const response = await fetch(url, options);
-		const result = await response.text();
-		let resMessage = JSON.parse(result).choices[0].message;
-		messages.push(resMessage);
+	const response = await fetch(url, options);
+	const result = await response.text();
+	return JSON.parse(result).choices[0].message;
+}
 
-		const parsedResMessage = JSON.parse(resMessage.content);
-
-		// Save TasteBud's response to Firebase
-		setDoc(
-			doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()),
-			resMessage
-		);
-
-		if (isNewChat) {
-			// Update the chat title
-			updateDoc(chatRef, {
-			name: JSON.parse(resMessage.content).chatTitle
-		});
-		}
-
-		res.json({
-			chat_id: chatID,
-			messages: messages,
-			// chatTitle: parsedResMessage.chatTitle,
-			// isRecipeList: parsedResMessage.isRecipeList,
-			// isRecipe: parsedResMessage.isRecipe,
-			// message: parsedResMessage.message,
-			// recipeTitles: parsedResMessage.recipeTitles,
-			// recipe: parsedResMessage.recipe,
-		});
-	} catch (error) {
-		res.status(500).json({ error: error.message });
+async function checkAPIResponseFormat(responseContent) {
+	// Trim response to everything within curly braces {}
+	const match = responseContent.match(/\{[^]*\}/);
+	if (match !== null) {
+		responseContent = match[0];
+	} else {
+		return "The response you sent does not contain a JSON object. Send me a JSON object!";
 	}
-});
+
+	var jsonResponse = null;
+	try {
+		jsonResponse = JSON.parse(responseContent);
+	} catch (error) {
+		return "The response you sent is not properly formatted. It should be one singular JSON object. Fix it now!";
+	}
+
+	if (!("chatTitle" in jsonResponse)) {
+		return "The field chatTitle was not included in your response. Include it and set it properly!";
+	}
+
+	if (!("isRecipeList" in jsonResponse)) {
+		return "The field isRecipeList was not included in your response. Include it and set it properly!";
+	} else if (jsonResponse.isRecipeList && !Array.isArray(jsonResponse.recipeTitles)) {
+		return "You included the field isRecipeList but the field recipeTitles is not a proper string array of recipes. Include it and set it properly!";
+	}
+
+	if (!("isRecipe" in jsonResponse)) {
+		return "The field isRecipe was not included in your response. Include it and set it properly!";
+	} else if (jsonResponse.isRecipe && !("recipe" in jsonResponse)) {
+		return "You included the field isRecipe but you failed to include a recipe. Include the field recipe and set it properly! Remember that a recipe contains title, cuisine, ingredients, and directions.";
+	}
+
+	if (!("message" in jsonResponse)) {
+		return "The field chatTitle was not included in your response. Include it and set it properly!";
+	}
+
+	return "OK";
+}
 
 /* ########################### Chat ########################## */
 /** Get all the information for a single chat */
