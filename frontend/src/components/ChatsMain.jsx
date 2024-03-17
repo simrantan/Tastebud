@@ -144,13 +144,13 @@ export default function ChatsMain() {
 						headers: {
 							"Content-Type": "application/json",
 						},
-						body: {
+						body: JSON.stringify({
 							message: userMessage.content, // Send only the content
 							// Include other necessary data for the backend
 							preferences: preferences,
 							chatID: curChatId !== undefined ? curChatId : null,
 							messages: chatHistory,
-						},
+						}),
 					}).then((response) => {
 						setIsQuerying(false);
 						return response;
