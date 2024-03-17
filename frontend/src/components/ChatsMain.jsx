@@ -79,7 +79,6 @@ export default function ChatsMain() {
 				}
 
 				setChatHistory(allMessages);
-
 				// Check if the last assistant message contains isRecipeList
 				console.log(
 					"last asssss message   " + JSON.stringify(lastAssistantMessage)
@@ -88,13 +87,15 @@ export default function ChatsMain() {
 					lastAssistantMessage &&
 					lastAssistantMessage.isRecipeList === true
 				) {
+					setReceivedIsRecipeList(lastAssistantMessage.isRecipeList);
+
 					const contentObject = lastAssistantMessage;
 					const isRecipeList = contentObject.isRecipeList;
+					console.log("made it inside");
 
 					if (isRecipeList) {
 						// Set recipePanelData to the list of recipes
 						setRecipePanelData({ recipes: contentObject.recipeTitles });
-						console.log("recipePanel", contentObject.recipeTitles);
 					}
 					if (contentObject.isRecipe) {
 						setSelectedRecipe(contentObject.recipe);
