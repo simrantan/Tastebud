@@ -210,7 +210,7 @@ export default function ChatsMain() {
 		async (recipeName) => {
 			try {
 				const index = recipePanelData.recipes.findIndex(
-					(recipe) => recipe.title === recipeName
+					(recipe) => recipe === recipeName
 				);
 
 				if (index !== -1) {
@@ -334,8 +334,7 @@ export default function ChatsMain() {
 									recipes={recipePanelData.recipes}
 									onRecipeClick={(index) => {
 										const indexRecipe = recipePanelData.recipes[index];
-										setRecipePanelData({ recipes: [indexRecipe] });
-										handleRecipeSelection(indexRecipe.title);
+										handleRecipeSelection(indexRecipe);
 									}}
 								/>
 							)}
