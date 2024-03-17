@@ -165,11 +165,10 @@ export default function ChatsMain() {
 					setCurChatId(newID);
 					console.log("newid", newID);
 
-					const contentObject = responseData.content; // Assuming content is a string
-					const isRecipeList = contentObject.isRecipeList;
-					const isRecipe = contentObject.isRecipe;
-					const receivedChatTitle = contentObject.chatTitle;
-					const receivedContent = contentObject.message;
+					const isRecipeList = responseData.isRecipeList;
+					const isRecipe = responseData.isRecipe;
+					const receivedChatTitle = responseData.chatTitle;
+					const receivedContent = responseData.message;
 
 					console.log("responsedata", responseData.messages);
 
@@ -177,11 +176,11 @@ export default function ChatsMain() {
 
 					if (isRecipeList) {
 						// Set recipePanelData to the list of recipes
-						setRecipePanelData({ recipes: contentObject.recipeTitles });
+						setRecipePanelData({ recipes: responseData.recipeTitles });
 						console.log("recipePanel", recipePanelData);
 					}
 					if (isRecipe) {
-						setSelectedRecipe(contentObject.recipe);
+						setSelectedRecipe(responseData.recipe);
 					}
 
 					// Add the AI message to chatHistory
