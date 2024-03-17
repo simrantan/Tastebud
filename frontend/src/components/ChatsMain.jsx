@@ -84,12 +84,11 @@ export default function ChatsMain() {
 					lastAssistantMessage &&
 					JSON.parse(lastAssistantMessage.content).isRecipeList === true
 				) {
-					const contentObject = lastAssistantMessage;
-					const isRecipeList = contentObject.isRecipeList;
+					const isRecipeList = lastAssistantMessage.isRecipeList;
 
 					if (isRecipeList) {
 						// Set recipePanelData to the list of recipes
-						setRecipePanelData({ recipes: contentObject.recipes });
+						setRecipePanelData({ recipes: contentObject.recipeTitles });
 					}
 				}
 
@@ -144,13 +143,13 @@ export default function ChatsMain() {
 						headers: {
 							"Content-Type": "application/json",
 						},
-						body: JSON.stringify({
+						body: {
 							message: userMessage.content, // Send only the content
 							// Include other necessary data for the backend
 							preferences: preferences,
 							chatID: curChatId !== undefined ? curChatId : null,
 							messages: chatHistory,
-						}),
+						},
 					}).then((response) => {
 						setIsQuerying(false);
 						return response;
@@ -165,40 +164,38 @@ export default function ChatsMain() {
 					setCurChatId(newID);
 					console.log("newid", newID);
 
-					if (responseData.messages && responseData.messages.length > 0) {
-						const lastMessage =
-							responseData.messages[responseData.messages.length - 1];
+					const contentObject = responseData.content; // Assuming content is a string
+					const isRecipeList = contentObject.isRecipeList;
+					const isRecipe = contentObject.isRecipe;
+					const receivedChatTitle = contentObject.chatTitle;
+					const receivedContent = contentObject.message;
 
-						const contentString = lastMessage.content; // Assuming content is a string
-						const contentObject = JSON.parse(contentString);
-						const isRecipeList = contentObject.isRecipeList;
-						const receivedChatTitle = contentObject.chatTitle;
-						const receivedContent = contentObject.message;
+					console.log("responsedata", responseData.messages);
 
-						console.log("responsedata", responseData.messages);
+					setReceivedIsRecipeList(isRecipeList);
 
-						setReceivedIsRecipeList(isRecipeList);
-
-						if (isRecipeList) {
-							// Set recipePanelData to the list of recipes
-							setRecipePanelData({ recipes: contentObject.recipes });
-							console.log("recipePanel", recipePanelData);
-						}
-
-						// Add the AI message to chatHistory
-						const newAIMessage = {
-							role: "assistant",
-							content: receivedContent,
-						};
-						console.log("ai", newAIMessage);
-
-						setChatHistory((prevChatHistory) => [
-							...prevChatHistory,
-							newAIMessage,
-						]);
-
-						scrollToBottom();
+					if (isRecipeList) {
+						// Set recipePanelData to the list of recipes
+						setRecipePanelData({ recipes: contentObject.recipeTitles });
+						console.log("recipePanel", recipePanelData);
 					}
+					if (isRecipe) {
+						setSelectedRecipe(contentObject.recipe);
+					}
+
+					// Add the AI message to chatHistory
+					const newAIMessage = {
+						role: "assistant",
+						content: receivedContent,
+					};
+					console.log("ai", newAIMessage);
+
+					setChatHistory((prevChatHistory) => [
+						...prevChatHistory,
+						newAIMessage,
+					]);
+
+					scrollToBottom();
 				} catch (error) {
 					console.error("Error fetching AI response:", error);
 				}
@@ -230,10 +227,6 @@ export default function ChatsMain() {
 						chatHistory: updatedChatHistory,
 						userMessage: newUserMessage,
 					});
-
-					// Update selectedRecipe state
-					setSelectedRecipe(recipePanelData.recipes[index]);
-					console.log("selected", recipePanelData.recipes[index]);
 				}
 			} catch (error) {
 				console.error("Error selecting recipe:", error);
@@ -336,15 +329,14 @@ export default function ChatsMain() {
 									</div>
 								))}
 
-							{receivedIsRecipeList && recipePanelData.recipes.length > 0 && (
+							{receivedIsRecipeList(
 								<RecipeCarousel
 									recipes={recipePanelData.recipes}
 									onRecipeClick={(index) => {
-										const selectedRecipe = recipePanelData.recipes[index];
-										setRecipePanelData({ recipes: [selectedRecipe] });
-										handleRecipeSelection(selectedRecipe.title);
+										const indexRecipe = recipePanelData.recipes[index];
+										setRecipePanelData({ recipes: [indexRecipe] });
+										handleRecipeSelection(indexRecipe.title);
 									}}
-									selectedRecipe={selectedRecipe}
 								/>
 							)}
 							<div ref={messagesEndRef} />
