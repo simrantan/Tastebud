@@ -3,7 +3,6 @@ import cors from "cors";
 import {
 	doc,
 	addDoc,
-	addDoc,
 	getDoc,
 	collection,
 	getDocs,
