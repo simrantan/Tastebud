@@ -84,7 +84,8 @@ export default function ChatsMain() {
 					lastAssistantMessage &&
 					JSON.parse(lastAssistantMessage.content).isRecipeList === true
 				) {
-					const isRecipeList = lastAssistantMessage.isRecipeList;
+					const contentObject = JSON.parse(lastAssistantMessage.content);
+					const isRecipeList = contentObject.isRecipeList;
 
 					if (isRecipeList) {
 						// Set recipePanelData to the list of recipes
