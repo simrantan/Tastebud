@@ -32,9 +32,11 @@ export default function ChatsMain() {
 		const fetchData = async () => {
 			try {
 				console.log("new chattt  " + chatId);
-				if (chatId === undefined) {
+				if (chatId === undefined || chatId.startsWith("newConversation")) {
 					// Start a new conversation with conversation starters and empty chat history
 					setChatHistory([]);
+					setRecipePanelData({ recipes: [] });
+					setSelectedRecipe(null);
 					setShowConversationStarters(true); // Show conversation starters
 					return; // Skip the rest of the logic for a new conversation
 				}
@@ -141,18 +143,31 @@ export default function ChatsMain() {
 
 				try {
 					setIsQuerying(true);
+					// Define chatID based on the condition
+					const chatID =
+						curChatId !== undefined && !curChatId.startsWith("newConversation")
+							? curChatId
+							: null;
+
+					// Prepare the request body object
+					const requestBody = {
+						message: userMessage.content, // Send only the content
+						// Include other necessary data for the backend
+						preferences: preferences,
+						chatID: chatID, // Include the chatID in the request body
+						messages: chatHistory,
+					};
+
+					// Convert the requestBody object to a JSON string
+					const requestBodyJSON = JSON.stringify(requestBody);
+
+					// Make the fetch request
 					const response2 = await fetch(AI_SIMULATION_ENDPOINT, {
 						method: "POST",
 						headers: {
 							"Content-Type": "application/json",
 						},
-						body: JSON.stringify({
-							message: userMessage.content, // Send only the content
-							// Include other necessary data for the backend
-							preferences: preferences,
-							chatID: curChatId !== undefined ? curChatId : null,
-							messages: chatHistory,
-						}),
+						body: requestBodyJSON, // Use the requestBodyJSON as the request body
 					}).then((response) => {
 						setIsQuerying(false);
 						return response;
