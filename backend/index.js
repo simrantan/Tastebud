@@ -3,6 +3,7 @@ import cors from "cors";
 import {
 	doc,
 	addDoc,
+	addDoc,
 	getDoc,
 	collection,
 	getDocs,
@@ -168,11 +169,10 @@ app.get("/user/:userId/recipe/:recipeId", async (req, res) => {
 	}
 });
 
-/** Add or Remove a recipe from a user's recipe book */
-app.post("/recipe_book/:userId/:recipeId", async (req, res) => {
-	const userId = req.params.userId;
-	const recipeId = req.params.recipeId;
-	const { action, recipeInfo } = req.body;
+/** Add a recipe to a user's recipe book */
+app.post("/recipe_book/:userId/add", async (req, res) => {
+    const userId = req.params.userId;
+    const recipeInfo = req.body;
 
 	if (action === "add") {
 		// Test with: curl -X POST -H "Content-Type: application/json" -d '{"action": "add", "recipeInfo": {"name": "Banana Bread", "chat_id": "RECIPE_ID", "text": "easy to make and delicious", "picture_url": "https://placekitten.com/1000/1000", "cuisine": "American"}}' http://localhost:3001/recipe_book/00000000_sample_user/111

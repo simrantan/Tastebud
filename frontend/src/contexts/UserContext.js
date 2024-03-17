@@ -16,7 +16,9 @@ export const UserProvider = ({ children }) => {
 	// Any time the userData changes, update it in local storage
 	useEffect(() => {
 		// console.log("userData", userData);
-		localStorage.setItem("userData", JSON.stringify(userData));
+		if (userData) {
+			localStorage.setItem("userData", JSON.stringify(userData));
+		}
 	}, [userData]);
 
 	const updateUser = async (data) => {
@@ -26,6 +28,23 @@ export const UserProvider = ({ children }) => {
 
 		// Pull data from Firebase and store it in the context
 		return fetch(`http://localhost:3001/user/${data.uid}`)
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error("Network response was not ok");
+				}
+				return response.json();
+			})
+			.then((userData) => {
+				setUserData(userData);
+			})
+			.catch((error) => {
+				console.error("There was a problem with the fetch operation:", error);
+			});
+	};
+
+	// Refresh the user data from the database
+	const refreshData = () => {
+		fetch(`http://localhost:3001/user/${userId}`)
 			.then((response) => {
 				if (!response.ok) {
 					throw new Error("Network response was not ok");
@@ -50,9 +69,6 @@ export const UserProvider = ({ children }) => {
 			.auth()
 			.signOut()
 			.then(() => {
-				setUserData(null);
-				setEmail(null);
-				setDisplayName(null);
 				setUid(null);
 			})
 			.catch((error) => {
