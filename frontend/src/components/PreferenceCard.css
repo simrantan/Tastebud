@@ -1,0 +1,75 @@
+/* PreferenceCard.css */
+
+.preference-card-container {
+    width: 400px; /* Adjust the max-width as per your design */
+    position: fixed;
+    top: 90px;
+    right: 30px;
+    bottom: 30px;
+    background-color: #f8f9fa; /* Add your desired background color */
+    padding: 10px; /* Add padding as needed */
+    border: 1px solid #ccc; /* Add a border for separation, adjust color as needed */
+    border-radius: 10px;
+    overflow-y: auto; /* Enable vertical scrolling if content exceeds container height */
+  }
+  
+  .section {
+    margin-bottom: 20px; /* Add margin between sections as needed */
+  }
+  
+  .preference-container {
+    display: flex;
+    flex-wrap: wrap; /* Change to wrap */
+    align-items: flex-end;
+    margin-right: -8px; /* Adjust margin to offset the negative margin on the items */
+  }
+  
+  .item {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 8px;
+    margin-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-right: 8px; /* Adjust margin between items as needed */
+    margin-bottom: 8px; /* Add margin between rows as needed */
+  }
+
+  .item-text {
+    margin-right: 10px;
+  }
+  
+  /* Add any additional styling as needed */
+  .custom-dropdown-toggle.btn-secondary {
+    width: 30px;
+    padding: 4px;
+    height: 32px !important;
+    width: 30px !important;    
+    background-color: #3498db !important; /* Change the background color as needed */
+    color: #ffffff !important; /* Change the text color as needed */
+    border: 1px solid #ffffff !important; /* Change the border color as needed */
+    align-items: center !important;
+  }
+  
+  .custom-dropdown-menu {
+    /* Additional styles for the dropdown menu */
+    background-color: #3498db; /* Change the background color as needed */
+    color: #ffffff; /* Change the text color as needed */
+  }
+
+  
+  .custom-remove-button-test {
+    /* Add your custom styles here */
+    height: 30px !important;
+    width: 30px !important;
+
+    background-color: rgb(255, 0, 30)!important;; /* Change the background color as needed */ 
+    color: white !important;; /* Change the text color as needed */
+    border: 1px solid #ffffff !important; /* Change the border color as needed */
+    /* Add any other styles you want to override */
+  }
+  
+  .dropdown-item{
+    text-align: center !important;
+  }
