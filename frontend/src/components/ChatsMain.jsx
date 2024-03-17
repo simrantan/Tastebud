@@ -63,12 +63,13 @@ export default function ChatsMain() {
 							content: message.content,
 						});
 					} else if (message.role === "assistant") {
-						const assistantContent = JSON.parse(message.content).message;
-						lastAssistantMessage = {
+						const assistantContent = JSON.parse(message.content);
+						lastAssistantMessage = assistantContent;
+						const addMessage = {
 							role: "assistant",
-							content: assistantContent,
+							content: assistantContent.message,
 						};
-						allMessages.push(lastAssistantMessage);
+						allMessages.push(addMessage);
 					}
 				}
 
@@ -83,7 +84,7 @@ export default function ChatsMain() {
 					lastAssistantMessage &&
 					JSON.parse(lastAssistantMessage.content).isRecipeList === true
 				) {
-					const contentObject = JSON.parse(lastAssistantMessage.content);
+					const contentObject = lastAssistantMessage;
 					const isRecipeList = contentObject.isRecipeList;
 
 					if (isRecipeList) {
