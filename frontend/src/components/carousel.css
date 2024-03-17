@@ -1,5 +1,5 @@
-.recipe-carousel-container {
-	white-space: nowrap;
+.scrollable-container {
+	width: 100%;
 	overflow-x: auto;
-	margin-bottom: 15px; /* Add margin to create space at the bottom */
+	white-space: nowrap;
 }

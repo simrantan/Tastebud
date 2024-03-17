@@ -33,7 +33,7 @@ const RecipeCarousel = ({ recipes, onRecipeClick }) => {
 					cursor: "pointer",
 					border: isSelected ? "2px solid #007bff" : "1px solid #ccc",
 					overflow: "hidden",
-					margin: "10px auto",
+					margin: "10px",
 					height: "5rem",
 				}}
 				onClick={handleRecipeClick}
@@ -49,15 +49,17 @@ const RecipeCarousel = ({ recipes, onRecipeClick }) => {
 	}
 
 	return (
-		<div className="d-flex justify-content-center" style={{}}>
-			{recipes.map((recipe, index) => (
-				<RecipeItem
-					key={index}
-					index={index}
-					recipe={recipe}
-					onRecipeClick={() => handleRecipeClick(index)}
-				/>
-			))}
+		<div className="scrollable-container">
+			<div className="d-flex" style={{ overflowX: "auto" }}>
+				{recipes.map((recipe, index) => (
+					<RecipeItem
+						key={index}
+						index={index}
+						recipe={recipe}
+						onRecipeClick={() => handleRecipeClick(index)}
+					/>
+				))}
+			</div>
 		</div>
 	);
 };
