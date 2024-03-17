@@ -329,7 +329,7 @@ export default function ChatsMain() {
 									</div>
 								))}
 
-							{receivedIsRecipeList ?? (
+							{receivedIsRecipeList && (
 								<RecipeCarousel
 									recipes={recipePanelData.recipes}
 									onRecipeClick={(index) => {
