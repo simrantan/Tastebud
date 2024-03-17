@@ -21,7 +21,7 @@ const RecipeItem = ({ recipe, onRecipeClick, isSelected }) => {
 			className={isSelected ? "selected-recipe" : ""}
 		>
 			<Card.Body>
-				<Card.Title className="text-center">{recipe.title}</Card.Title>
+				<Card.Title className="text-center">{recipe}</Card.Title>
 			</Card.Body>
 		</Card>
 	);
