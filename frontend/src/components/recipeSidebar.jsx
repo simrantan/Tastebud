@@ -118,7 +118,12 @@ const RecipePanel = ({ recipe }) => {
 				<Button
 					onClick={handleToggleRecipe}
 					variant={addedToRecipeBook ? "danger" : "primary"}
-					style={{ flex: "none", marginTop: "14px" }}
+					style={{
+						flex: "none",
+						marginTop: "14px",
+						backgroundColor: addedToRecipeBook ? "#dc3545" : "#3c3f63",
+						border: "0px",
+					}}
 				>
 					{addedToRecipeBook ? "Remove from Recipe Book" : "Add to Recipe Book"}
 				</Button>
