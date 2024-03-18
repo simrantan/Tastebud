@@ -23,6 +23,9 @@ const RecipeCarousel = ({ recipes, onRecipeClick }) => {
 			backgroundColor: "#FFF",
 			borderColor: "#573c56",
 			color: "#573c56",
+			whiteSpace: "nowrap", // Prevent text wrapping
+			overflow: "hidden",
+			textOverflow: "ellipsis",
 		};
 
 		return (
@@ -32,9 +35,10 @@ const RecipeCarousel = ({ recipes, onRecipeClick }) => {
 					borderRadius: "5px",
 					cursor: "pointer",
 					border: isSelected ? "2px solid #007bff" : "1px solid #ccc",
-					overflow: "hidden",
 					margin: "10px",
 					height: "5rem",
+					minWidth: "100px", // Set a minimum width for the button
+					flex: "0 0 auto", // Prevent buttons from stretching
 				}}
 				onClick={handleRecipeClick}
 				className={isSelected ? "selected-recipe" : ""}
@@ -49,8 +53,8 @@ const RecipeCarousel = ({ recipes, onRecipeClick }) => {
 	}
 
 	return (
-		<div className="scrollable-container">
-			<div className="d-flex" style={{ overflowX: "auto" }}>
+		<div className="scrollable-container" style={{ overflowX: "auto" }}>
+			<div className="d-flex">
 				{recipes.map((recipe, index) => (
 					<RecipeItem
 						key={index}
