@@ -297,7 +297,7 @@ export default function ChatsMain() {
 				marginLeft: "50px",
 				maxWidth: "calc(100% - 500px)",
 				height: "86vh",
-				overflowX: "auto", // Enable horizontal scrolling
+				//overflowX: "auto", // Enable horizontal scrolling
 				//whiteSpace: "nowrap", // Prevent wrapping of child elements
 				borderRadius: "10px",
 			}}
