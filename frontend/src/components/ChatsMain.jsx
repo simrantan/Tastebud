@@ -121,6 +121,9 @@ export default function ChatsMain() {
 			messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
 		}
 	};
+	useEffect(() => {
+		scrollToBottom();
+	}, [chatHistory]);
 
 	const handleInputChange = (e) => {
 		setUserInput(e.target.value);
