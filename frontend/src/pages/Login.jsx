@@ -26,11 +26,18 @@ export default function LoginPage({ props }) {
 	const { updateUser } = useUser();
 	let navigate = useNavigate();
 
-	const [email, setLocalEmail] = useState("sopferman@stanford.edu");
-	const [password, setLocalPassword] = useState("password");
+	const [email, setLocalEmail] = useState("");
+	const [password, setLocalPassword] = useState("");
+	const [error, setError] = useState(""); // State to hold error message
 
 	const handleSignup = async (e) => {
 		e.preventDefault();
+
+		// Check if password meets minimum length requirement
+		if (password.length < 6) {
+			setError("Password must be at least 6 characters long");
+			return;
+		}
 		// By default, Firebase will create a new user with the email and password provided
 		try {
 			console.log("Signing up with email and password");
@@ -81,6 +88,7 @@ export default function LoginPage({ props }) {
 								email: userCredential.user.email,
 								uid: userCredential.user.uid,
 							};
+							console.log("logged in!");
 							// Update user context
 							updateUser(userData).then(() => {
 								// Redirect to  after successful login
@@ -128,8 +136,13 @@ export default function LoginPage({ props }) {
 						className="form-control"
 						id="password"
 						value={password}
-						onChange={(e) => setLocalPassword(e.target.value)}
+						onChange={(e) => {
+							setLocalPassword(e.target.value);
+							setError(""); // Clear error message when password changes
+						}}
 					/>
+					{error && <div className="text-danger">{error}</div>}{" "}
+					{/* Render error message */}
 				</div>
 
 				<button
