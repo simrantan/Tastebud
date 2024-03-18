@@ -11,7 +11,6 @@ export default function ChatsMain() {
 	const { userData } = useUser();
 
 	const { chatId } = useParams();
-	console.log("chattt" + chatId);
 	const [userInput, setUserInput] = useState("");
 	const [chatHistory, setChatHistory] = useState([{}]);
 	const [recipePanelData, setRecipePanelData] = useState({ recipes: [] });
@@ -82,7 +81,6 @@ export default function ChatsMain() {
 				}
 
 				setChatHistory(allMessages);
-
 				// Check if the last assistant message contains isRecipeList
 				console.log(
 					"last asssss message   " + JSON.stringify(lastAssistantMessage)
@@ -235,7 +233,7 @@ export default function ChatsMain() {
 				if (index !== -1) {
 					const newUserMessage = {
 						role: "user",
-						content: "Generate a recipe for " + recipeName,
+						content: "I picked  " + recipeName,
 					};
 
 					const updatedChatHistory = [...chatHistory, newUserMessage];
@@ -299,8 +297,6 @@ export default function ChatsMain() {
 				marginLeft: "200px",
 				maxWidth: "calc(100% - 650px)",
 				height: "86vh",
-				overflowX: "auto", // Enable horizontal scrolling
-				whiteSpace: "nowrap", // Prevent wrapping of child elements
 			}}
 		>
 			<Row className="justify-content-center" style={{ height: "100%" }}>
