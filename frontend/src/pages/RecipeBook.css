@@ -42,3 +42,13 @@
 	margin-top: 10px;
 	margin-right: 10px;
 }
+
+
+.clickable-card {
+    cursor: pointer;
+}
+
+.clickable-card:hover .recipe-card {
+    /* Apply styles to indicate hover */
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2); /* Example shadow effect */
+}

@@ -136,40 +136,54 @@ export default function RecipeBook() {
 						<h3 style={{ marginBottom: "15px" }}>{cuisine}</h3>
 						<div className="recipe-container">
 							{groupedRecipes[cuisine].map((recipe) => (
-								<Card
-									key={recipe.id}
-									className="recipe-card"
-									style={{ marginBottom: "15px" }}
+								<div
+									onClick={() => handleRecipeClick(recipe)}
+									className="clickable-card"
 								>
-									<Card.Img
-										variant="top"
-										src={`${process.env.PUBLIC_URL}/cuisines/${cuisine
-											.split(",")[0]
-											.toLocaleLowerCase()}.jpeg`}
-										onError={(e) => {
-											e.target.src = `${process.env.PUBLIC_URL}/cuisines/other.jpeg`;
-										}}
-									/>
+									<Card
+										key={recipe.id}
+										className="recipe-card"
+										style={{ marginBottom: "15px" }}
+									>
+										<Card.Img
+											variant="top"
+											src={`${process.env.PUBLIC_URL}/cuisines/${cuisine
+												.split(",")[0]
+												.toLocaleLowerCase()}.jpeg`}
+											onError={(e) => {
+												e.target.src = `${process.env.PUBLIC_URL}/cuisines/other.jpeg`;
+											}}
+										/>
 
-									<Card.Body>
-										<Card.Title>{recipe.title}</Card.Title>
-										<div className="button-container">
-											<Button
-												onClick={() => handleRecipeClick(recipe)}
-												variant="info"
-												style={{ marginRight: "10px" }}
-											>
-												View Recipe
-											</Button>
-											<Button
-												variant="danger"
-												onClick={() => handleRemoveFromRecipeBook(recipe.id)}
-											>
-												Remove
-											</Button>
-										</div>
-									</Card.Body>
-								</Card>
+										<Card.Body>
+											<Card.Title>{recipe.title}</Card.Title>
+											<div className="button-container">
+												<Button
+													onClick={() => handleRecipeClick(recipe)}
+													variant="info"
+													style={{
+														marginRight: "10px",
+														backgroundColor: "#3c3f63",
+														color: "white", // Set the font color to white
+														border: "0px",
+													}}
+												>
+													View Recipe
+												</Button>
+												<Button
+													variant="danger"
+													onClick={(event) => {
+														event.stopPropagation(); // Prevent event propagation
+														handleRemoveFromRecipeBook(recipe.id);
+													}}
+													style={{ backgroundColor: "#dc3545", border: "0px" }}
+												>
+													Remove
+												</Button>
+											</div>
+										</Card.Body>
+									</Card>
+								</div>
 							))}
 						</div>
 					</div>

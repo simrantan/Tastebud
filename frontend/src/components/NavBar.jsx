@@ -29,7 +29,7 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 					<img
 						src={chatBubble}
 						alt={`Previous Chats Icon`}
-						style={{ height: "54px", padding: "0", margin: "0" }}
+						style={{ height: "54px", padding: "8px", margin: "0" }}
 					/>
 				</div>
 
@@ -74,7 +74,7 @@ function NavButton({ label, path, icon }) {
 				<img
 					src={icon}
 					alt={`${label} Icon`}
-					style={{ height: "54px", padding: "0", margin: "0" }}
+					style={{ height: "54px", padding: "6px", margin: "0" }}
 				/>
 			</div>
 
