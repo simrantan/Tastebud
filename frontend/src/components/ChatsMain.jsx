@@ -296,19 +296,20 @@ export default function ChatsMain() {
 			className="p-4"
 			style={{
 				backgroundColor: "#FFF9F3",
-				marginLeft: "200px",
-				maxWidth: "calc(100% - 650px)",
+				marginLeft: "50px",
+				maxWidth: "calc(100% - 500px)",
 				height: "86vh",
 				overflowX: "auto", // Enable horizontal scrolling
-				whiteSpace: "nowrap", // Prevent wrapping of child elements
+				//whiteSpace: "nowrap", // Prevent wrapping of child elements
+				borderRadius: "10px",
 			}}
 		>
 			<Row className="justify-content-center" style={{ height: "100%" }}>
-				<Col md="4" style={{ height: "100%" }}>
+				<Col md="5" style={{ height: "100%" }}>
 					<RecipePanel recipe={selectedRecipe} />
 				</Col>
 
-				<Col md="8" style={{ height: "100%" }}>
+				<Col md="7" style={{ height: "100%" }}>
 					<Card
 						id="chat2"
 						style={{
