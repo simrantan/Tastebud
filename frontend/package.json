@@ -1,6 +1,6 @@
 {
 	"name": "tastebud-frontend",
-	"homepage": "https://StanfordCS194.github.io/Win24-Team22/",
+	"homepage": "https://StanfordCS194.github.io/login",
 	"version": "0.1.0",
 	"private": true,
 	"dependencies": {
