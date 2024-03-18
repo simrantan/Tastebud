@@ -23,7 +23,7 @@ const RecipeCarousel = ({ recipes, onRecipeClick }) => {
 			backgroundColor: "#FFF",
 			borderColor: "#573c56",
 			color: "#573c56",
-			whiteSpace: "nowrap", // Prevent text wrapping
+			whiteSpace: "wrap", // Prevent text wrapping
 			overflow: "hidden",
 			textOverflow: "ellipsis",
 		};
@@ -37,7 +37,7 @@ const RecipeCarousel = ({ recipes, onRecipeClick }) => {
 					border: isSelected ? "2px solid #007bff" : "1px solid #ccc",
 					margin: "10px",
 					height: "5rem",
-					minWidth: "100px", // Set a minimum width for the button
+					maxWidth: "100px", // Set a minimum width for the button
 					flex: "0 0 auto", // Prevent buttons from stretching
 				}}
 				onClick={handleRecipeClick}
