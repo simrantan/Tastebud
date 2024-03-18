@@ -5,12 +5,13 @@ import { ToastContainer, toast } from "react-toastify";
 import ReactMarkdown from "react-markdown";
 import { useUser } from "../contexts/UserContext";
 
-const RecipePanel = ({ recipe }) => {
+const RecipePanel = ({ recipe, chatId }) => {
 	const [addedToRecipeBook, setAddedToRecipeBook] = useState(false);
 	console.log("recipe in pane", JSON.stringify(recipe, null, 2));
 
 	const { userData } = useUser();
 	const userId = userData.id;
+	console.log("recipechatid", chatId);
 
 	if (!recipe) {
 		return (
@@ -41,7 +42,7 @@ const RecipePanel = ({ recipe }) => {
 					headers: {
 						"Content-Type": "application/json",
 					},
-					body: JSON.stringify(recipe),
+					body: JSON.stringify({ ...recipe, chatId }),
 				}
 			);
 

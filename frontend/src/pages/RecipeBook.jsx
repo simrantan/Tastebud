@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Card, Button, Modal } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
 import { useUser } from "../contexts/UserContext";
+import { Link } from "react-router-dom";
 
 import "react-toastify/dist/ReactToastify.css";
 import "./RecipeBook.css";
@@ -180,6 +181,11 @@ export default function RecipeBook() {
 												>
 													Remove
 												</Button>
+												<Link to={`/${recipe.chatId}`}>
+													<Button variant="light" className="text-dark m-3">
+														Create New Chat
+													</Button>
+												</Link>
 											</div>
 										</Card.Body>
 									</Card>

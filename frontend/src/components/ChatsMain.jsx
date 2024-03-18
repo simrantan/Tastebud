@@ -304,7 +304,7 @@ export default function ChatsMain() {
 		>
 			<Row className="justify-content-center" style={{ height: "100%" }}>
 				<Col md="5" style={{ height: "100%" }}>
-					<RecipePanel recipe={selectedRecipe} />
+					<RecipePanel recipe={selectedRecipe} chatId={curChatId} />
 				</Col>
 
 				<Col md="7" style={{ height: "100%" }}>
