@@ -233,7 +233,7 @@ export default function ChatsMain() {
 				if (index !== -1) {
 					const newUserMessage = {
 						role: "user",
-						content: "I picked  " + recipeName,
+						content: "Give me a recipe for  " + recipeName,
 					};
 
 					const updatedChatHistory = [...chatHistory, newUserMessage];
