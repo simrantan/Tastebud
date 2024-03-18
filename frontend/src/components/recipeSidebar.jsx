@@ -12,6 +12,10 @@ const RecipePanel = ({ recipe, chatId }) => {
 	const { userData } = useUser();
 	const userId = userData.id;
 	console.log("recipechatid", chatId);
+	useEffect(() => {
+		// Reset addedToRecipeBook state when a new recipe is loaded
+		setAddedToRecipeBook(false);
+	}, [recipe]);
 
 	if (!recipe) {
 		return (
@@ -22,7 +26,6 @@ const RecipePanel = ({ recipe, chatId }) => {
 			</div>
 		);
 	}
-
 	const handleToggleRecipe = async () => {
 		setAddedToRecipeBook(!addedToRecipeBook);
 
