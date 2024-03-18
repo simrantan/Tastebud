@@ -183,7 +183,7 @@ export default function RecipeBook() {
 												</Button>
 												<Link to={`/${recipe.chatId}`}>
 													<Button variant="light" className="text-dark m-3">
-														Create New Chat
+														Continue Chat
 													</Button>
 												</Link>
 											</div>
