@@ -35,13 +35,22 @@ const RecipeCarousel = ({ recipes, onRecipeClick }) => {
 					borderRadius: "5px",
 					cursor: "pointer",
 					border: isSelected ? "2px solid #007bff" : "1px solid #ccc",
-					margin: "10px",
+					margin: "5px",
 					height: "5rem",
-					maxWidth: "100px", // Set a minimum width for the button
+					maxWidth: "150px", // Set a minimum width for the button
 					flex: "0 0 auto", // Prevent buttons from stretching
+					alignContent: "center",
+					transition: "background-color 0.3s", // Add transition for smoother color change
+					backgroundColor: "#ffffff", // Initial background color
 				}}
 				onClick={handleRecipeClick}
 				className={isSelected ? "selected-recipe" : ""}
+				onMouseEnter={(e) => {
+					e.target.style.backgroundColor = "#f0f0f0"; // Change background color on hover
+				}}
+				onMouseLeave={(e) => {
+					e.target.style.backgroundColor = "#ffffff"; // Restore background color on mouse leave
+				}}
 			>
 				{recipe}
 			</Button>
