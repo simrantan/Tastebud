@@ -15,7 +15,7 @@ import {
 	generateDummyData,
 	getTimestamp,
 } from "./generate_firebase_dummydata.js";
-import systemMessage from "./system_message.json" assert { type: "json" };
+import systemMessage from './system_message.json' assert { type: 'json' };
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -170,30 +170,33 @@ app.get("/user/:userId/recipe/:recipeId", async (req, res) => {
 
 /** Add a recipe to a user's recipe book */
 app.post("/recipe_book/:userId/add", async (req, res) => {
-	const userId = req.params.userId;
-	const recipeInfo = req.body;
-	// Test with: curl -X POST -H "Content-Type: application/json" -d '{"name": "Banana Bread", "chat_id": "CHAT_ID", "text": "Easy to make and delicious", "picture_url": "https://placekitten.com/1000/1000", "cuisine": "American"}'  http://localhost:3001/recipe_book/00000000_sample_user/add
-	try {
-		const recipesRef = collection(DATABASE, `users/${userId}/recipes`);
-		await addDoc(recipesRef, recipeInfo);
-		res.status(200).json({ success: true });
-	} catch (error) {
-		console.error(error);
-		res.status(500).send("Internal Server Error");
-	}
-});
-/** Remove a recipe from a user's recipe book */
-app.post("/recipe_book/:userId/remove/:recipeId", async (req, res) => {
-	const userId = req.params.userId;
-	const recipeId = req.params.recipeId;
-	// Test with: curl -X POST -H "Content-Type: application/json" http://localhost:3001/recipe_book/00000000_sample_user/remove/111
-	try {
-		const recipeRef = collection(DATABASE, `users/${userId}/recipes`);
-		await deleteDoc(doc(recipeRef, recipeId));
-		res.status(200).json({ success: true });
-	} catch (error) {
-		console.error(error);
-		res.status(500).send("Internal Server Error");
+    const userId = req.params.userId;
+    const recipeInfo = req.body;
+
+	if (action === "add") {
+		// Test with: curl -X POST -H "Content-Type: application/json" -d '{"action": "add", "recipeInfo": {"name": "Banana Bread", "chat_id": "RECIPE_ID", "text": "easy to make and delicious", "picture_url": "https://placekitten.com/1000/1000", "cuisine": "American"}}' http://localhost:3001/recipe_book/00000000_sample_user/111
+		try {
+			const recipeRef = collection(DATABASE, `users/${userId}/recipes`);
+			await setDoc(doc(recipeRef, recipeId), recipeInfo);
+			res.status(200).json({ success: true });
+		} catch (error) {
+			console.error(error);
+			res.status(500).send("Internal Server Error");
+		}
+	} else if (action === "remove") {
+		// Test with: curl -X POST -H "Content-Type: application/json" -d '{"action": "remove", "recipeInfo": {"name": "Banana Bread", "chat_id": "RECIPE_ID", "text": "easy to make and delicious", "picture_url": "https://placekitten.com/1000/1000", "cuisine": "American"}}' http://localhost:3001/recipe_book/00000000_sample_user/111
+		try {
+			const recipeRef = collection(DATABASE, `users/${userId}/recipes`);
+			await deleteDoc(doc(recipeRef, recipeId));
+			res.status(200).json({ success: true });
+		} catch (error) {
+			console.error(error);
+			res.status(500).send("Internal Server Error");
+		}
+	} else {
+		return res
+			.status(400)
+			.json({ error: "Invalid action (not 'add' or 'remove')" });
 	}
 });
 
@@ -201,7 +204,7 @@ app.post("/recipe_book/:userId/remove/:recipeId", async (req, res) => {
 /** Get response message from TasteBud after receiving user message */
 app.post("/chat/:userID/message", async (req, res) => {
 	// Test with: curl -X POST -H "Content-Type: application/json" -d '{"message": "I want to make a cake", "chatID": null}' http://localhost:3001/chat/00000000_sample_user/message
-
+	
 	const userId = req.params.userID;
 	const isNewChat = req.body.chatID === null;
 	const preferences = req.body.preferences;
@@ -223,15 +226,7 @@ app.post("/chat/:userID/message", async (req, res) => {
 		chatID = chatRef.id;
 		// Start new message history in Firebase, starting with the system message
 		await setDoc(
-			doc(
-				DATABASE,
-				"users",
-				userId,
-				"chats",
-				chatID,
-				"messages",
-				getTimestamp()
-			),
+			doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()),
 			systemMessage
 		);
 		messages = [systemMessage];
@@ -245,13 +240,12 @@ app.post("/chat/:userID/message", async (req, res) => {
 
 	const originalMessage = {
 		role: "user",
-		content: input,
-	};
+		content: input
+	}
 
 	// Save the user's original message to Firebase
 	setDoc(
-		doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()),
-		originalMessage
+		doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()), originalMessage
 	);
 
 	// Append user's original message to messages history
@@ -259,25 +253,17 @@ app.post("/chat/:userID/message", async (req, res) => {
 
 	// Now we append to user's input as appropriate
 	if (isNewChat) {
-		input +=
-			". Generate a title for this chat in the 'chatTitle' field in your response.";
+		input += ". Generate a title for this chat in the 'chatTitle' field in your response."
 	}
 
 	if (preferences.likes && preferences.likes.length > 0) {
-		input +=
-			". It's not necessary to include these, but note that I like " +
-			preferences.likes.join(", ") +
-			".";
+		input += ". It's not necessary to include these, but note that I like " + preferences.likes.join(", ") + ".";
 	}
 	if (preferences.dislikes && preferences.dislikes.length > 0) {
-		input +=
-			". I dislike " + preferences.dislikes.join(", ") + ", so exclude them.";
+		input += ". I dislike " + preferences.dislikes.join(", ") + ", so exclude them.";
 	}
 	if (preferences.allergies && Object.keys(preferences.allergies).length > 0) {
-		input +=
-			". I am allergic to " +
-			Object.keys(preferences.allergies).join(", ") +
-			", so DO NOT INCLUDE THEM IN ANY RECIPES YOU PROVIDE.";
+		input += ". I am allergic to " + Object.keys(preferences.allergies).join(", ") + ", so DO NOT INCLUDE THEM IN ANY RECIPES YOU PROVIDE.";
 	}
 
 	input += "\n REMEMBER THIS!!!!!: " + systemMessage.content;
@@ -285,14 +271,14 @@ app.post("/chat/:userID/message", async (req, res) => {
 	const engineeredMessage = {
 		role: "user",
 		content: input,
-	};
+	}
 
 	// Add reformatted user message to messages that get sent to the API
 	messagesForAI.push(engineeredMessage);
 
 	// Fetch API response
 	var response = await getResponseFromAPI(messagesForAI);
-
+	
 	// Check if API response is properly formatted
 	var check = await checkAPIResponseFormat(response.content, isNewChat);
 
@@ -302,15 +288,7 @@ app.post("/chat/:userID/message", async (req, res) => {
 
 		// Save API response to Firebase
 		setDoc(
-			doc(
-				DATABASE,
-				"users",
-				userId,
-				"chats",
-				chatID,
-				"messages",
-				getTimestamp()
-			),
+			doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()),
 			response
 		);
 
@@ -320,7 +298,7 @@ app.post("/chat/:userID/message", async (req, res) => {
 		const jsonResponse = JSON.parse(response.content);
 
 		if (isNewChat) {
-			updateDoc(chatRef, { name: jsonResponse.chatTitle });
+			updateDoc(chatRef, {name: jsonResponse.chatTitle});
 		}
 
 		res.json({
@@ -339,7 +317,7 @@ app.post("/chat/:userID/message", async (req, res) => {
 		// If API's response is improperly formatted, try once more with correcting messages
 		const messagesCopy = messages.concat(response, {
 			role: "user",
-			content: check + "\n REMEMBER THIS!!!!!: " + systemMessage.content,
+			content: check + "\n REMEMBER THIS!!!!!: " + systemMessage.content
 		});
 
 		response = await getResponseFromAPI(messagesCopy);
@@ -351,25 +329,17 @@ app.post("/chat/:userID/message", async (req, res) => {
 
 			// Save API response to Firebase
 			setDoc(
-				doc(
-					DATABASE,
-					"users",
-					userId,
-					"chats",
-					chatID,
-					"messages",
-					getTimestamp()
-				),
+				doc(DATABASE, "users", userId, "chats", chatID, "messages", getTimestamp()),
 				response
 			);
-
+			
 			// Append response to messages history variable
 			messages.push(response);
 
 			const jsonResponse = JSON.parse(response.content);
 
 			if (isNewChat) {
-				updateDoc(chatRef, { name: jsonResponse.chatTitle });
+				updateDoc(chatRef, {name: jsonResponse.chatTitle});
 			}
 
 			res.json({
@@ -429,10 +399,7 @@ async function checkAPIResponseFormat(responseContent, isNewChat) {
 
 	if (!("isRecipeList" in jsonResponse)) {
 		return "The field isRecipeList was not included in your response. Include it and set it properly!";
-	} else if (
-		jsonResponse.isRecipeList &&
-		!Array.isArray(jsonResponse.recipeTitles)
-	) {
+	} else if (jsonResponse.isRecipeList && !Array.isArray(jsonResponse.recipeTitles)) {
 		return "You included the field isRecipeList but the field recipeTitles is not a proper string array of recipes. Include it and set it properly!";
 	}
 
@@ -440,6 +407,10 @@ async function checkAPIResponseFormat(responseContent, isNewChat) {
 		return "The field isRecipe was not included in your response. Include it and set it properly!";
 	} else if (jsonResponse.isRecipe && !("recipe" in jsonResponse)) {
 		return "You included the field isRecipe but you failed to include a recipe. Include the field recipe and set it properly! Remember that a recipe contains title, cuisine, ingredients, and directions.";
+	} else if (jsonResponse.isRecipe && (!("title" in jsonResponse.recipe) || !("cuisine" in jsonResponse.recipe) || !("ingredients" in jsonResponse.recipe) || !("directions" in jsonResponse.recipe))) {
+		return "Remember that a recipe must contain title, cuisine, ingredients, and directions. You are missing something, fix it now!";
+	} else if (jsonResponse.isRecipe && typeof jsonResponse.recipe.directions[0] === 'string' && jsonResponse.recipe.directions[0].substring(0, 2) !== "1.") {
+		return "Your directions must be a string array, and the first step must start with '1.'. Fix it now!";
 	}
 
 	if (!("message" in jsonResponse)) {
