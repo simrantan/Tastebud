@@ -1,10 +1,17 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import recipeBook from "../assets/recipe-book.png";
 import userProfile from "../assets/user.png";
 import chatBubble from "../assets/chat.png";
+import { useParams } from "react-router-dom";
 
 export default function NavBar({ setChatSidebarIsOpen }) {
+	const location = useLocation();
+
+	// Extracting the pathname from the location object
+	const path = location.pathname;
+	const navigate = useNavigate();
+
 	return (
 		<nav className="navbar navbar-expand-lg navbar-white bg-white d-flex justify-content-between mb-3">
 			<div
@@ -37,10 +44,33 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 					Previous Chats
 				</span>
 			</div>
-
+			<div style={{ height: "76px" }}>
+				{path === "/recipe-book" && (
+					<button
+						className="btn btn-custom"
+						onClick={() => navigate(-1)}
+						style={{
+							margin: "auto", // Center the button horizontally
+							display: "flex",
+							justifyContent: "center",
+							alignItems: "center",
+							backgroundColor: "#d87e79", // Set the background color
+							outline: "none", // Remove the outline
+							color: "white",
+							height: "55px",
+						}}
+					>
+						Go Back to Chats
+					</button>
+				)}
+			</div>{" "}
 			<div className="d-flex justify-content-end ">
 				{/* <NavButton label="Chat" path="/" icon={chatBubble} /> */}
-				<NavButton label="Recipe Book" path="/recipe-book" icon={recipeBook} />
+				<NavButton
+					label="Recipe Book"
+					path="/recipe-book"
+					icon={recipeBook}
+				/>{" "}
 				<NavButton
 					label="User Profile"
 					path="/user-profile"
@@ -51,11 +81,13 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 	);
 }
 
-function NavButton({ label, path, icon }) {
+function NavButton({ label, path, icon, prevChatId = null }) {
 	return (
 		<Link
 			className="d-flex flex-column align-items-center text-decoration-none mx-3"
-			to={path}
+			to={{
+				pathname: path,
+			}}
 			style={{ width: "fit-content" }}
 		>
 			<div
