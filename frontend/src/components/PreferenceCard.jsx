@@ -160,47 +160,20 @@ const PreferenceCard = () => {
 				{Object.entries(allergens).map(([allergen, category]) => (
 					<span key={allergen} className="item">
 						<span className="item-text">{allergen}</span>
-						<span className="ml-2">
-							{" "}
-							{category === 1 ? "💀" : category === 2 ? "🤢" : "💀"}
-						</span>
-						<span>
-							<OverlayTrigger
-								placement="top"
-								overlay={
-									<Tooltip place="top" effect="solid">
-										<div>💀 This will kill me</div>
-										<div>🤢 This makes me ill</div>
-									</Tooltip>
-								}
-							>
-								<span
-									className="ml-2"
-									style={{
-										cursor: "pointer",
-										display: "inline-block",
-										width: "20px",
-										height: "20px",
-										borderRadius: "50%",
-										backgroundColor: "grey",
-										color: "#fff",
-										textAlign: "center",
-										lineHeight: "20px", // Vertical centering of the question mark
-										fontSize: "14px", // Adjust the font size
-										marginRight: "5px",
-										marginLeft: "5px",
-									}}
-								>
-									?
-								</span>
-							</OverlayTrigger>
-						</span>
+
 						<Dropdown className="ml-2">
 							<Dropdown.Toggle
 								variant="secondary"
 								id="dropdown-basic"
 								className="custom-dropdown-toggle"
-							></Dropdown.Toggle>
+								style={{ minWidth: "50px" }} // Adjust the width as needed
+							>
+								{" "}
+								<span className="ml-2">
+									{" "}
+									{category === 1 ? "💀" : category === 2 ? "🤢" : "💀"}
+								</span>
+							</Dropdown.Toggle>
 							<Dropdown.Menu>
 								<Dropdown.Item
 									className="dropdown-text"
@@ -221,9 +194,41 @@ const PreferenceCard = () => {
 							size="sm"
 							className="custom-remove-button"
 							onClick={() => handleRemoveAllergen(allergen)}
+							style={{ marginLeft: "2px" }}
 						>
 							X
 						</Button>
+						<span>
+							<OverlayTrigger
+								placement="top"
+								overlay={
+									<Tooltip place="top" effect="solid">
+										<div>💀 This will kill me</div>
+										<div>🤢 This makes me ill</div>
+									</Tooltip>
+								}
+							>
+								<span
+									className="ml-2"
+									style={{
+										cursor: "pointer",
+										display: "inline-block",
+										width: "16px",
+										height: "16px",
+										borderRadius: "50%",
+										backgroundColor: "grey",
+										color: "#fff",
+										textAlign: "center",
+										lineHeight: "16px", // Vertical centering of the question mark
+										fontSize: "12px", // Adjust the font size
+										marginRight: "5px",
+										marginLeft: "5px",
+									}}
+								>
+									?
+								</span>
+							</OverlayTrigger>
+						</span>
 					</span>
 				))}
 			</div>
