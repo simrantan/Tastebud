@@ -274,8 +274,6 @@ app.post("/chat/:userID/message", async (req, res) => {
 		content: input,
 	}
 
-	console.log(input)
-
 	// Add reformatted user message to messages that get sent to the API
 	// messagesForAI.push(engineeredMessage);
 	const messagesForAI = messages.slice(0, -1).concat(engineeredMessage);
