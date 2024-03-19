@@ -212,7 +212,6 @@ app.post("/chat/:userID/message", async (req, res) => {
 	var chatID = req.body.chatID;
 	var chatRef = null;
 	var messages = null;
-	var messagesForAI = null;
 
 	if (isNewChat) {
 		// If new chat, create new chat in Firebase
@@ -230,12 +229,10 @@ app.post("/chat/:userID/message", async (req, res) => {
 			systemMessage
 		);
 		messages = [systemMessage];
-		messagesForAI = JSON.parse(JSON.stringify(messages)); // Deep copy
 	} else {
 		// If chat already exists, get the chat reference and messages history from Firebase
 		chatRef = doc(DATABASE, "users", userId, "chats", chatID);
 		messages = req.body.messages;
-		messagesForAI = JSON.parse(JSON.stringify(messages)); // Deep copy
 	}
 
 	const originalMessage = {
@@ -251,11 +248,9 @@ app.post("/chat/:userID/message", async (req, res) => {
 	// Append user's original message to messages history
 	messages.push(originalMessage);
 
-	// Now we append to user's input as appropriate
-	if (isNewChat) {
-		input += ". Generate a title for this chat in the 'chatTitle' field in your response."
-	}
+	input = "User input: \"" + input;
 
+	// Append to user's input as appropriate
 	if (preferences.likes && preferences.likes.length > 0) {
 		input += ". It's not necessary to include these, but note that I like " + preferences.likes.join(", ") + ".";
 	}
@@ -266,15 +261,24 @@ app.post("/chat/:userID/message", async (req, res) => {
 		input += ". I am allergic to " + Object.keys(preferences.allergies).join(", ") + ", so DO NOT INCLUDE THEM IN ANY RECIPES YOU PROVIDE.";
 	}
 
-	input += "\n REMEMBER THIS!!!!!: " + systemMessage.content;
+	if (isNewChat) {
+		input += ". Generate a title for this chat in the 'chatTitle' field in your response."
+	}
+
+	input += "\"";
+
+	input += "\nREMEMBER THIS SYSTEM MESSAGE!!!!!: " + systemMessage.content;
 
 	const engineeredMessage = {
 		role: "user",
 		content: input,
 	}
 
+	console.log(input)
+
 	// Add reformatted user message to messages that get sent to the API
-	messagesForAI.push(engineeredMessage);
+	// messagesForAI.push(engineeredMessage);
+	const messagesForAI = messages.slice(0, -1).concat(engineeredMessage);
 
 	// Fetch API response
 	var response = await getResponseFromAPI(messagesForAI);
