@@ -4,6 +4,8 @@ import recipeBook from "../assets/recipe-book.png";
 import userProfile from "../assets/user.png";
 import chatBubble from "../assets/chat.png";
 import { useParams } from "react-router-dom";
+import tasteBudLogo from "../assets/tastebud-icon-red.png"; // Import your PNG logo
+import "@fontsource/karla"; // Defaults to weight 400
 
 export default function NavBar({ setChatSidebarIsOpen }) {
 	const location = useLocation();
@@ -44,13 +46,38 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 					Previous Chats
 				</span>
 			</div>
+			<div
+				style={{
+					position: "sticky",
+					left: "50%",
+					transform: "translateX(-50%)",
+					display: "flex",
+					alignItems: "center",
+					height: "76px",
+					paddingBottom: "21px",
+				}}
+			>
+				<div
+					style={{
+						fontFamily: "Karla",
+						fontSize: "36px",
+					}}
+				>
+					TasteBud
+				</div>
+				<img
+					src={tasteBudLogo}
+					alt="TasteBud Logo"
+					style={{ width: "55px", height: "55px" }}
+				/>
+			</div>
 			<div style={{ height: "76px" }}>
 				{path === "/recipe-book" && (
 					<button
 						className="btn btn-custom"
 						onClick={() => navigate(-1)}
 						style={{
-							margin: "auto", // Center the button horizontally
+							marginRight: "810px", // Center the button horizontally
 							display: "flex",
 							justifyContent: "center",
 							alignItems: "center",
