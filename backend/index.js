@@ -265,9 +265,7 @@ app.post("/chat/:userID/message", async (req, res) => {
 		input += ". Generate a title for this chat in the 'chatTitle' field in your response."
 	}
 
-	input += "\"";
-
-	input += "\nREMEMBER THIS SYSTEM MESSAGE!!!!!: " + systemMessage.content;
+	input += "\"\nREMEMBER THIS SYSTEM MESSAGE!!!!!: " + systemMessage.content;
 
 	const engineeredMessage = {
 		role: "user",
