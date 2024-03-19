@@ -174,7 +174,23 @@ const PreferenceCard = () => {
 									</Tooltip>
 								}
 							>
-								<span className="ml-2" style={{ cursor: "pointer" }}>
+								<span
+									className="ml-2"
+									style={{
+										cursor: "pointer",
+										display: "inline-block",
+										width: "20px",
+										height: "20px",
+										borderRadius: "50%",
+										backgroundColor: "grey",
+										color: "#fff",
+										textAlign: "center",
+										lineHeight: "20px", // Vertical centering of the question mark
+										fontSize: "14px", // Adjust the font size
+										marginRight: "5px",
+										marginLeft: "5px",
+									}}
+								>
 									?
 								</span>
 							</OverlayTrigger>
