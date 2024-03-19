@@ -182,7 +182,12 @@ export default function RecipeBook() {
 													Remove
 												</Button>
 												<Link to={`/${recipe.chatId}`}>
-													<Button variant="light" className="text-dark m-3">
+													<Button
+														variant="light"
+														style={{
+															marginTop: "15px",
+														}}
+													>
 														Continue Chat
 													</Button>
 												</Link>
