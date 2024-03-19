@@ -343,7 +343,9 @@ export default function ChatsMain() {
 										<div>
 											<p
 												className={`small p-2 ms-3 mb-1 rounded-3 ${
-													message.role === "user" ? "user-message" : "bg-light"
+													message.role === "user"
+														? "user-message"
+														: "assistant-message"
 												}`}
 											>
 												{message.content}
