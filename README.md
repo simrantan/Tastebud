@@ -82,6 +82,6 @@ These instructions will get you a copy of the project up and running.
     npm start
     ```
 
-_Known issue: if you get the error `ReferenceError: Headers is not defined` upon starting the backend, you need to use a newer version of Node.js - check out the [Node Version Manager](https://github.com/nvm-sh/nvm) for help._
+_Known issue: if you get the error `ReferenceError: Headers is not defined` upon starting the backend, you need to use a newer version of Node.js - check out the [Node Version Manager](https://github.com/nvm-sh/nvm) for help. TasteBud is known to work using node v20.11.1 and npm v10.2.4._
 
 <p align="right">(<a href="#top">back to top</a>)</p>
