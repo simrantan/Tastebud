@@ -7,7 +7,6 @@ import {
 	Route,
 } from "react-router-dom";
 import MainPage from "./pages/MainPage";
-import ChatsMain from "./components/ChatsMain";
 import RecipeBook from "./pages/RecipeBook";
 import LoginPage from "./pages/Login";
 import { UserProvider, useUser } from "./contexts/UserContext";
