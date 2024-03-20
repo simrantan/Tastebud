@@ -4,6 +4,9 @@ import { useUser } from "../contexts/UserContext";
 import recipeBook from "../assets/recipe-book.png";
 import userProfile from "../assets/user.png";
 import chatBubble from "../assets/chat.png";
+import home from "../assets/home.png";
+
+import { useParams } from "react-router-dom";
 import tasteBudLogo from "../assets/tastebud-icon-red.png"; // Import your PNG logo
 import "@fontsource/karla"; // Defaults to weight 400
 
