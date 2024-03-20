@@ -55,13 +55,22 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 					</>
 				)}
 			</div>
-			<div className="d-flex">
+			<div
+				style={{
+					position: "sticky",
+					left: "50%",
+					transform: "translateX(-50%)",
+					display: "flex",
+					alignItems: "center",
+					height: "76px",
+					paddingBottom: "21px",
+					userSelect: "none",
+				}}
+			>
 				<div
 					style={{
 						fontFamily: "Karla",
 						fontSize: "36px",
-						// User select is set to none to prevent the text from being selected/highlighted
-						userSelect: "none",
 					}}
 				>
 					TasteBud
