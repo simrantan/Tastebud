@@ -87,7 +87,7 @@ export default function ChatsSidebar({
 					</Link>
 				</div>
 
-				<div style={{ flex: 1, overflowY: "auto" }}>
+				<div style={{ flex: 1, overflowY: "auto", width: "100%" }}>
 					{/* Create an entry for each conversation */}
 					{chats.map((chat) => (
 						<SidebarEntry
