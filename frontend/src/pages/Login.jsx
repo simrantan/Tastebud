@@ -69,10 +69,6 @@ export default function LoginPage({ props }) {
 						// Redirect after successful login
 						navigate("/newConversation");
 					});
-				})
-				.then((userCredential) => {
-					// Log the user in
-					// postLogin(userCredential);
 				});
 		} catch (error) {
 			// If the user already exists, try logging in instead
@@ -91,7 +87,7 @@ export default function LoginPage({ props }) {
 							console.log("logged in!");
 							// Update user context
 							updateUser(userData).then(() => {
-								// Redirect to  after successful login
+								// Redirect after successful login
 								navigate("/newConversation");
 							});
 						})
@@ -113,7 +109,7 @@ export default function LoginPage({ props }) {
 	return (
 		<div className="container">
 			<h1>Login / Create Account</h1>
-			<form style={{ width: "50%" }}>
+			<form style={{ width: "50%" }} onSubmit={handleSignup}>
 				<div className="mb-3">
 					<label htmlFor="email" className="form-label">
 						Email address
@@ -145,11 +141,7 @@ export default function LoginPage({ props }) {
 					{/* Render error message */}
 				</div>
 
-				<button
-					type="submit"
-					className="btn btn-primary"
-					onClick={handleSignup}
-				>
+				<button type="submit" className="btn btn-primary">
 					Go!
 				</button>
 			</form>
