@@ -89,11 +89,15 @@ export default function RecipeBook() {
 		const groupedRecipes = {};
 		filteredRecipes.forEach((recipe) => {
 			const cuisine = recipe.cuisine;
-			if (groupedRecipes[cuisine]) {
-				groupedRecipes[cuisine].push(recipe);
-			} else {
-				groupedRecipes[cuisine] = [recipe];
-			}
+			// One food may belong to multiple cuisines
+			cuisine.split(",").forEach((cuisine) => {
+				cuisine = cuisine.trim();
+				if (groupedRecipes[cuisine]) {
+					groupedRecipes[cuisine].push(recipe);
+				} else {
+					groupedRecipes[cuisine] = [recipe];
+				}
+			});
 		});
 
 		const sortedCuisines = Object.keys(groupedRecipes).sort();
@@ -110,13 +114,17 @@ export default function RecipeBook() {
 
 	return (
 		<div>
-			<ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+			<ToastContainer
+				position="bottom-right"
+				autoClose={3000}
+				hideProgressBar
+			/>
 
 			<div style={{ marginLeft: "300px", marginRight: "300px" }}>
-				<h2 style={{ marginBottom: "20px" }}>Recipe Book</h2>
+				<h1 style={{ marginBottom: "20px" }}>Recipe Book</h1>
 				<input
 					type="text"
-					placeholder="Search recipes..."
+					placeholder="Search your recipe book..."
 					value={searchQuery}
 					onChange={handleSearchChange}
 					style={{
@@ -140,6 +148,7 @@ export default function RecipeBook() {
 								<div
 									onClick={() => handleRecipeClick(recipe)}
 									className="clickable-card"
+									key={recipe.id}
 								>
 									<Card
 										key={recipe.id}

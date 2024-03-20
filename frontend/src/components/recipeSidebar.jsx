@@ -20,7 +20,11 @@ const RecipePanel = ({ recipe, chatId }) => {
 	if (!recipe) {
 		return (
 			<div className="recipe-panel">
-				<ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+				<ToastContainer
+					position="bottom-right"
+					autoClose={3000}
+					hideProgressBar
+				/>
 				<h3>Recipe</h3>
 				<p>No recipe selected</p>
 			</div>
@@ -85,8 +89,11 @@ const RecipePanel = ({ recipe, chatId }) => {
 
 	return (
 		<>
-			<ToastContainer position="top-right" autoClose={3000} hideProgressBar />
-
+			<ToastContainer
+				position="bottom-right"
+				autoClose={3000}
+				hideProgressBar
+			/>
 			<div
 				className="recipe-panel d-flex flex-column justify-content-between"
 				style={{ height: "100%", backgroundColor: "#FFF9F3" }}
