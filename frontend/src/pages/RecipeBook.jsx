@@ -114,7 +114,11 @@ export default function RecipeBook() {
 
 	return (
 		<div>
-			<ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+			<ToastContainer
+				position="bottom-right"
+				autoClose={3000}
+				hideProgressBar
+			/>
 
 			<div style={{ marginLeft: "300px", marginRight: "300px" }}>
 				<h1 style={{ marginBottom: "20px" }}>Recipe Book</h1>
