@@ -43,7 +43,10 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 								style={{ height: "54px", padding: "8px", margin: "0" }}
 							/>
 						</div>
-						<span className="d-block small" style={{ color: "#d87e79" }}>
+						<span
+							className="d-block small"
+							style={{ color: "#d87e79", userSelect: "none" }}
+						>
 							Previous Chats
 						</span>
 					</>
@@ -54,6 +57,8 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 					style={{
 						fontFamily: "Karla",
 						fontSize: "36px",
+						// User select is set to none to prevent the text from being selected/highlighted
+						userSelect: "none",
 					}}
 				>
 					TasteBud
@@ -133,7 +138,10 @@ function NavButton({ label, path, icon }) {
 				/>
 			</div>
 
-			<span className="d-block small" style={{ color: "#d87e79" }}>
+			<span
+				className="d-block small"
+				style={{ color: "#d87e79", userSelect: "none" }}
+			>
 				{label}
 			</span>
 		</Link>

@@ -117,10 +117,10 @@ export default function RecipeBook() {
 			<ToastContainer position="top-right" autoClose={3000} hideProgressBar />
 
 			<div style={{ marginLeft: "300px", marginRight: "300px" }}>
-				<h2 style={{ marginBottom: "20px" }}>Recipe Book</h2>
+				<h1 style={{ marginBottom: "20px" }}>Recipe Book</h1>
 				<input
 					type="text"
-					placeholder="Search recipes..."
+					placeholder="Search your recipe book..."
 					value={searchQuery}
 					onChange={handleSearchChange}
 					style={{
