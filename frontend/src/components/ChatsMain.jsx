@@ -85,16 +85,25 @@ export default function ChatsMain() {
 				console.log(
 					"last asssss message   " + JSON.stringify(lastAssistantMessage)
 				);
-				setReceivedIsRecipeList(lastAssistantMessage.isRecipeList);
 
-				if (lastAssistantMessage.isRecipeList) {
-					// Set recipePanelData to the list of recipes
-					setRecipePanelData({ recipes: lastAssistantMessage.recipeTitles });
-				}
-				if (lastAssistantMessage.isRecipe) {
-					setSelectedRecipe(lastAssistantMessage.recipe);
+				if (lastAssistantMessage) {
+					setReceivedIsRecipeList(lastAssistantMessage.isRecipeList);
+
+					if (lastAssistantMessage.isRecipeList) {
+						// Set recipePanelData to the list of recipes
+						setRecipePanelData({ recipes: lastAssistantMessage.recipeTitles });
+					}
+					if (lastAssistantMessage.isRecipe) {
+						console.log("set reicpe");
+						setSelectedRecipe(lastAssistantMessage.recipe);
+					} else {
+						console.log("setting null");
+						setSelectedRecipe(null);
+					}
 				} else {
 					setSelectedRecipe(null);
+					setRecipePanelData({ recipes: [] });
+					setReceivedIsRecipeList(false);
 				}
 
 				setChatHistory(allMessages);
