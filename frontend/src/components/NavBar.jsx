@@ -3,6 +3,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import recipeBook from "../assets/recipe-book.png";
 import userProfile from "../assets/user.png";
 import chatBubble from "../assets/chat.png";
+import home from "../assets/home.png";
+
 import { useParams } from "react-router-dom";
 import tasteBudLogo from "../assets/tastebud-icon-red.png"; // Import your PNG logo
 import "@fontsource/karla"; // Defaults to weight 400
@@ -71,28 +73,10 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 					style={{ width: "55px", height: "55px" }}
 				/>
 			</div>
-			<div style={{ height: "76px" }}>
-				{path === "/recipe-book" && (
-					<button
-						className="btn btn-custom"
-						onClick={() => navigate(-1)}
-						style={{
-							marginRight: "810px", // Center the button horizontally
-							display: "flex",
-							justifyContent: "center",
-							alignItems: "center",
-							backgroundColor: "#d87e79", // Set the background color
-							outline: "none", // Remove the outline
-							color: "white",
-							height: "55px",
-						}}
-					>
-						Go Back to Chats
-					</button>
-				)}
-			</div>{" "}
+			<div style={{ height: "76px" }}></div>{" "}
 			<div className="d-flex justify-content-end ">
 				{/* <NavButton label="Chat" path="/" icon={chatBubble} /> */}
+				<NavButton label="Homepage" path="/newConversation" icon={home} />
 				<NavButton
 					label="Recipe Book"
 					path="/recipe-book"
