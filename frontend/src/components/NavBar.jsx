@@ -73,28 +73,11 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 				/>
 			</div>
 
-			{path === "/recipe-book" && (
-				<div>
-					<button
-						className="btn btn-custom"
-						onClick={() => navigate(-1)}
-						style={{
-							display: "flex",
-							justifyContent: "center",
-							alignItems: "center",
-							backgroundColor: "#d87e79", // Set the background color
-							outline: "none", // Remove the outline
-							color: "white",
-							height: "55px",
-						}}
-					>
-						Go Back to Chats
-					</button>
-				</div>
-			)}
 			<div className="d-flex justify-content-end">
 				{isLoggedIn() && (
 					<>
+						<NavButton label="Homepage" path="/newConversation" icon={home} />
+
 						<NavButton
 							label="Recipe Book"
 							path="/recipe-book"
