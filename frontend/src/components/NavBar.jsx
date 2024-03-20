@@ -49,17 +49,7 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 					</>
 				)}
 			</div>
-			<div
-				style={{
-					position: "sticky",
-					left: "50%",
-					transform: "translateX(-50%)",
-					display: "flex",
-					alignItems: "center",
-					height: "76px",
-					paddingBottom: "21px",
-				}}
-			>
+			<div className="d-flex">
 				<div
 					style={{
 						fontFamily: "Karla",
@@ -74,13 +64,13 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 					style={{ width: "55px", height: "55px" }}
 				/>
 			</div>
-			<div style={{ height: "76px" }}>
-				{path === "/recipe-book" && (
+
+			{path === "/recipe-book" && (
+				<div>
 					<button
 						className="btn btn-custom"
 						onClick={() => navigate(-1)}
 						style={{
-							marginRight: "810px", // Center the button horizontally
 							display: "flex",
 							justifyContent: "center",
 							alignItems: "center",
@@ -92,8 +82,8 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 					>
 						Go Back to Chats
 					</button>
-				)}
-			</div>{" "}
+				</div>
+			)}
 			<div className="d-flex justify-content-end">
 				{isLoggedIn() && (
 					<>
@@ -114,7 +104,7 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 	);
 }
 
-function NavButton({ label, path, icon, prevChatId = null }) {
+function NavButton({ label, path, icon }) {
 	return (
 		<Link
 			className="d-flex flex-column align-items-center text-decoration-none mx-3"
