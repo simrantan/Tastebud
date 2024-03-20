@@ -19,7 +19,6 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 			<div
 				className="d-flex flex-column align-items-center text-decoration-none mx-3"
 				style={{ width: "fit-content" }}
-				// TODO: shouldn't do this if no user logged in
 				onClick={() => setChatSidebarIsOpen(true)}
 			>
 				<div

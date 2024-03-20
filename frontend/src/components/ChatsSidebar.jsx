@@ -10,7 +10,7 @@ export default function ChatsSidebar({
 	chatSidebarIsOpen,
 	setChatSidebarIsOpen,
 }) {
-	const { userData } = useUser();
+	const { userData, isLoggedIn } = useUser();
 	const [chats, setChats] = useState([]);
 	const [newChatCount, setNewChatCount] = useState(0);
 
@@ -40,6 +40,11 @@ export default function ChatsSidebar({
 
 	function toggleDrawer() {
 		setChatSidebarIsOpen(!chatSidebarIsOpen);
+	}
+
+	// If the user is not logged in, don't render the sidebar
+	if (!isLoggedIn()) {
+		return null;
 	}
 
 	return (
