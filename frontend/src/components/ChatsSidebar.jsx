@@ -55,7 +55,7 @@ export default function ChatsSidebar({
 				}}
 			>
 				<div
-					className="d-flex justify-content-between p-3 align-items-top"
+					className="d-flex justify-content-between p-3 pb-1 align-items-top"
 					style={{ width: "100%" }}
 				>
 					<h2 className="text-light">My Chats</h2>
@@ -68,6 +68,20 @@ export default function ChatsSidebar({
 					</button>
 				</div>
 
+				<div className="m-0 p-0" style={{ flex: "none" }}>
+					<Link
+						to={`/newConversation:${newChatCount}`}
+						onClick={() => {
+							setNewChatCount((prevCount) => prevCount + 1);
+							toggleDrawer();
+						}}
+					>
+						<Button variant="light" className="text-dark m-0 mb-2">
+							Create New Chat
+						</Button>
+					</Link>
+				</div>
+
 				<div style={{ flex: 1, overflowY: "auto" }}>
 					{/* Create an entry for each conversation */}
 					{chats.map((chat) => (
@@ -77,20 +91,6 @@ export default function ChatsSidebar({
 							toggleDrawer={toggleDrawer}
 						/>
 					))}
-				</div>
-
-				<div style={{ flex: "none" }}>
-					<Link
-						to={`/newConversation:${newChatCount}`}
-						onClick={() => {
-							setNewChatCount((prevCount) => prevCount + 1);
-							toggleDrawer();
-						}}
-					>
-						<Button variant="light" className="text-dark m-3">
-							Create New Chat
-						</Button>
-					</Link>
 				</div>
 			</div>
 		</>
