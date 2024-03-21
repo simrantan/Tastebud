@@ -28,12 +28,13 @@ export default function RecipeBook() {
 			.catch((error) => {
 				console.error("Error fetching recipe book:", error);
 			});
-	}, [userId]);
+	}, [userId, showModal]);
 
 	// Fetch the notes when the selected recipe changes
-	useEffect(() => {
-		setNotes(selectedRecipe?.notes || "");
-	}, [selectedRecipe]);
+	// useEffect(() => {
+	// 	console.log(selectedRecipe);
+	// 	setNotes(selectedRecipe?.notes || "");
+	// }, [selectedRecipe]);
 
 	const handleSearchChange = (e) => {
 		setSearchQuery(e.target.value);
@@ -41,6 +42,8 @@ export default function RecipeBook() {
 
 	const handleRecipeClick = (recipe) => {
 		setSelectedRecipe(recipe);
+		setNotes(recipe.notes || "");
+
 		setShowModal(true);
 	};
 
@@ -125,16 +128,21 @@ export default function RecipeBook() {
 				},
 				body: JSON.stringify({ notes: notes }), // Assuming your API expects a JSON object with 'notes' field
 			}
-		).catch((error) => {
-			// Handle error
-			console.error("Error sending notes:", error);
-		});
+		)
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error("Network response was not ok");
+				}
+				// Reset notes state after sending
+				setNotes("");
+				setShowModal(false);
 
-		// Reset notes state after sending
-		setNotes("");
-
-		// Close the modal
-		setShowModal(false);
+				// Close the modal or do any other post-fetch operations
+			})
+			.catch((error) => {
+				// Handle error
+				console.error("Error sending notes:", error);
+			});
 	};
 
 	return (
