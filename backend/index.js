@@ -168,6 +168,24 @@ app.get("/user/:userId/recipe/:recipeId", async (req, res) => {
 	}
 });
 
+/** Add notes to a recipe in the user's recipe book */
+app.post("/recipe_book/:userId/recipe/:recipeId/notes", async (req, res) => {
+	const userId = req.params.userId;
+	const recipeId = req.params.recipeId;
+	const notes = req.body.notes;
+
+	try {
+		const recipeRef = doc(DATABASE, "users", userId, "recipes", recipeId);
+		await updateDoc(recipeRef, {
+			notes: notes,
+		});
+		res.status(200).json({ success: true });
+	} catch (error) {
+		console.error(error);
+		res.status(500).send("Internal Server Error");
+	}
+});
+
 /** Add a recipe to a user's recipe book */
 app.post("/recipe_book/:userId/add", async (req, res) => {
 	const userId = req.params.userId;
@@ -182,6 +200,7 @@ app.post("/recipe_book/:userId/add", async (req, res) => {
 		res.status(500).send("Internal Server Error");
 	}
 });
+
 /** Remove a recipe from a user's recipe book */
 app.post("/recipe_book/:userId/remove/:recipeId", async (req, res) => {
 	const userId = req.params.userId;

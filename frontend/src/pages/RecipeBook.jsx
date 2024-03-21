@@ -16,6 +16,7 @@ export default function RecipeBook() {
 	const [showModal, setShowModal] = useState(false);
 	const [selectedRecipe, setSelectedRecipe] = useState(null);
 	const [searchQuery, setSearchQuery] = useState("");
+	const [notes, setNotes] = useState("");
 
 	useEffect(() => {
 		fetch(`http://localhost:3001/recipe_book/${userId}`)
@@ -29,6 +30,11 @@ export default function RecipeBook() {
 			});
 	}, [userId]);
 
+	// Fetch the notes when the selected recipe changes
+	useEffect(() => {
+		setNotes(selectedRecipe?.notes || "");
+	}, [selectedRecipe]);
+
 	const handleSearchChange = (e) => {
 		setSearchQuery(e.target.value);
 	};
@@ -38,13 +44,9 @@ export default function RecipeBook() {
 		setShowModal(true);
 	};
 
-	const handleCloseModal = () => {
-		setShowModal(false);
-	};
-
 	const handleRemoveFromRecipeBookModal = (recipeId) => {
 		handleRemoveFromRecipeBook(recipeId);
-		handleCloseModal();
+		handleModalClose();
 	};
 
 	const handleRemoveFromRecipeBook = async (recipeId) => {
@@ -111,6 +113,29 @@ export default function RecipeBook() {
 	};
 
 	const groupedRecipes = groupRecipesByCuisine();
+
+	const handleModalClose = () => {
+		// Make API request to save the notes when the modal is closed
+		fetch(
+			`http://localhost:3001/recipe_book/${userId}/recipe/${selectedRecipe.id}/notes`,
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ notes: notes }), // Assuming your API expects a JSON object with 'notes' field
+			}
+		).catch((error) => {
+			// Handle error
+			console.error("Error sending notes:", error);
+		});
+
+		// Reset notes state after sending
+		setNotes("");
+
+		// Close the modal
+		setShowModal(false);
+	};
 
 	return (
 		<div>
@@ -210,7 +235,7 @@ export default function RecipeBook() {
 				))}
 			</div>
 
-			<Modal show={showModal} onHide={handleCloseModal}>
+			<Modal show={showModal} onHide={handleModalClose}>
 				<Modal.Header closeButton>
 					<Modal.Title>{selectedRecipe?.title}</Modal.Title>
 				</Modal.Header>
@@ -223,11 +248,22 @@ export default function RecipeBook() {
 									<li key={index}>{ingredient}</li>
 								))}
 							</ul>
+
 							<h4>Directions:</h4>
 							<div>
 								{selectedRecipe.directions.map((direction, index) => (
 									<p key={index}>{direction}</p>
 								))}
+							</div>
+
+							<div>
+								<h4>Notes:</h4>
+								<textarea
+									value={notes}
+									onChange={(e) => setNotes(e.target.value)}
+									rows={4}
+									style={{ width: "100%", resize: "vertical" }}
+								/>
 							</div>
 						</>
 					)}
@@ -239,7 +275,7 @@ export default function RecipeBook() {
 					>
 						Remove from Recipe Book
 					</Button>
-					<Button variant="secondary" onClick={handleCloseModal}>
+					<Button variant="secondary" onClick={handleModalClose}>
 						Close
 					</Button>
 				</Modal.Footer>
