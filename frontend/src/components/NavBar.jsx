@@ -1,22 +1,16 @@
 import React from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 import recipeBook from "../assets/recipe-book.png";
 import userProfile from "../assets/user.png";
 import chatBubble from "../assets/chat.png";
 import home from "../assets/home.png";
 
-import { useParams } from "react-router-dom";
 import tasteBudLogo from "../assets/tastebud-icon-red.png"; // Import your PNG logo
 import "@fontsource/karla"; // Defaults to weight 400
 
 export default function NavBar({ setChatSidebarIsOpen }) {
-	const location = useLocation();
 	const { isLoggedIn } = useUser();
-
-	// Extracting the pathname from the location object
-	const path = location.pathname;
-	const navigate = useNavigate();
 
 	return (
 		<nav className="navbar navbar-expand-lg navbar-white bg-white d-flex justify-content-between mb-3">

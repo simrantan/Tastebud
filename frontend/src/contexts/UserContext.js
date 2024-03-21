@@ -42,23 +42,6 @@ export const UserProvider = ({ children }) => {
 			});
 	};
 
-	// Refresh the user data from the database
-	const refreshData = () => {
-		fetch(`http://localhost:3001/user/${userId}`)
-			.then((response) => {
-				if (!response.ok) {
-					throw new Error("Network response was not ok");
-				}
-				return response.json();
-			})
-			.then((userData) => {
-				setUserData(userData);
-			})
-			.catch((error) => {
-				console.error("There was a problem with the fetch operation:", error);
-			});
-	};
-
 	function isLoggedIn() {
 		return localStorage.getItem("userData") !== null;
 	}

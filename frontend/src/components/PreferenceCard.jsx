@@ -57,8 +57,6 @@ const PreferenceCard = () => {
 			if (!response.ok) {
 				throw new Error(`HTTP error! Status: ${response.status}`);
 			}
-
-			const data = await response.json();
 		} catch (error) {
 			console.error("Error saving preferences:", error.message);
 		}

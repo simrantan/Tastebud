@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Container, Row, Col, Card, Form, Button } from "react-bootstrap";
+import { Container, Row, Col, Card, Form } from "react-bootstrap";
 import RecipePanel from "./recipeSidebar";
 import RecipeCarousel from "./carousel";
 import ConversationStarters from "./conversationStarters";
@@ -176,7 +176,7 @@ export default function ChatsMain() {
 
 					const responseData = await response2.json();
 
-					if (curChatId == undefined) {
+					if (curChatId === undefined) {
 						setChatHistory(responseData.messages.slice(0, 2));
 					}
 					const newID = responseData.chat_id;
@@ -184,7 +184,6 @@ export default function ChatsMain() {
 
 					const isRecipeList = responseData.isRecipeList;
 					const isRecipe = responseData.isRecipe;
-					const receivedChatTitle = responseData.chatTitle;
 					const receivedContent = responseData.message;
 
 					setReceivedIsRecipeList(isRecipeList);

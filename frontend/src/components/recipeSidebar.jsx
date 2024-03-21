@@ -1,8 +1,7 @@
 // RecipePanel.js
 import React, { useState, useEffect } from "react";
-import { Button, Card } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
-import ReactMarkdown from "react-markdown";
 import { useUser } from "../contexts/UserContext";
 
 const RecipePanel = ({ recipe, chatId }) => {

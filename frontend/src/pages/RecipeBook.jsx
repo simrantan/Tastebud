@@ -69,8 +69,6 @@ export default function RecipeBook() {
 			if (!response.ok) {
 				throw new Error(`HTTP error! Status: ${response.status}`);
 			}
-
-			const data = await response.json();
 		} catch (error) {
 			console.error("Error removing recipe:", error.message);
 		}
