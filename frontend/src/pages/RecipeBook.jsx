@@ -49,7 +49,7 @@ export default function RecipeBook() {
 
 	const handleRemoveFromRecipeBookModal = (recipeId) => {
 		handleRemoveFromRecipeBook(recipeId);
-		handleModalClose();
+		setShowModal(false);
 	};
 
 	const handleRemoveFromRecipeBook = async (recipeId) => {
@@ -77,6 +77,7 @@ export default function RecipeBook() {
 			}
 
 			const data = await response.json();
+
 			console.log(data);
 		} catch (error) {
 			console.error("Error removing recipe:", error.message);
