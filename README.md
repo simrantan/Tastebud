@@ -4,29 +4,13 @@
 #   https://github.com/othneildrew/Best-README-Template/
 #   https://github.com/kylelobo/The-Documentation-Compendium/
 -->
-
-<!--
-<p align="center">
-  <a href="" rel="noopener">
- <img width=200px height=200px src="https://i.imgur.com/6wj0hh6.jpg" alt="Project logo"></a>
-</p>
--->
-
-<h1 align="center">TasteBud</h1>
+<h1 align="center">Team 22: TasteBud</h1>
 <div id="top"></div>
 
-<!--
-The cute little icon things.
-
-<div align="center">
-
-[![Status](https://img.shields.io/badge/status-active-success.svg)]()
-[![GitHub Issues](https://img.shields.io/github/issues/kylelobo/The-Documentation-Compendium.svg)](https://github.com/kylelobo/The-Documentation-Compendium/issues)
-[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/kylelobo/The-Documentation-Compendium.svg)](https://github.com/kylelobo/The-Documentation-Compendium/pulls)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
-
-</div>
--->
+<p align="center">
+  <a href="" rel="noopener">
+ <img width=200px height=200px src=".github/Screenshot 2024-01-23 at 23.47.07.png" alt="TasteBud"></a>
+</p>
 
 <p align="center">
 Few lines describing your project.
@@ -36,25 +20,13 @@ Few lines describing your project.
 ## Table of Contents
 
 - [About](#about)
-- [Usage](#usage)
 - [Getting Started](#getting_started)
-- [Roadmap](#roadmap)
-- [Contributing](#contributing)
-- [Acknowledgements](#acknowledgements)
 
 ## About <a name="about"></a>
 
-Write about a paragraph describing the purpose of your project.
+TasteBud is your ultimate culinary companion, a chatbot chef assistant that simplifies meal decisions. Whether you have dietary restrictions or need inspiration for your near-expired produce, TasteBud suggests personalized recipes, offers ingredient substitutions, and guides you through a delightful cooking experience. Elevate your culinary adventures with TasteBud – where delicious meets tailored convenience.
 
 All of our documentation lives in our [wiki page](https://github.com/StanfordCS194/Win24-Team22/wiki).
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-## Usage <a name="usage"></a>
-
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-<!-- _For more examples, please refer to the [Documentation](https://example.com)_ -->
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -62,17 +34,7 @@ Use this space to show useful examples of how a project can be used. Additional 
 
 These instructions will get you a copy of the project up and running.
 
-### Prerequisites
-
-The things you need to use the software and how to install them.
-
-- npm
-
-  ```sh
-  npm install npm@latest -g
-  ```
-
-### Installation
+1. [Install Node.js](https://nodejs.org/en/download) TasteBud is known to work using node v20.11.1 and npm v10.2.4.
 
 1. Clone the repo
 
@@ -80,45 +42,48 @@ The things you need to use the software and how to install them.
    git clone git@github.com:StanfordCS194/Win24-Team22.git
    ```
 
-2. Install NPM packages. Run this in both `frontend` and `backend` directories.
+### Frontend
+
+1. Move into the `frontend` directory.
+
+    ```sh
+    cd Win24-Team22/frontend
+    ```
+
+1. Install dependencies
 
    ```sh
    npm install
    ```
 
-3. Once you've made your changes, publish them by running `npm run deploy` from the frontend directory.
+1. Start the development server
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+    ```sh
+    npm start
+    ```
 
-## Roadmap <a name="roadmap"></a>
+### Backend
 
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-  - [ ] Nested Feature
+1. Move into the `backend` directory.
 
-<!--
-See the [open issues](https://github.com/github_username/repo_name/issues) for a full list of proposed features (and known issues).
--->
+    ```sh
+    cd Win24-Team22/backend
+    ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+1. Install dependencies
 
-## Contributing <a name="contributing"></a>
+   ```sh
+   npm install
+   ```
 
-Collaboration is what makes the world such an amazing place to learn, inspire, and create. **Any contributions or suggestions you make are greatly appreciated!**
+1. Start the development server
 
-Feel free to do any of the following:
+    ```sh
+    npm start
+    ```
 
-- send me an [email](mailto:steven.g.opferman@gmail.com)
-- [open an issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/creating-an-issue) with the tag "enhancement"
-- [fork the repo](https://docs.github.com/en/get-started/quickstart/fork-a-repo) and [create a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
+_Known issue: if you get the error `ReferenceError: Headers is not defined` upon starting the backend, you need to use a newer version of Node.js - check out the [Node Version Manager](https://github.com/nvm-sh/nvm) for help. TasteBud is known to work using node v20.11.1 and npm v10.2.4._
 
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-## Acknowledgements <a name="acknowledgements"></a>
-
-- Hat tip to anyone whose code was used
-- Inspiration
-- References
+Once the frontend and backend are both running, visit <http://localhost:3000/> in your browser to begin using TasteBud!
 
 <p align="right">(<a href="#top">back to top</a>)</p>
