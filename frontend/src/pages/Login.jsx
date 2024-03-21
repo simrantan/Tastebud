@@ -40,7 +40,6 @@ export default function LoginPage({ props }) {
 		}
 		// By default, Firebase will create a new user with the email and password provided
 		try {
-			console.log("Signing up with email and password");
 			// Create user in Firebase
 			await firebase
 				.auth()
@@ -75,7 +74,6 @@ export default function LoginPage({ props }) {
 		} catch (error) {
 			// If the user already exists, try logging in instead
 			if (error.code === "auth/email-already-in-use") {
-				console.log("Logging in with email and password");
 				try {
 					await firebase
 						.auth()
@@ -86,7 +84,6 @@ export default function LoginPage({ props }) {
 								email: userCredential.user.email,
 								uid: userCredential.user.uid,
 							};
-							console.log("logged in!");
 							// Update user context
 							updateUser(userData).then(() => {
 								// Redirect after successful login

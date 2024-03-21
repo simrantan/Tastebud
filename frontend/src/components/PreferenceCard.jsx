@@ -106,7 +106,6 @@ const PreferenceCard = () => {
 				return updatedLikes;
 			});
 			setNewLike("");
-			console.log(likes);
 		}
 	};
 

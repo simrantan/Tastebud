@@ -30,12 +30,6 @@ export default function RecipeBook() {
 			});
 	}, [userId, showModal]);
 
-	// Fetch the notes when the selected recipe changes
-	// useEffect(() => {
-	// 	console.log(selectedRecipe);
-	// 	setNotes(selectedRecipe?.notes || "");
-	// }, [selectedRecipe]);
-
 	const handleSearchChange = (e) => {
 		setSearchQuery(e.target.value);
 	};
@@ -77,8 +71,6 @@ export default function RecipeBook() {
 			}
 
 			const data = await response.json();
-
-			console.log(data);
 		} catch (error) {
 			console.error("Error removing recipe:", error.message);
 		}

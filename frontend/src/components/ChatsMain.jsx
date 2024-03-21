@@ -31,7 +31,6 @@ export default function ChatsMain() {
 		// Set chat history with URL
 		const fetchData = async () => {
 			try {
-				console.log("new chattt  " + chatId);
 				if (chatId === undefined || chatId.startsWith("newConversation")) {
 					// Start a new conversation with conversation starters and empty chat history
 					setChatHistory([]);
@@ -53,8 +52,6 @@ export default function ChatsMain() {
 				}
 
 				const chatData = await response.json();
-
-				console.log("chat data   " + JSON.stringify(chatData));
 				const allMessages = [];
 				let lastAssistantMessage = null; // Track the last assistant message
 
@@ -82,9 +79,6 @@ export default function ChatsMain() {
 
 				setChatHistory(allMessages);
 				// Check if the last assistant message contains isRecipeList
-				console.log(
-					"last asssss message   " + JSON.stringify(lastAssistantMessage)
-				);
 
 				if (lastAssistantMessage) {
 					setReceivedIsRecipeList(lastAssistantMessage.isRecipeList);
@@ -94,10 +88,8 @@ export default function ChatsMain() {
 						setRecipePanelData({ recipes: lastAssistantMessage.recipeTitles });
 					}
 					if (lastAssistantMessage.isRecipe) {
-						console.log("set reicpe");
 						setSelectedRecipe(lastAssistantMessage.recipe);
 					} else {
-						console.log("setting null");
 						setSelectedRecipe(null);
 					}
 				} else {
@@ -114,9 +106,6 @@ export default function ChatsMain() {
 
 		setCurChatId((prevChatId) => {
 			const newChatId = chatId; /* your logic to determine the new chatId */
-
-			console.log("curChatId: " + prevChatId);
-			console.log("newChatId: " + newChatId);
 
 			// Perform any additional logic or side effects here
 			fetchData();
@@ -192,21 +181,17 @@ export default function ChatsMain() {
 					}
 					const newID = responseData.chat_id;
 					setCurChatId(newID);
-					console.log("newid", newID);
 
 					const isRecipeList = responseData.isRecipeList;
 					const isRecipe = responseData.isRecipe;
 					const receivedChatTitle = responseData.chatTitle;
 					const receivedContent = responseData.message;
 
-					console.log("responsedata", responseData.messages);
-
 					setReceivedIsRecipeList(isRecipeList);
 
 					if (isRecipeList) {
 						// Set recipePanelData to the list of recipes
 						setRecipePanelData({ recipes: responseData.recipeTitles });
-						console.log("recipePanel", responseData.recipeTitles);
 					}
 					if (isRecipe) {
 						setSelectedRecipe(responseData.recipe);
@@ -217,7 +202,6 @@ export default function ChatsMain() {
 						role: "assistant",
 						content: receivedContent,
 					};
-					console.log("ai", newAIMessage);
 
 					setChatHistory((prevChatHistory) => [
 						...prevChatHistory,

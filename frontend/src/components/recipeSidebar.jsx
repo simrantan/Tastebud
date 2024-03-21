@@ -7,11 +7,9 @@ import { useUser } from "../contexts/UserContext";
 
 const RecipePanel = ({ recipe, chatId }) => {
 	const [addedToRecipeBook, setAddedToRecipeBook] = useState(false);
-	console.log("recipe in pane", JSON.stringify(recipe, null, 2));
 
 	const { userData } = useUser();
 	const userId = userData.id;
-	console.log("recipechatid", chatId);
 	useEffect(() => {
 		// Reset addedToRecipeBook state when a new recipe is loaded
 		setAddedToRecipeBook(false);

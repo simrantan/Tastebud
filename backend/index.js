@@ -352,8 +352,6 @@ app.post("/chat/:userID/message", async (req, res) => {
 			messages: messages,
 		});
 	} else {
-		console.log("Retrying API call...");
-
 		// If API's response is improperly formatted, try once more with correcting messages
 		const messagesCopy = messages.concat(response, {
 			role: "user",
