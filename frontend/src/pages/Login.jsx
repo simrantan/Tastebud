@@ -66,8 +66,10 @@ export default function LoginPage({ props }) {
 
 					// Update user context
 					updateUser(userData).then(() => {
+						setTimeout(() => {
+							navigate("/newConversation");
+						}, 700);
 						// Redirect after successful login
-						navigate("/newConversation");
 					});
 				});
 		} catch (error) {
@@ -88,7 +90,9 @@ export default function LoginPage({ props }) {
 							// Update user context
 							updateUser(userData).then(() => {
 								// Redirect after successful login
-								navigate("/newConversation");
+								setTimeout(() => {
+									navigate("/newConversation");
+								}, 700);
 							});
 						})
 						.catch((error) => {
