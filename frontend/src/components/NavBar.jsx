@@ -23,7 +23,7 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 		>
 			<div
 				className="d-flex flex-column align-items-center text-decoration-none mx-3"
-				style={{ width: "fit-content", paddingTop: "20px" }}
+				style={{ width: "fit-content", paddingTop: "10px" }}
 				onClick={() => setChatSidebarIsOpen(true)}
 			>
 				{isLoggedIn() && (
@@ -71,7 +71,7 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 					display: "flex",
 					alignItems: "center",
 					height: "100px", // Increased height to give more space
-					paddingTop: "20px", // Increased padding to push elements down
+					paddingTop: "10px", // Increased padding to push elements down
 					userSelect: "none",
 				}}
 			>
@@ -92,7 +92,7 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 			</div>
 			<div
 				className="d-flex justify-content-end"
-				style={{ paddingTop: "20px" }}
+				style={{ paddingTop: "10px" }}
 			>
 				{isLoggedIn() && (
 					<>

@@ -307,7 +307,8 @@ export default function ChatsMain() {
 						id="chat2"
 						style={{
 							borderRadius: "15px",
-							border: "1px solid #ccc",
+							border: "3px solid #573c56", // Dark purple border
+							boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
 							overflow: "hidden",
 							height: "100%",
 							backgroundColor: "#FFF9F3",

@@ -1,82 +1,83 @@
 /* PreferenceCard.css */
 
 .preference-card-container {
-    width: 400px; /* Adjust the max-width as per your design */
-    position: fixed;
-    top: 90px;
-    right: 30px;
-    bottom: 30px;
-    background-color: #FFF9F3; /* Add your desired background color */
-    padding: 10px; /* Add padding as needed */
-    border: 4px solid #d87e79; /* Add a border for separation, adjust color as needed */
-    border-radius: 10px;
-    overflow-y: auto; /* Enable vertical scrolling if content exceeds container height */
-  }
-  
-  .section {
-    margin-bottom: 20px; /* Add margin between sections as needed */
-  }
+	width: 400px; /* Adjust the max-width as per your design */
+	position: fixed;
 
-  .section-title {
-    font-size: 30px;
-  }
-  
-  .preference-container {
-    display: flex;
-    flex-wrap: wrap; /* Change to wrap */
-    align-items: flex-end;
-    margin-right: -8px; /* Adjust margin to offset the negative margin on the items */
+	right: 30px;
+	bottom: 90px;
+	background-color: #fff9f3; /* Add your desired background color */
+	padding: 7.5px; /* Reduced padding by 25% */
+	border: 4px solid #d87e79; /* Add a border for separation, adjust color as needed */
+	border-radius: 10px;
+	overflow-y: auto; /* Enable vertical scrolling if content exceeds container height */
+	height: 60%; /* Reduced height to 75% */
+}
 
-  }
-  
-  .item {
-    border: 2px solid #d87e79;
-    border-radius: 5px;
-    padding: 8px;
-    margin-top: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-right: 8px; /* Adjust margin between items as needed */
-    margin-bottom: 8px; /* Add margin between rows as needed */
-    background-color: #FFF9F3; /* Change the background color as needed */
+.section {
+	margin-bottom: 15px; /* Adjusted margin between sections */
+}
 
-  }
+.section-title {
+	font-size: 22.5px; /* Reduced font size by 25% */
+}
 
-  .item-text {
-    margin-right: 10px;
-  }
-  
-  /* Add any additional styling as needed */
-  .custom-dropdown-toggle.btn-secondary {
-    width: 30px;
-    padding: 4px;
-    height: 32px !important;
-    width: 30px !important;    
-    background-color: #573c56 !important; /* Change the background color as needed */
-    color: #FFF9F3 !important; /* Change the text color as needed */
-    border: 1px solid #ffffff !important; /* Change the border color as needed */
-    align-items: center !important;
-  }
-  
-  .custom-dropdown-menu {
-    /* Additional styles for the dropdown menu */
-    background-color: #3498db; /* Change the background color as needed */
-    color: #ffffff; /* Change the text color as needed */
-  }
+.preference-container {
+	display: flex;
+	flex-wrap: wrap; /* Change to wrap */
+	align-items: flex-end;
+	margin-right: -8px; /* Adjust margin to offset the negative margin on the items */
+}
 
-  
-  .custom-remove-button-test {
-    /* Add your custom styles here */
-    height: 30px !important;
-    width: 30px !important;
-    background-color: rgb(255, 0, 30)!important;; /* Change the background color as needed */ 
-    color: white !important;; /* Change the text color as needed */
-    border: 1px solid #ffffff !important; /* Change the border color as needed */
-    /* Add any other styles you want to override */
-  }
+.item {
+	border: 2px solid #d87e79;
+	border-radius: 5px;
+	padding: 6px; /* Reduced padding by 25% */
+	margin-top: 6px; /* Reduced margin by 25% */
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-right: 6px; /* Reduced margin between items */
+	margin-bottom: 6px; /* Reduced margin between rows */
+	background-color: #fff9f3; /* Change the background color as needed */
+}
 
-  
-  .dropdown-item{
-    text-align: center !important;
-  }
+.item-text {
+	margin-right: 7.5px; /* Reduced margin between item text and button */
+}
+
+/* Add any additional styling as needed */
+.custom-dropdown-toggle.btn-secondary {
+	width: 22.5px; /* Reduced width */
+	padding: 3px; /* Reduced padding */
+	height: 24px !important; /* Reduced height */
+	width: 22.5px !important;
+	background-color: #573c56 !important; /* Change the background color as needed */
+	color: #fff9f3 !important; /* Change the text color as needed */
+	border: 1px solid #ffffff !important; /* Change the border color as needed */
+	align-items: center !important;
+}
+
+.custom-dropdown-menu {
+	/* Additional styles for the dropdown menu */
+	background-color: #3498db; /* Change the background color as needed */
+	color: #ffffff; /* Change the text color as needed */
+}
+
+.custom-remove-button-test {
+	/* Add your custom styles here */
+	height: 22.5px !important; /* Reduced height */
+	width: 22.5px !important; /* Reduced width */
+	background-color: rgb(
+		255,
+		0,
+		30
+	) !important; /* Change the background color as needed */
+	color: white !important; /* Change the text color as needed */
+	border: 1px solid #ffffff !important; /* Change the border color as needed */
+	/* Add any other styles you want to override */
+}
+
+.dropdown-item {
+	text-align: center !important;
+}
