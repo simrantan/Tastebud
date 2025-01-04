@@ -13,10 +13,17 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 	const { isLoggedIn } = useUser();
 
 	return (
-		<nav className="navbar navbar-expand-lg navbar-white bg-white d-flex justify-content-between mb-3">
+		<nav
+			className="navbar navbar-expand-lg navbar-white bg-white d-flex justify-content-between mb-3"
+			style={{
+				padding: "10px 20px 10px 20px", // Added padding on sides and top
+				backgroundColor: "#f8f9fa", // Added background color
+				boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // Added shadow
+			}}
+		>
 			<div
 				className="d-flex flex-column align-items-center text-decoration-none mx-3"
-				style={{ width: "fit-content" }}
+				style={{ width: "fit-content", paddingTop: "20px" }}
 				onClick={() => setChatSidebarIsOpen(true)}
 			>
 				{isLoggedIn() && (
@@ -32,7 +39,14 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 								alignItems: "center",
 								backgroundColor: "#d87e79", // Set the background color
 								outline: "none", // Remove the outline
+								transition: "transform 0.3s",
 							}}
+							onMouseEnter={(e) =>
+								(e.currentTarget.style.transform = "scale(1.1)")
+							}
+							onMouseLeave={(e) =>
+								(e.currentTarget.style.transform = "scale(1)")
+							}
 						>
 							<img
 								src={chatBubble}
@@ -56,15 +70,16 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 					transform: "translateX(-50%)",
 					display: "flex",
 					alignItems: "center",
-					height: "76px",
-					paddingBottom: "21px",
+					height: "100px", // Increased height to give more space
+					paddingTop: "20px", // Increased padding to push elements down
 					userSelect: "none",
 				}}
 			>
 				<div
 					style={{
 						fontFamily: "Karla",
-						fontSize: "36px",
+						fontSize: "42px", // Adjusted size
+						fontWeight: "bold", // Bolded text
 					}}
 				>
 					TasteBud
@@ -75,12 +90,13 @@ export default function NavBar({ setChatSidebarIsOpen }) {
 					style={{ width: "55px", height: "55px" }}
 				/>
 			</div>
-
-			<div className="d-flex justify-content-end">
+			<div
+				className="d-flex justify-content-end"
+				style={{ paddingTop: "20px" }}
+			>
 				{isLoggedIn() && (
 					<>
 						<NavButton label="Homepage" path="/newConversation" icon={home} />
-
 						<NavButton
 							label="Recipe Book"
 							path="/recipe-book"
@@ -108,7 +124,7 @@ function NavButton({ label, path, icon }) {
 			style={{ width: "fit-content" }}
 		>
 			<div
-				className="btn btn-custom" // Change btn-primary to btn-custom
+				className="btn btn-custom"
 				style={{
 					aspectRatio: "1",
 					padding: "0",
@@ -116,9 +132,12 @@ function NavButton({ label, path, icon }) {
 					display: "flex",
 					justifyContent: "center",
 					alignItems: "center",
-					backgroundColor: "#d87e79", // Set the background color
-					outline: "none", // Remove the outline
+					backgroundColor: "#d87e79",
+					outline: "none",
+					transition: "transform 0.3s",
 				}}
+				onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
+				onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
 			>
 				<img
 					src={icon}
